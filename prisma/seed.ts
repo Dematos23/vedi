@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 async function main() {
   console.log(`Start seeding ...`);
 
-  // Clear existing data
+  // Clear existing data in the correct order to avoid foreign key constraint errors
   await prisma.appointment.deleteMany();
   await prisma.service.deleteMany();
   await prisma.patient.deleteMany();
@@ -24,6 +24,7 @@ async function main() {
         address: patient.address,
         notes: patient.notes,
         createdAt: patient.createdAt,
+        updatedAt: patient.updatedAt,
       },
     });
   }

@@ -56,8 +56,8 @@ export const mockAppointments = [
     patientId: "1",
     serviceId: "1",
     description: "Follow-up on anxiety management techniques.",
-    createdAt: new Date("2023-10-15T10:00:00"),
-    updatedAt: new Date("2023-10-15T10:00:00"),
+    createdAt: new Date("2023-10-01T10:00:00"),
+    updatedAt: new Date("2023-10-01T10:00:00"),
   },
   {
     id: "2",
@@ -65,8 +65,8 @@ export const mockAppointments = [
     patientId: "2",
     serviceId: "1",
     description: "Grief counseling session.",
-    createdAt: new Date("2023-10-16T14:00:00"),
-    updatedAt: new Date("2023-10-16T14:00:00"),
+    createdAt: new Date("2023-10-02T14:00:00"),
+    updatedAt: new Date("2023-10-02T14:00:00"),
   },
   {
     id: "3",
@@ -74,17 +74,17 @@ export const mockAppointments = [
     patientId: "3",
     serviceId: "2",
     description: "Relationship communication strategies.",
-    createdAt: new Date("2023-10-17T11:30:00"),
-    updatedAt: new Date("2023-10-17T11:30:00"),
+    createdAt: new Date("2023-10-03T11:30:00"),
+    updatedAt: new Date("2023-10-03T11:30:00"),
   },
-    {
+  {
     id: "4",
-    date: new Date("2023-10-18T09:00:00"),
+    date: new Date("2024-08-18T09:00:00"),
     patientId: "1",
     serviceId: "3",
     description: "CBT session focusing on negative thought patterns.",
-    createdAt: new Date("2023-10-18T09:00:00"),
-    updatedAt: new Date("2023-10-18T09:00:00"),
+    createdAt: new Date("2024-08-01T09:00:00"),
+    updatedAt: new Date("2024-08-01T09:00:00"),
   },
 ];
 
