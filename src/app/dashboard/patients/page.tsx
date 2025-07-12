@@ -25,11 +25,11 @@ import { NewPatientSheet } from "./components/new-patient-sheet";
 export default async function PatientsPage({
   searchParams,
 }: {
-  searchParams?: {
+  searchParams: {
     query?: string;
   };
 }) {
-  const query = searchParams?.query || "";
+  const { query = "" } = searchParams;
   const patients = await prisma.patient.findMany({
     where: {
       OR: [

@@ -14,11 +14,11 @@ import { ServiceCard } from "./components/service-card";
 export default async function ServicesPage({
   searchParams,
 }: {
-  searchParams?: {
+  searchParams: {
     query?: string;
   };
 }) {
-  const query = searchParams?.query || "";
+  const { query = "" } = searchParams;
   const services = await prisma.service.findMany({
     where: {
       OR: [
