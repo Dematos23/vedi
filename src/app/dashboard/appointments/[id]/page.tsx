@@ -15,12 +15,13 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowLeft, User, Clock, DollarSign, BookText, Pencil, Save } from "lucide-react";
+import { ArrowLeft, User, Clock, DollarSign, BookText, Pencil, Save, Download } from "lucide-react";
 import { format } from "date-fns";
 import { formatCurrency } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { updateAppointmentDescription } from "@/lib/actions";
+import { ExportAppointmentPdfButton } from "./components/export-appointment-pdf";
 
 type AppointmentWithDetails = Appointment & {
   patient: Patient;
@@ -59,8 +60,8 @@ function AppointmentDetailClient({ appointmentData }: { appointmentData: Appoint
   const { patient, service, date } = appointment;
 
   return (
-    <div className="grid gap-6">
-      <div className="flex items-center gap-4">
+    <div id="appointment-view" className="grid gap-6">
+      <div className="flex items-center gap-4 print:hidden">
         <Button asChild variant="outline" size="icon">
           <Link href="/dashboard/appointments">
             <ArrowLeft className="h-4 w-4" />
@@ -68,6 +69,9 @@ function AppointmentDetailClient({ appointmentData }: { appointmentData: Appoint
           </Link>
         </Button>
         <h1 className="text-2xl font-bold">Appointment Details</h1>
+        <div className="ml-auto">
+          <ExportAppointmentPdfButton appointmentId={appointment.id} serviceName={service.name} />
+        </div>
       </div>
       <Card>
         <CardHeader>
@@ -115,7 +119,7 @@ function AppointmentDetailClient({ appointmentData }: { appointmentData: Appoint
             <CardDescription>View or edit session notes below.</CardDescription>
           </div>
           {!isEditing && (
-            <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
+            <Button variant="outline" size="sm" onClick={() => setIsEditing(true)} className="print:hidden">
               <Pencil className="mr-2 h-4 w-4" />
               Edit Notes
             </Button>
@@ -141,7 +145,7 @@ function AppointmentDetailClient({ appointmentData }: { appointmentData: Appoint
             )}
         </CardContent>
          {isEditing && (
-          <CardFooter className="justify-end gap-2">
+          <CardFooter className="justify-end gap-2 print:hidden">
             <Button variant="ghost" onClick={() => setIsEditing(false)} disabled={isSaving}>Cancel</Button>
             <Button onClick={handleSave} disabled={isSaving}>
               <Save className="mr-2 h-4 w-4" />
