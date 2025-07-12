@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { Eye } from "lucide-react";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { Search } from "./components/search";
@@ -85,10 +85,10 @@ export default async function PatientsPage({
                   {patient.phone && <Badge variant="outline">{patient.phone}</Badge>}
                 </TableCell>
                 <TableCell className="text-right">
-                  <Button asChild variant="ghost" size="icon">
+                  <Button asChild variant="outline" size="sm">
                     <Link href={`/dashboard/patients/${patient.id}`}>
-                      <ArrowRight className="h-4 w-4" />
-                      <span className="sr-only">View Patient</span>
+                      <Eye className="mr-2 h-4 w-4" />
+                      View
                     </Link>
                   </Button>
                 </TableCell>
