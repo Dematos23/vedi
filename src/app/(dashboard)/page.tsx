@@ -5,18 +5,18 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { UsersRound, BriefcaseMedical, CalendarDays } from "lucide-react";
-import {
-  mockAppointments,
-  mockPatients,
-  mockServices,
-} from "@/lib/mock-data";
+import prisma from "@/lib/prisma";
 
-export default function DashboardPage() {
-  const totalPatients = mockPatients.length;
-  const totalServices = mockServices.length;
-  const upcomingAppointments = mockAppointments.filter(
-    (a) => a.date > new Date()
-  ).length;
+export default async function DashboardPage() {
+  const totalPatients = await prisma.patient.count();
+  const totalServices = await prisma.service.count();
+  const upcomingAppointments = await prisma.appointment.count({
+    where: {
+      date: {
+        gte: new Date(),
+      },
+    },
+  });
 
   return (
     <div className="flex flex-col gap-4">
@@ -58,7 +58,7 @@ export default function DashboardPage() {
           <CardContent>
             <div className="text-2xl font-bold">+{upcomingAppointments}</div>
             <p className="text-xs text-muted-foreground">
-              Scheduled for this week
+              All upcoming appointments
             </p>
           </CardContent>
         </Card>
