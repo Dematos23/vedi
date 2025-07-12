@@ -14,7 +14,7 @@ model Patient {
   id           String        @id @default(cuid())
   name         String
   lastname     String
-  email        String?
+  email        String        @unique
   phone        String?
   address      String?
   notes        String?
@@ -26,9 +26,10 @@ model Patient {
 model Service {
   id           String        @id @default(cuid())
   name         String
-  price        Float
-  duration     Int // Duration in minutes
   description  String
+  price        Float
+  duration     Int
+  status       ServiceStatus @default(ACTIVE)
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   appointments Appointment[]
@@ -36,12 +37,18 @@ model Service {
 
 model Appointment {
   id          String   @id @default(cuid())
+  patientId   String
+  serviceId   String
   date        DateTime
   description String?
-  patient     Patient  @relation(fields: [patientId], references: [id])
-  patientId   String
-  service     Service  @relation(fields: [serviceId], references: [id])
-  serviceId   String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  patient Patient @relation(fields: [patientId], references: [id])
+  service Service @relation(fields: [serviceId], references: [id])
+}
+
+enum ServiceStatus {
+  ACTIVE
+  INACTIVE
 }

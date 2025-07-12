@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, ServiceStatus } from '@prisma/client';
 import { mockPatients, mockServices, generateMockAppointments } from '../src/lib/mock-data';
 
 const prisma = new PrismaClient();
@@ -26,7 +26,10 @@ async function main() {
   const createdServices = [];
   for (const serviceData of mockServices) {
     const service = await prisma.service.create({
-      data: serviceData,
+      data: {
+        ...serviceData,
+        status: ServiceStatus.ACTIVE, // Set default status
+      },
     });
     createdServices.push(service);
   }

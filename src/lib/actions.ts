@@ -4,6 +4,7 @@
 import { revalidatePath } from "next/cache";
 import prisma from "./prisma";
 import * as z from "zod";
+import type { ServiceStatus } from "@prisma/client";
 
 // Service Actions
 const serviceSchema = z.object({
@@ -29,6 +30,7 @@ export async function createService(data: z.infer<typeof serviceSchema>) {
       description: validatedFields.data.description,
       price: validatedFields.data.price,
       duration: validatedFields.data.duration,
+      // status defaults to ACTIVE
     },
   });
 
@@ -56,13 +58,36 @@ export async function deleteService(serviceId: string) {
     if (!serviceId) {
         throw new Error("Service ID is required.");
     }
-    await prisma.appointment.deleteMany({
+    
+    const appointmentCount = await prisma.appointment.count({
         where: { serviceId },
     });
+
+    if (appointmentCount > 0) {
+        throw new Error("This service has appointments and cannot be deleted.");
+    }
+
     await prisma.service.delete({
         where: { id: serviceId },
     });
+
     revalidatePath("/dashboard/services");
+    revalidatePath("/dashboard/appointments");
+}
+
+
+export async function toggleServiceStatus(serviceId: string, status: ServiceStatus) {
+    if (!serviceId) {
+        throw new Error("Service ID is required.");
+    }
+
+    await prisma.service.update({
+        where: { id: serviceId },
+        data: { status },
+    });
+
+    revalidatePath("/dashboard/services");
+    revalidatePath("/dashboard/appointments");
 }
 
 
@@ -81,6 +106,14 @@ export async function createAppointment(
 
   if (!validatedFields.success) {
     throw new Error("Invalid appointment data.");
+  }
+  
+  const service = await prisma.service.findUnique({
+      where: { id: validatedFields.data.serviceId }
+  });
+
+  if (!service || service.status === 'INACTIVE') {
+      throw new Error("Cannot book an appointment for an inactive service.");
   }
 
   await prisma.appointment.create({

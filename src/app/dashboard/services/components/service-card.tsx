@@ -36,10 +36,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { formatCurrency } from "@/lib/utils";
-import { Pencil, Trash2, Save } from "lucide-react";
+import { formatCurrency, cn } from "@/lib/utils";
+import { Pencil, Trash2, Save, Power, PowerOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { updateService, deleteService } from "@/lib/actions";
+import { updateService, deleteService, toggleServiceStatus } from "@/lib/actions";
+import { Badge } from "@/components/ui/badge";
 
 const serviceSchema = z.object({
   id: z.string(),
@@ -57,6 +58,8 @@ interface ServiceCardProps {
 
 export function ServiceCard({ service }: ServiceCardProps) {
   const [isEditing, setIsEditing] = React.useState(false);
+  const [showDeleteAlert, setShowDeleteAlert] = React.useState(false);
+  const [showDeactivationAlert, setShowDeactivationAlert] = React.useState(false);
   const { toast } = useToast();
 
   const form = useForm<ServiceFormValues>({
@@ -69,6 +72,8 @@ export function ServiceCard({ service }: ServiceCardProps) {
       duration: service.duration,
     },
   });
+  
+  const isInactive = service.status === 'INACTIVE';
 
   const onSubmit = async (data: ServiceFormValues) => {
     try {
@@ -87,19 +92,41 @@ export function ServiceCard({ service }: ServiceCardProps) {
     }
   };
 
-  const handleDelete = async () => {
+  const handleDeleteAttempt = async () => {
     try {
         await deleteService(service.id);
         toast({
             title: "Success",
             description: "Service has been deleted.",
         });
+        setShowDeleteAlert(false);
+    } catch (error: any) {
+        if (error.message.includes("appointments")) {
+            setShowDeleteAlert(false);
+            setShowDeactivationAlert(true);
+        } else {
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: "Failed to delete service. Please try again.",
+            });
+        }
+    }
+  }
+
+  const handleToggleStatus = async () => {
+    try {
+      await toggleServiceStatus(service.id, service.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE');
+      toast({
+        title: "Success",
+        description: `Service has been ${isInactive ? 'activated' : 'deactivated'}.`,
+      });
     } catch (error) {
-        toast({
-            variant: "destructive",
-            title: "Error",
-            description: "Failed to delete service. Make sure it's not associated with any appointments.",
-        });
+       toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to update service status.",
+      });
     }
   }
 
@@ -109,11 +136,11 @@ export function ServiceCard({ service }: ServiceCardProps) {
   }
 
   return (
-    <Card>
+    <Card className={cn(isInactive && "bg-muted/50 border-dashed")}>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardHeader className="flex-row items-start justify-between">
-            <div>
+            <div className="grid gap-2">
               {isEditing ? (
                 <FormField
                   control={form.control}
@@ -129,14 +156,23 @@ export function ServiceCard({ service }: ServiceCardProps) {
                   )}
                 />
               ) : (
-                <CardTitle>{service.name}</CardTitle>
+                <div className="flex items-center gap-2">
+                  <CardTitle>{service.name}</CardTitle>
+                  {isInactive && <Badge variant="destructive">Inactive</Badge>}
+                </div>
               )}
             </div>
             {!isEditing && (
-              <Button variant="ghost" size="icon" onClick={() => setIsEditing(true)}>
-                <Pencil className="h-5 w-5" />
-                <span className="sr-only">Edit Service</span>
-              </Button>
+              <div className="flex gap-1">
+                 <Button variant="ghost" size="icon" onClick={() => setIsEditing(true)}>
+                  <Pencil className="h-5 w-5" />
+                  <span className="sr-only">Edit Service</span>
+                </Button>
+                <Button variant="ghost" size="icon" onClick={handleToggleStatus}>
+                   {isInactive ? <Power className="h-5 w-5" /> : <PowerOff className="h-5 w-5" />}
+                   <span className="sr-only">{isInactive ? 'Activate' : 'Deactivate'} Service</span>
+                </Button>
+              </div>
             )}
           </CardHeader>
           <CardContent className="grid gap-4">
@@ -202,9 +238,9 @@ export function ServiceCard({ service }: ServiceCardProps) {
           </CardContent>
           {isEditing && (
             <CardFooter className="justify-end gap-2">
-                 <AlertDialog>
+                 <AlertDialog open={showDeleteAlert} onOpenChange={setShowDeleteAlert}>
                     <AlertDialogTrigger asChild>
-                         <Button variant="destructive-outline" size="icon">
+                         <Button variant="destructive-outline" size="icon" type="button">
                             <Trash2 className="h-4 w-4" />
                             <span className="sr-only">Delete Service</span>
                          </Button>
@@ -213,14 +249,13 @@ export function ServiceCard({ service }: ServiceCardProps) {
                         <AlertDialogHeader>
                         <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                         <AlertDialogDescription>
-                            This action cannot be undone. This will permanently delete the service
-                            and remove it from any associated appointments.
+                            This action cannot be undone. This will permanently delete the service.
                         </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction
-                            onClick={handleDelete}
+                            onClick={handleDeleteAttempt}
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                         >
                             Delete
@@ -239,6 +274,24 @@ export function ServiceCard({ service }: ServiceCardProps) {
           )}
         </form>
       </Form>
+      
+      {/* Deactivation Alert */}
+      <AlertDialog open={showDeactivationAlert} onOpenChange={setShowDeactivationAlert}>
+        <AlertDialogContent>
+            <AlertDialogHeader>
+            <AlertDialogTitle>Cannot Delete Service</AlertDialogTitle>
+            <AlertDialogDescription>
+                This service has appointments associated with it and cannot be deleted. Would you like to deactivate it instead? Deactivated services will not appear when creating new appointments.
+            </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleToggleStatus}>
+                Deactivate
+            </AlertDialogAction>
+            </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 }

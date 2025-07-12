@@ -80,6 +80,8 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
     }
   };
 
+  const activeServices = services.filter(s => s.status === 'ACTIVE');
+
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
@@ -134,7 +136,7 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {services.map((service) => (
+                      {activeServices.map((service) => (
                         <SelectItem key={service.id} value={service.id}>
                           {service.name}
                         </SelectItem>

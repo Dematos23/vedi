@@ -36,9 +36,14 @@ export default async function ServicesPage({
         },
       ],
     },
-    orderBy: {
-      name: 'asc'
-    }
+    orderBy: [
+      {
+        status: 'asc' // Show ACTIVE ones first
+      },
+      {
+        name: 'asc'
+      }
+    ]
   });
 
   return (
