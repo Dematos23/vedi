@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import { format } from "date-fns";
+import { format, startOfDay } from "date-fns";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 import { DateRange } from "react-day-picker";
 
@@ -16,7 +16,7 @@ type TimeUnit = "day" | "week" | "month" | "year";
 
 export function SalesChart() {
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>({
-    from: new Date(new Date().getFullYear(), 0, 1),
+    from: startOfDay(new Date(new Date().getFullYear(), 0, 1)),
     to: new Date(),
   });
   const [timeUnit, setTimeUnit] = React.useState<TimeUnit>("month");
