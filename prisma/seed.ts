@@ -1,4 +1,3 @@
-
 import { PrismaClient } from '@prisma/client';
 import { mockPatients, mockServices, mockAppointments } from '../src/lib/mock-data';
 
@@ -19,6 +18,7 @@ async function main() {
       data: {
         id: patient.id,
         name: patient.name,
+        lastname: patient.lastname,
         email: patient.email,
         phone: patient.phone,
         address: patient.address,
@@ -36,7 +36,11 @@ async function main() {
       data: {
         id: service.id,
         name: service.name,
+        price: service.price,
+        duration: service.duration,
         description: service.description,
+        createdAt: service.createdAt,
+        updatedAt: service.updatedAt,
       },
     });
   }

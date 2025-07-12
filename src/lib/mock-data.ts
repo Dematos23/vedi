@@ -1,7 +1,8 @@
 export const mockPatients = [
   {
     id: "1",
-    name: "John Doe",
+    name: "John",
+    lastname: "Doe",
     email: "john.doe@example.com",
     phone: "123-456-7890",
     address: "123 Main St, Anytown, USA",
@@ -11,7 +12,8 @@ export const mockPatients = [
   },
   {
     id: "2",
-    name: "Jane Smith",
+    name: "Jane",
+    lastname: "Smith",
     email: "jane.smith@example.com",
     phone: "098-765-4321",
     address: "456 Oak Ave, Anytown, USA",
@@ -21,7 +23,8 @@ export const mockPatients = [
   },
   {
     id: "3",
-    name: "Peter Jones",
+    name: "Peter",
+    lastname: "Jones",
     email: "peter.jones@example.com",
     phone: "555-555-5555",
     address: "789 Pine Ln, Anytown, USA",
@@ -35,17 +38,29 @@ export const mockServices = [
   {
     id: "1",
     name: "Individual Therapy",
+    price: 150.00,
+    duration: 50, // in minutes
     description: "One-on-one therapy sessions.",
+    createdAt: new Date(),
+    updatedAt: new Date(),
   },
   {
     id: "2",
     name: "Couples Counseling",
+    price: 200.00,
+    duration: 60, // in minutes
     description: "Therapy for couples to improve their relationship.",
+    createdAt: new Date(),
+    updatedAt: new Date(),
   },
   {
     id: "3",
     name: "Cognitive Behavioral Therapy (CBT)",
+    price: 175.00,
+    duration: 55, // in minutes
     description: "A talk therapy that helps you manage your problems by changing the way you think and behave.",
+    createdAt: new Date(),
+    updatedAt: new Date(),
   },
 ];
 
