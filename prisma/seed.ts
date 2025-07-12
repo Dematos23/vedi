@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { mockPatients, mockServices, mockAppointments } from '../src/lib/mock-data';
+import { mockPatients, mockServices, generateMockAppointments } from '../src/lib/mock-data';
 
 const prisma = new PrismaClient();
 
@@ -13,51 +13,30 @@ async function main() {
   console.log('Cleared previous data.');
 
   // Seed Patients
-  for (const patient of mockPatients) {
-    await prisma.patient.create({
-      data: {
-        id: patient.id,
-        name: patient.name,
-        lastname: patient.lastname,
-        email: patient.email,
-        phone: patient.phone,
-        address: patient.address,
-        notes: patient.notes,
-        createdAt: patient.createdAt,
-        updatedAt: patient.updatedAt,
-      },
+  const createdPatients = [];
+  for (const patientData of mockPatients) {
+    const patient = await prisma.patient.create({
+      data: patientData,
     });
+    createdPatients.push(patient);
   }
-  console.log(`Seeded ${mockPatients.length} patients.`);
+  console.log(`Seeded ${createdPatients.length} patients.`);
 
   // Seed Services
-  for (const service of mockServices) {
-    await prisma.service.create({
-      data: {
-        id: service.id,
-        name: service.name,
-        price: service.price,
-        duration: service.duration,
-        description: service.description,
-        createdAt: service.createdAt,
-        updatedAt: service.updatedAt,
-      },
+  const createdServices = [];
+  for (const serviceData of mockServices) {
+    const service = await prisma.service.create({
+      data: serviceData,
     });
+    createdServices.push(service);
   }
-  console.log(`Seeded ${mockServices.length} services.`);
+  console.log(`Seeded ${createdServices.length} services.`);
 
-  // Seed Appointments
-  for (const appointment of mockAppointments) {
+  // Generate and Seed Appointments
+  const mockAppointments = generateMockAppointments(createdPatients, createdServices);
+  for (const appointmentData of mockAppointments) {
     await prisma.appointment.create({
-      data: {
-        id: appointment.id,
-        date: appointment.date,
-        description: appointment.description,
-        patientId: appointment.patientId,
-        serviceId: appointment.serviceId,
-        createdAt: appointment.createdAt,
-        updatedAt: appointment.updatedAt,
-      },
+      data: appointmentData,
     });
   }
   console.log(`Seeded ${mockAppointments.length} appointments.`);
