@@ -15,11 +15,13 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { mockPatients } from "@/lib/mock-data";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import prisma from "@/lib/prisma";
 
-export default function PatientsPage() {
+export default async function PatientsPage() {
+  const patients = await prisma.patient.findMany();
+
   return (
     <Card>
       <CardHeader>
@@ -39,7 +41,7 @@ export default function PatientsPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {mockPatients.map((patient) => (
+            {patients.map((patient) => (
               <TableRow key={patient.id}>
                 <TableCell className="font-medium">{patient.name}</TableCell>
                 <TableCell className="hidden md:table-cell">

@@ -79,7 +79,3 @@ export const mockAppointments = [
     description: "CBT session focusing on negative thought patterns.",
   },
 ];
-
-export const getPatientById = (id: string) => mockPatients.find(p => p.id === id);
-export const getServiceById = (id: string) => mockServices.find(s => s.id === id);
-export const getAppointmentById = (id: string) => mockAppointments.find(a => a.id === id);

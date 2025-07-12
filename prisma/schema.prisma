@@ -1,32 +1,20 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-generator client {
-  provider = "prisma-client-js"
-}
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        String   @id @default(cuid())
-  name      String?
-  email     String   @unique
-  password  String
-  role      Role     @default(THERAPIST)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+generator client {
+  provider = "prisma-client-js"
 }
 
 model Patient {
   id           String        @id @default(cuid())
   name         String
   email        String        @unique
-  phone        String?
-  address      String?
-  notes        String?       @db.Text
+  phone        String
+  address      String
+  notes        String?
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   appointments Appointment[]
@@ -35,23 +23,16 @@ model Patient {
 model Service {
   id           String        @id @default(cuid())
   name         String
-  description  String?
+  description  String
   appointments Appointment[]
 }
 
 model Appointment {
-  id          String    @id @default(cuid())
+  id          String   @id @default(cuid())
   date        DateTime
-  description String?   @db.Text
-  patient     Patient   @relation(fields: [patientId], references: [id])
+  description String
   patientId   String
-  service     Service   @relation(fields: [serviceId], references: [id])
+  patient     Patient  @relation(fields: [patientId], references: [id])
   serviceId   String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-}
-
-enum Role {
-  ADMIN
-  THERAPIST
+  service     Service  @relation(fields: [serviceId], references: [id])
 }

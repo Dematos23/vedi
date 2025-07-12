@@ -1,3 +1,5 @@
+// This file is intentionally left with client-side data fetching setup.
+// A future step will be to create the API routes to provide the data.
 "use client";
 
 import * as React from "react";
@@ -44,17 +46,16 @@ import {
   mockAppointments,
   mockPatients,
   mockServices,
-  getPatientById,
-  getServiceById,
 } from "@/lib/mock-data";
 
 export default function AppointmentsPage() {
   const [date, setDate] = React.useState<Date | undefined>(new Date());
 
+  // Since we don't have APIs yet, we'll continue to use mock data here.
   const appointmentsWithDetails = mockAppointments.map((appt) => ({
     ...appt,
-    patient: getPatientById(appt.patientId),
-    service: getServiceById(appt.serviceId),
+    patient: mockPatients.find(p => p.id === appt.patientId),
+    service: mockServices.find(s => s.id === appt.serviceId),
   }));
 
   return (

@@ -1,7 +1,6 @@
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -14,30 +13,33 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getPatientById, mockAppointments, getServiceById } from "@/lib/mock-data";
+import prisma from "@/lib/prisma";
 import { format } from "date-fns";
 import Link from "next/link";
 import { NoteSummarizer } from "./components/note-summarizer";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { notFound } from "next/navigation";
 
-export default function PatientDetailPage({ params }: { params: { id: string } }) {
-  const patient = getPatientById(params.id);
+export default async function PatientDetailPage({ params }: { params: { id: string } }) {
+  const patient = await prisma.patient.findUnique({
+    where: { id: params.id },
+    include: {
+      appointments: {
+        include: {
+          service: true,
+        },
+        orderBy: {
+          date: 'desc',
+        },
+        take: 4,
+      },
+    },
+  });
 
   if (!patient) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <p>Patient not found.</p>
-      </div>
-    );
+    notFound();
   }
-
-  const patientAppointments = mockAppointments
-    .filter((appt) => appt.patientId === patient.id)
-    .map((appt) => ({
-      ...appt,
-      service: getServiceById(appt.serviceId),
-    }));
 
   return (
     <div className="grid gap-6">
@@ -91,9 +93,9 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {patientAppointments.slice(0, 4).map((appt) => (
+                  {patient.appointments.map((appt) => (
                     <TableRow key={appt.id}>
-                      <TableCell><Badge variant="outline">{appt.service?.name}</Badge></TableCell>
+                      <TableCell><Badge variant="outline">{appt.service.name}</Badge></TableCell>
                       <TableCell>{format(appt.date, "PP")}</TableCell>
                     </TableRow>
                   ))}

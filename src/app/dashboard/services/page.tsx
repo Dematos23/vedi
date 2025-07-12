@@ -9,9 +9,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { mockServices } from "@/lib/mock-data";
+import prisma from "@/lib/prisma";
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const services = await prisma.service.findMany();
+
   return (
     <div className="grid gap-6 md:grid-cols-2">
       <div>
@@ -56,7 +58,7 @@ export default function ServicesPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4">
-            {mockServices.map((service) => (
+            {services.map((service) => (
               <div
                 key={service.id}
                 className="rounded-lg border bg-card text-card-foreground p-4"
