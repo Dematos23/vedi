@@ -44,7 +44,7 @@ const navItems = [
 
 function MainSidebar() {
   const pathname = usePathname();
-  const { isMobile, open, setOpen } = useSidebar();
+  const { isMobile, setOpen } = useSidebar();
 
   const handleLinkClick = () => {
     if(isMobile) {
@@ -63,7 +63,6 @@ function MainSidebar() {
             <SidebarMenuItem key={item.href}>
               <Link href={item.href}>
                 <SidebarMenuButton
-                  as="a"
                   isActive={pathname === item.href || (pathname.startsWith(item.href) && item.href !== '/dashboard')}
                   onClick={handleLinkClick}
                 >
@@ -79,7 +78,7 @@ function MainSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
              <Link href="/login">
-              <SidebarMenuButton as="a">
+              <SidebarMenuButton>
                 <LogOut />
                 Logout
               </SidebarMenuButton>
