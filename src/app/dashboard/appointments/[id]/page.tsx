@@ -1,8 +1,6 @@
-
 "use client";
 
 import * as React from "react";
-import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import {
   Card,
@@ -14,7 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowLeft, Calendar, User, Clock, DollarSign, BookText, Pencil, Save } from "lucide-react";
+import { ArrowLeft, User, Clock, DollarSign, BookText, Pencil, Save } from "lucide-react";
 import { format } from "date-fns";
 import { formatCurrency } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
@@ -27,12 +25,13 @@ type AppointmentWithDetails = Appointment & {
   service: Service;
 };
 
-// This wrapper fetches data on the server and passes it to the client component.
+// This is the new page structure. It fetches data on the server
+// and passes it to the client component.
 export default function AppointmentDetailPageWrapper({ params }: { params: { id: string } }) {
   const [appointment, setAppointment] = React.useState<AppointmentWithDetails | null>(null);
   const [loading, setLoading] = React.useState(true);
 
-   React.useEffect(() => {
+  React.useEffect(() => {
     const fetchAppointment = async () => {
       try {
         const res = await fetch(`/api/appointments/${params.id}`);
@@ -47,12 +46,13 @@ export default function AppointmentDetailPageWrapper({ params }: { params: { id:
         setLoading(false);
       }
     };
-    fetchAppointment();
+    if (params.id) {
+        fetchAppointment();
+    }
   }, [params.id]);
 
-
   if (loading) {
-      return <div>Loading...</div>
+    return <div>Loading...</div>
   }
 
   if (!appointment) {
@@ -108,7 +108,7 @@ function AppointmentDetailPage({ appointmentData }: { appointmentData: Appointme
         <CardHeader>
           <CardTitle>{service.name}</CardTitle>
           <CardDescription>
-            Scheduled on {format(date, "PPP 'at' p")}
+            Scheduled on {format(new Date(date), "PPP 'at' p")}
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-6">
@@ -188,4 +188,3 @@ function AppointmentDetailPage({ appointmentData }: { appointmentData: Appointme
     </div>
   );
 }
-
