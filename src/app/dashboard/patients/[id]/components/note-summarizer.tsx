@@ -1,83 +1,31 @@
+
 "use client";
 
-import { useState } from "react";
-import { summarizeSessionNotes } from "@/ai/flows/summarize-session-notes";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { Wand2, Save } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { updatePatientNotes } from "@/lib/actions";
-import { useToast } from "@/hooks/use-toast";
 
 interface NoteSummarizerProps {
-  patientId: string;
-  initialNotes: string;
+  notes: string;
+  setNotes: (notes: string) => void;
+  summary: string | null;
+  isSummarizing: boolean;
+  error: string | null;
 }
 
-export function NoteSummarizer({ patientId, initialNotes }: NoteSummarizerProps) {
-  const [notes, setNotes] = useState(initialNotes);
-  const [summary, setSummary] = useState<string | null>(null);
-  const [isSummarizing, setIsSummarizing] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const { toast } = useToast();
-
-  const handleSummarize = async () => {
-    setIsSummarizing(true);
-    setError(null);
-    setSummary(null);
-    try {
-      const result = await summarizeSessionNotes({ sessionNotes: notes });
-      setSummary(result.summary);
-    } catch (e) {
-      setError("Failed to generate summary. Please try again.");
-      console.error(e);
-    } finally {
-      setIsSummarizing(false);
-    }
-  };
-
-  const handleSaveNotes = async () => {
-    setIsSaving(true);
-    try {
-      await updatePatientNotes(patientId, notes);
-      toast({
-        title: "Success",
-        description: "Patient notes have been saved.",
-      });
-    } catch (e) {
-       toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to save notes. Please try again.",
-      });
-      console.error(e);
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
+export function NoteSummarizer({
+  notes,
+  setNotes,
+  summary,
+  isSummarizing,
+  error,
+}: NoteSummarizerProps) {
   return (
     <div className="grid gap-6">
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-                <CardTitle>Therapist Notes</CardTitle>
-                <CardDescription>Record and manage session details here.</CardDescription>
-            </div>
-            <div className="flex gap-2">
-                <Button onClick={handleSaveNotes} disabled={isSaving || !notes}>
-                    <Save className="mr-2 h-4 w-4" />
-                    {isSaving ? "Saving..." : "Save Notes"}
-                </Button>
-                <Button onClick={handleSummarize} disabled={isSummarizing || !notes}>
-                <Wand2 className="mr-2 h-4 w-4" />
-                {isSummarizing ? "Summarizing..." : "Summarize with AI"}
-                </Button>
-            </div>
-          </div>
+          <CardTitle>Therapist Notes</CardTitle>
+          <CardDescription>Record and manage session details here.</CardDescription>
         </CardHeader>
         <CardContent>
           <Textarea

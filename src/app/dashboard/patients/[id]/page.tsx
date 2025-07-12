@@ -1,4 +1,7 @@
 
+"use client";
+
+import * as React from "react";
 import {
   Card,
   CardContent,
@@ -18,25 +21,63 @@ import prisma from "@/lib/prisma";
 import { format } from "date-fns";
 import Link from "next/link";
 import { NoteSummarizer } from "./components/note-summarizer";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Save, Wand2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { notFound } from "next/navigation";
+import { updatePatientNotes } from "@/lib/actions";
+import { summarizeSessionNotes } from "@/ai/flows/summarize-session-notes";
+import { useToast } from "@/hooks/use-toast";
+import type { Patient, Appointment, Service } from "@prisma/client";
 
-export default async function PatientDetailPage({ params }: { params: { id: string } }) {
-  const patient = await prisma.patient.findUnique({
-    where: { id: params.id },
-    include: {
-      appointments: {
-        include: {
-          service: true,
-        },
-        orderBy: {
-          date: 'desc',
-        },
-        take: 10, // Fetch more appointments for the main view
-      },
-    },
-  });
+type PatientWithAppointments = Patient & {
+  appointments: (Appointment & {
+    service: Service;
+  })[];
+};
+
+export default function PatientDetailPage({ patient }: { patient: PatientWithAppointments }) {
+  const [notes, setNotes] = React.useState(patient.notes || "");
+  const [summary, setSummary] = React.useState<string | null>(null);
+  const [isSummarizing, setIsSummarizing] = React.useState(false);
+  const [isSaving, setIsSaving] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+  const { toast } = useToast();
+
+  const handleSummarize = async () => {
+    setIsSummarizing(true);
+    setError(null);
+    setSummary(null);
+    try {
+      const result = await summarizeSessionNotes({ sessionNotes: notes });
+      setSummary(result.summary);
+    } catch (e) {
+      setError("Failed to generate summary. Please try again.");
+      console.error(e);
+    } finally {
+      setIsSummarizing(false);
+    }
+  };
+
+  const handleSaveNotes = async () => {
+    setIsSaving(true);
+    try {
+      await updatePatientNotes(patient.id, notes);
+      toast({
+        title: "Success",
+        description: "Patient notes have been saved.",
+      });
+    } catch (e) {
+       toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to save notes. Please try again.",
+      });
+      console.error(e);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
 
   if (!patient) {
     notFound();
@@ -56,8 +97,18 @@ export default async function PatientDetailPage({ params }: { params: { id: stri
       <div className="grid md:grid-cols-3 gap-6">
         <div className="md:col-span-2 grid gap-6">
           <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Appointment History</CardTitle>
+              <div className="flex gap-2">
+                  <Button onClick={handleSaveNotes} disabled={isSaving || !notes}>
+                      <Save className="mr-2 h-4 w-4" />
+                      {isSaving ? "Saving..." : "Save Notes"}
+                  </Button>
+                  <Button onClick={handleSummarize} disabled={isSummarizing || !notes}>
+                  <Wand2 className="mr-2 h-4 w-4" />
+                  {isSummarizing ? "Summarizing..." : "Summarize with AI"}
+                  </Button>
+              </div>
             </CardHeader>
             <CardContent>
               <Table>
@@ -111,9 +162,39 @@ export default async function PatientDetailPage({ params }: { params: { id: stri
               </div>
             </CardContent>
           </Card>
-          <NoteSummarizer patientId={patient.id} initialNotes={patient.notes || ""} />
+          <NoteSummarizer 
+            notes={notes} 
+            setNotes={setNotes}
+            summary={summary}
+            isSummarizing={isSummarizing}
+            error={error}
+          />
         </div>
       </div>
     </div>
   );
+}
+
+// This wrapper fetches data on the server and passes it to the client component.
+export default async function PatientDetailPageWrapper({ params }: { params: { id: string } }) {
+  const patient = await prisma.patient.findUnique({
+    where: { id: params.id },
+    include: {
+      appointments: {
+        include: {
+          service: true,
+        },
+        orderBy: {
+          date: 'desc',
+        },
+        take: 10,
+      },
+    },
+  });
+
+  if (!patient) {
+    notFound();
+  }
+
+  return <PatientDetailPage clientPatient={patient} />;
 }
