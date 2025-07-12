@@ -45,6 +45,14 @@ function PatientDetailPage({ patient }: { patient: PatientWithAppointments }) {
   const { toast } = useToast();
 
   const handleSummarize = async () => {
+    if (!notes) {
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Cannot summarize empty notes.",
+        });
+        return;
+    }
     setIsSummarizing(true);
     setError(null);
     setSummary(null);
@@ -175,8 +183,9 @@ function PatientDetailPage({ patient }: { patient: PatientWithAppointments }) {
             </CardContent>
           </Card>
            <NoteSummarizer 
-            notes={notes} 
-            setNotes={setNotes}
+            patientId={patient.id}
+            initialNotes={patient.notes || ""}
+            onNotesChange={setNotes}
             summary={summary}
             isSummarizing={isSummarizing}
             error={error}
