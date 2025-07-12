@@ -6,7 +6,6 @@ import {
   CalendarDays,
   LayoutDashboard,
   LogOut,
-  PanelLeft,
   UsersRound,
 } from "lucide-react";
 import {
@@ -113,6 +112,7 @@ export default function DashboardLayout({
                   <AvatarImage
                     src="https://placehold.co/32x32.png"
                     alt="@therapist"
+                    data-ai-hint="person user"
                   />
                   <AvatarFallback>TH</AvatarFallback>
                 </Avatar>

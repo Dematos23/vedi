@@ -56,7 +56,7 @@ export default async function AppointmentsPage() {
           <TableBody>
             {appointments.map((appt) => (
               <TableRow key={appt.id}>
-                <TableCell className="font-medium">{appt.patient.name}</TableCell>
+                <TableCell className="font-medium">{`${appt.patient.name} ${appt.patient.lastname}`}</TableCell>
                 <TableCell>
                   <Badge variant="outline">{appt.service.name}</Badge>
                 </TableCell>

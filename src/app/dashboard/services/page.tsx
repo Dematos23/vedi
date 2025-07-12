@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/card";
 import prisma from "@/lib/prisma";
 import { NewServiceForm } from "./components/new-service-form";
+import { formatCurrency } from "@/lib/utils";
 
 export default async function ServicesPage() {
   const services = await prisma.service.findMany({
@@ -42,12 +43,20 @@ export default async function ServicesPage() {
             {services.map((service) => (
               <div
                 key={service.id}
-                className="rounded-lg border bg-card text-card-foreground p-4"
+                className="rounded-lg border bg-card text-card-foreground p-4 flex justify-between items-start"
               >
-                <h3 className="font-semibold">{service.name}</h3>
-                <p className="text-sm text-muted-foreground">
-                  {service.description}
-                </p>
+                <div>
+                  <h3 className="font-semibold">{service.name}</h3>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {service.description}
+                  </p>
+                   <p className="text-xs text-muted-foreground mt-2">
+                    {service.duration} min
+                  </p>
+                </div>
+                <div className="text-right">
+                    <p className="font-semibold text-lg">{formatCurrency(service.price)}</p>
+                </div>
               </div>
             ))}
           </CardContent>

@@ -3,18 +3,13 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription
 } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UsersRound, BriefcaseMedical, CalendarDays } from "lucide-react";
 import prisma from "@/lib/prisma";
-import { SalesChart } from "./components/sales-chart";
-import { AppointmentsChart } from "./components/appointments-chart";
 
 export default async function DashboardPage() {
   const totalPatients = await prisma.patient.count();
   const totalServices = await prisma.service.count();
-  
   const upcomingAppointments = await prisma.appointment.count({
     where: {
       date: {
@@ -22,8 +17,6 @@ export default async function DashboardPage() {
       },
     },
   });
-
-  const services = await prisma.service.findMany();
 
   return (
     <div className="flex flex-col gap-4">
@@ -70,29 +63,16 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
       </div>
-      
       <Card>
-          <CardHeader>
-            <CardTitle>Analytics</CardTitle>
-            <CardDescription>
-              Visualize your clinic's performance.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Tabs defaultValue="sales">
-              <TabsList>
-                <TabsTrigger value="sales">Sales</TabsTrigger>
-                <TabsTrigger value="appointments">Appointments</TabsTrigger>
-              </TabsList>
-              <TabsContent value="sales">
-                <SalesChart />
-              </TabsContent>
-              <TabsContent value="appointments">
-                <AppointmentsChart services={services}/>
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
+        <CardHeader>
+          <CardTitle>Welcome to Vedi</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>
+            This is your central hub for managing patients, services, and appointments. Use the navigation on the left to get started.
+          </p>
+        </CardContent>
+      </Card>
     </div>
   );
 }

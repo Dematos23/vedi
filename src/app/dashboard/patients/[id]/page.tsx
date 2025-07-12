@@ -1,4 +1,3 @@
-
 import {
   Card,
   CardContent,
@@ -33,7 +32,7 @@ export default async function PatientDetailPage({ params }: { params: { id: stri
         orderBy: {
           date: 'desc',
         },
-        take: 4,
+        take: 5,
       },
     },
   });
