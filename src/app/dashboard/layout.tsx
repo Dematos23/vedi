@@ -61,13 +61,16 @@ function MainSidebar() {
         <SidebarMenu>
           {navItems.map((item) => (
             <SidebarMenuItem key={item.href}>
-              <Link href={item.href} passHref legacyBehavior>
+              <Link href={item.href}>
                 <SidebarMenuButton
+                  asChild
                   isActive={pathname === item.href || (pathname.startsWith(item.href) && item.href !== '/dashboard')}
                   onClick={handleLinkClick}
                 >
-                  <item.icon />
-                  {item.label}
+                  <span>
+                    <item.icon />
+                    {item.label}
+                  </span>
                 </SidebarMenuButton>
               </Link>
             </SidebarMenuItem>
@@ -77,11 +80,13 @@ function MainSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-             <Link href="/login" passHref legacyBehavior>
-              <SidebarMenuButton>
-                <LogOut />
-                Logout
-              </SidebarMenuButton>
+             <Link href="/login">
+                <SidebarMenuButton asChild>
+                    <span>
+                        <LogOut />
+                        Logout
+                    </span>
+                </SidebarMenuButton>
             </Link>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -124,7 +129,7 @@ export default function DashboardLayout({
               <DropdownMenuItem>Settings</DropdownMenuItem>
               <DropdownMenuItem>Support</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
+              <DropdownMenuItem asChild>
                 <Link href="/login">Logout</Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
