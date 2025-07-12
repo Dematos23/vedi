@@ -2,6 +2,9 @@
 
 import * as React from "react";
 import { notFound } from "next/navigation";
+import prisma from "@/lib/prisma";
+import type { Appointment, Patient, Service } from "@prisma/client";
+
 import {
   Card,
   CardContent,
@@ -18,52 +21,14 @@ import { formatCurrency } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { updateAppointmentDescription } from "@/lib/actions";
-import type { Appointment, Patient, Service } from "@prisma/client";
 
 type AppointmentWithDetails = Appointment & {
   patient: Patient;
   service: Service;
 };
 
-// This is the new page structure. It fetches data on the server
-// and passes it to the client component.
-export default function AppointmentDetailPageWrapper({ params }: { params: { id: string } }) {
-  const [appointment, setAppointment] = React.useState<AppointmentWithDetails | null>(null);
-  const [loading, setLoading] = React.useState(true);
-
-  React.useEffect(() => {
-    const fetchAppointment = async () => {
-      try {
-        const res = await fetch(`/api/appointments/${params.id}`);
-        if (!res.ok) {
-          throw new Error('Failed to fetch');
-        }
-        const data = await res.json();
-        setAppointment(data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    if (params.id) {
-        fetchAppointment();
-    }
-  }, [params.id]);
-
-  if (loading) {
-    return <div>Loading...</div>
-  }
-
-  if (!appointment) {
-    notFound();
-  }
-
-  return <AppointmentDetailPage appointmentData={appointment} />;
-}
-
-
-function AppointmentDetailPage({ appointmentData }: { appointmentData: AppointmentWithDetails }) {
+// Client component to handle interactive parts
+function AppointmentDetailClient({ appointmentData }: { appointmentData: AppointmentWithDetails }) {
   const [appointment, setAppointment] = React.useState(appointmentData);
   const [description, setDescription] = React.useState(appointment.description || "");
   const [isEditing, setIsEditing] = React.useState(false);
@@ -187,4 +152,21 @@ function AppointmentDetailPage({ appointmentData }: { appointmentData: Appointme
       </Card>
     </div>
   );
+}
+
+// Server Component Wrapper to fetch data
+export default async function AppointmentDetailPage({ params }: { params: { id: string } }) {
+  const appointment = await prisma.appointment.findUnique({
+    where: { id: params.id },
+    include: {
+      patient: true,
+      service: true,
+    },
+  });
+
+  if (!appointment) {
+    notFound();
+  }
+
+  return <AppointmentDetailClient appointmentData={appointment} />;
 }
