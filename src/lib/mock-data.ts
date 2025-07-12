@@ -8,11 +8,11 @@ faker.seed(123);
 const mockPatients: Omit<Patient, 'id' | 'createdAt' | 'updatedAt'>[] = [];
 for (let i = 0; i < 10; i++) {
   mockPatients.push({
-    name: faker.name.firstName(),
-    lastname: faker.name.lastName(),
+    name: faker.person.firstName(),
+    lastname: faker.person.lastName(),
     email: faker.internet.email(),
     phone: faker.phone.number(),
-    address: faker.address.streetAddress(true),
+    address: faker.location.streetAddress(true),
     notes: faker.lorem.paragraph(),
   });
 }
@@ -34,6 +34,20 @@ const mockServices: Omit<Service, 'id' | 'createdAt' | 'updatedAt'>[] = [
     { name: 'Grief Counseling', price: 145.00, duration: 50, description: 'Support for individuals who have experienced the loss of a loved one.' }
 ];
 
+const convertToPeruTime = (date: Date) => {
+    // Current offset for the machine running the seed
+    const localOffset = date.getTimezoneOffset() * 60000; 
+    // Peru is UTC-5
+    const peruOffset = -5 * 3600 * 1000;
+    
+    // Get UTC time
+    const utc = date.getTime() + localOffset;
+
+    // Create a new date object for Peru time
+    return new Date(utc + peruOffset);
+}
+
+
 // This function will be called by the seed script.
 // It generates appointments dynamically based on the created patients and services.
 export const generateMockAppointments = (patients: Patient[], services: Service[]): Omit<Appointment, 'id' | 'createdAt' | 'updatedAt' | 'patient' | 'service'>[] => {
@@ -54,7 +68,7 @@ export const generateMockAppointments = (patients: Patient[], services: Service[
             appointments.push({
                 patientId: patient.id,
                 serviceId: randomService.id,
-                date: date,
+                date: convertToPeruTime(date),
                 description: faker.lorem.sentence(),
             });
         }
