@@ -82,7 +82,7 @@ export default async function PatientsPage({
                   {patient.email}
                 </TableCell>
                 <TableCell className="hidden md:table-cell">
-                  {patient.phone && <Badge variant="outline">{patient.phone}</Badge>}
+                  {patient.phone && <Badge variant="outline" className="px-4">{patient.phone}</Badge>}
                 </TableCell>
                 <TableCell className="text-right">
                   <Button asChild variant="outline" size="sm">

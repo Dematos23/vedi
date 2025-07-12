@@ -74,10 +74,7 @@ export default async function PatientDetailPage({ params }: { params: { id: stri
                 <span className="font-medium text-muted-foreground">Address</span>
                 <span className="text-right">{patient.address}</span>
               </div>
-               <div className="flex justify-between">
-                <span className="font-medium text-muted-foreground">Member Since</span>
-                <span>{format(patient.createdAt, "PPP")}</span>
-              </div>
+    
             </CardContent>
           </Card>
            <Card>
