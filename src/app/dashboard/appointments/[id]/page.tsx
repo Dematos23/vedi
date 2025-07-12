@@ -1,5 +1,3 @@
-"use client";
-
 import * as React from "react";
 import { notFound } from "next/navigation";
 import prisma from "@/lib/prisma";
@@ -15,7 +13,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowLeft, User, Clock, DollarSign, BookText, Pencil, Save, Download } from "lucide-react";
+import { ArrowLeft, User, Clock, DollarSign, BookText, Pencil, Save } from "lucide-react";
 import { format } from "date-fns";
 import { formatCurrency } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
@@ -28,7 +26,8 @@ type AppointmentWithDetails = Appointment & {
   service: Service;
 };
 
-// Client component to handle interactive parts
+// This is now a dedicated client component
+"use client";
 function AppointmentDetailClient({ appointmentData }: { appointmentData: AppointmentWithDetails }) {
   const [appointment, setAppointment] = React.useState(appointmentData);
   const [description, setDescription] = React.useState(appointment.description || "");
@@ -158,7 +157,7 @@ function AppointmentDetailClient({ appointmentData }: { appointmentData: Appoint
   );
 }
 
-// Server Component Wrapper to fetch data
+// This remains a Server Component to fetch data
 export default async function AppointmentDetailPage({ params }: { params: { id: string } }) {
   const appointment = await prisma.appointment.findUnique({
     where: { id: params.id },
