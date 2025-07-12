@@ -7,6 +7,7 @@ import * as z from "zod";
 
 // Service Actions
 const serviceSchema = z.object({
+  id: z.string().optional(),
   name: z.string().min(3, "Service name must be at least 3 characters."),
   description: z
     .string()
@@ -33,6 +34,37 @@ export async function createService(data: z.infer<typeof serviceSchema>) {
 
   revalidatePath("/dashboard/services");
 }
+
+export async function updateService(data: z.infer<typeof serviceSchema>) {
+    const validatedFields = serviceSchema.safeParse(data);
+
+    if (!validatedFields.success || !validatedFields.data.id) {
+        throw new Error("Invalid service data.");
+    }
+
+    const { id, ...serviceData } = validatedFields.data;
+
+    await prisma.service.update({
+        where: { id },
+        data: serviceData,
+    });
+
+    revalidatePath("/dashboard/services");
+}
+
+export async function deleteService(serviceId: string) {
+    if (!serviceId) {
+        throw new Error("Service ID is required.");
+    }
+    await prisma.appointment.deleteMany({
+        where: { serviceId },
+    });
+    await prisma.service.delete({
+        where: { id: serviceId },
+    });
+    revalidatePath("/dashboard/services");
+}
+
 
 // Appointment Actions
 const appointmentSchema = z.object({

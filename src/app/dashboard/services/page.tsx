@@ -7,9 +7,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import prisma from "@/lib/prisma";
-import { formatCurrency } from "@/lib/utils";
 import { Search } from "../patients/components/search";
 import { NewServiceSheet } from "./components/new-service-sheet";
+import { ServiceCard } from "./components/service-card";
 
 export default async function ServicesPage({
   searchParams,
@@ -60,23 +60,7 @@ export default async function ServicesPage({
       <CardContent className="grid gap-4">
         {services.length > 0 ? (
           services.map((service) => (
-            <div
-              key={service.id}
-              className="rounded-lg border bg-card text-card-foreground p-4 flex justify-between items-start"
-            >
-              <div>
-                <h3 className="font-semibold">{service.name}</h3>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {service.description}
-                </p>
-                <p className="text-xs text-muted-foreground mt-2">
-                  {service.duration} min
-                </p>
-              </div>
-              <div className="text-right">
-                <p className="font-semibold text-lg">{formatCurrency(service.price)}</p>
-              </div>
-            </div>
+           <ServiceCard key={service.id} service={service} />
           ))
         ) : (
           <div className="text-center text-muted-foreground py-12">
