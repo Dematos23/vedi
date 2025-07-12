@@ -1,3 +1,4 @@
+
 import {
   Card,
   CardContent,
@@ -50,7 +51,7 @@ export default async function PatientDetailPage({ params }: { params: { id: stri
             <span className="sr-only">Back to Patients</span>
           </Link>
         </Button>
-        <h1 className="text-2xl font-bold">{patient.name}</h1>
+        <h1 className="text-2xl font-bold">{`${patient.name} ${patient.lastname}`}</h1>
       </div>
       <div className="grid md:grid-cols-3 gap-6">
         <div className="md:col-span-2 grid gap-6">

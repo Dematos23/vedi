@@ -1,3 +1,4 @@
+
 import {
   Table,
   TableBody,
@@ -43,12 +44,12 @@ export default async function PatientsPage() {
           <TableBody>
             {patients.map((patient) => (
               <TableRow key={patient.id}>
-                <TableCell className="font-medium">{patient.name}</TableCell>
+                <TableCell className="font-medium">{`${patient.name} ${patient.lastname}`}</TableCell>
                 <TableCell className="hidden md:table-cell">
                   {patient.email}
                 </TableCell>
                 <TableCell className="hidden md:table-cell">
-                  <Badge variant="outline">{patient.phone}</Badge>
+                  {patient.phone && <Badge variant="outline">{patient.phone}</Badge>}
                 </TableCell>
                 <TableCell className="text-right">
                   <Button asChild variant="ghost" size="icon">

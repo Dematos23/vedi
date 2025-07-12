@@ -1,3 +1,4 @@
+
 "use server";
 
 import { revalidatePath } from "next/cache";
@@ -10,6 +11,8 @@ const serviceSchema = z.object({
   description: z
     .string()
     .min(10, "Description must be at least 10 characters."),
+  price: z.coerce.number().positive("Price must be a positive number."),
+  duration: z.coerce.number().int().positive("Duration must be a positive number."),
 });
 
 export async function createService(data: z.infer<typeof serviceSchema>) {
@@ -23,6 +26,8 @@ export async function createService(data: z.infer<typeof serviceSchema>) {
     data: {
       name: validatedFields.data.name,
       description: validatedFields.data.description,
+      price: validatedFields.data.price,
+      duration: validatedFields.data.duration,
     },
   });
 

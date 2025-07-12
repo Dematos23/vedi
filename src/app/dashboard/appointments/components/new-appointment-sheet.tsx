@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -31,11 +32,11 @@ import {
 } from "@/components/ui/form";
 
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { DatePicker } from "@/components/date-picker";
 import { createAppointment } from "@/lib/actions";
 import { useToast } from "@/hooks/use-toast";
+import type { Patient, Service } from "@prisma/client";
 
 const appointmentSchema = z.object({
   patientId: z.string({ required_error: "Please select a patient." }),
@@ -47,8 +48,8 @@ const appointmentSchema = z.object({
 type AppointmentFormValues = z.infer<typeof appointmentSchema>;
 
 interface NewAppointmentSheetProps {
-  patients: { id: string; name: string }[];
-  services: { id: string; name: string }[];
+  patients: Patient[];
+  services: Service[];
 }
 
 export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetProps) {
@@ -111,7 +112,7 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
                     <SelectContent>
                       {patients.map((patient) => (
                         <SelectItem key={patient.id} value={patient.id}>
-                          {patient.name}
+                          {`${patient.name} ${patient.lastname}`}
                         </SelectItem>
                       ))}
                     </SelectContent>
