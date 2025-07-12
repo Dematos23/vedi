@@ -27,7 +27,11 @@ const serviceSchema = z.object({
 
 type ServiceFormValues = z.infer<typeof serviceSchema>;
 
-export function NewServiceForm() {
+interface NewServiceFormProps {
+  onFormSubmit?: () => void;
+}
+
+export function NewServiceForm({ onFormSubmit }: NewServiceFormProps) {
   const { toast } = useToast();
   const form = useForm<ServiceFormValues>({
     resolver: zodResolver(serviceSchema),
@@ -47,6 +51,9 @@ export function NewServiceForm() {
         description: "New service has been registered.",
       });
       form.reset();
+      if (onFormSubmit) {
+        onFormSubmit();
+      }
     } catch (error) {
       toast({
         variant: "destructive",
@@ -58,7 +65,7 @@ export function NewServiceForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 py-4">
         <FormField
           control={form.control}
           name="name"
@@ -113,9 +120,11 @@ export function NewServiceForm() {
             )}
           />
         </div>
-        <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
-          {form.formState.isSubmitting ? "Registering..." : "Register Service"}
-        </Button>
+        <div className="flex justify-end pt-4">
+            <Button type="submit" disabled={form.formState.isSubmitting}>
+                {form.formState.isSubmitting ? "Registering..." : "Register Service"}
+            </Button>
+        </div>
       </form>
     </Form>
   );

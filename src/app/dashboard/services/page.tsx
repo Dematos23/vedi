@@ -1,3 +1,4 @@
+
 import {
   Card,
   CardContent,
@@ -6,62 +7,83 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import prisma from "@/lib/prisma";
-import { NewServiceForm } from "./components/new-service-form";
 import { formatCurrency } from "@/lib/utils";
+import { Search } from "../patients/components/search";
+import { NewServiceSheet } from "./components/new-service-sheet";
 
-export default async function ServicesPage() {
+export default async function ServicesPage({
+  searchParams,
+}: {
+  searchParams?: {
+    query?: string;
+  };
+}) {
+  const query = searchParams?.query || "";
   const services = await prisma.service.findMany({
+    where: {
+      OR: [
+        {
+          name: {
+            contains: query,
+            mode: "insensitive",
+          },
+        },
+        {
+          description: {
+            contains: query,
+            mode: "insensitive",
+          },
+        },
+      ],
+    },
     orderBy: {
       name: 'asc'
     }
   });
 
   return (
-    <div className="grid gap-6 md:grid-cols-2">
-      <div>
-        <Card>
-          <CardHeader>
-            <CardTitle>Register New Service</CardTitle>
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>Services</CardTitle>
             <CardDescription>
-              Add a new therapy or service to the registry.
+              A list of all registered services.
             </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <NewServiceForm />
-          </CardContent>
-        </Card>
-      </div>
-      <div>
-        <Card>
-          <CardHeader>
-            <CardTitle>Available Services</CardTitle>
-            <CardDescription>
-              List of all registered services.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-4">
-            {services.map((service) => (
-              <div
-                key={service.id}
-                className="rounded-lg border bg-card text-card-foreground p-4 flex justify-between items-start"
-              >
-                <div>
-                  <h3 className="font-semibold">{service.name}</h3>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {service.description}
-                  </p>
-                   <p className="text-xs text-muted-foreground mt-2">
-                    {service.duration} min
-                  </p>
-                </div>
-                <div className="text-right">
-                    <p className="font-semibold text-lg">{formatCurrency(service.price)}</p>
-                </div>
+          </div>
+          <NewServiceSheet />
+        </div>
+        <div className="pt-4">
+          <Search placeholder="Search by service name or description..." />
+        </div>
+      </CardHeader>
+      <CardContent className="grid gap-4">
+        {services.length > 0 ? (
+          services.map((service) => (
+            <div
+              key={service.id}
+              className="rounded-lg border bg-card text-card-foreground p-4 flex justify-between items-start"
+            >
+              <div>
+                <h3 className="font-semibold">{service.name}</h3>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {service.description}
+                </p>
+                <p className="text-xs text-muted-foreground mt-2">
+                  {service.duration} min
+                </p>
               </div>
-            ))}
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+              <div className="text-right">
+                <p className="font-semibold text-lg">{formatCurrency(service.price)}</p>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="text-center text-muted-foreground py-12">
+            No services found.
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }
