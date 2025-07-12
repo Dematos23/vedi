@@ -1,11 +1,13 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-}
-
-generator client {
-  provider = "prisma-client-js"
 }
 
 model Patient {
@@ -28,11 +30,13 @@ model Service {
 }
 
 model Appointment {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   date        DateTime
-  description String
+  description String?
+  patient     Patient   @relation(fields: [patientId], references: [id])
   patientId   String
-  patient     Patient  @relation(fields: [patientId], references: [id])
+  service     Service   @relation(fields: [serviceId], references: [id])
   serviceId   String
-  service     Service  @relation(fields: [serviceId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
