@@ -3,9 +3,15 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
+  CardDescription,
 } from "@/components/ui/card";
-import { UsersRound, BriefcaseMedical, CalendarDays } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { UsersRound, BriefcaseMedical, CalendarDays, DollarSign } from "lucide-react";
 import prisma from "@/lib/prisma";
+import { SalesChart } from "./components/sales-chart";
+import { AppointmentsChart } from "./components/appointments-chart";
+import { formatCurrency } from "@/lib/utils";
+import { startOfMonth, endOfMonth } from 'date-fns';
 
 export default async function DashboardPage() {
   const totalPatients = await prisma.patient.count();
@@ -17,11 +23,32 @@ export default async function DashboardPage() {
       },
     },
   });
+  
+  const services = await prisma.service.findMany();
+
+  const now = new Date();
+  const startOfCurrentMonth = startOfMonth(now);
+  const endOfCurrentMonth = endOfMonth(now);
+
+  const currentMonthSalesResult = await prisma.appointment.aggregate({
+    _sum: {
+      servicePrice: true,
+    },
+    where: {
+      date: {
+        gte: startOfCurrentMonth,
+        lte: endOfCurrentMonth,
+      },
+    },
+  });
+
+  const currentMonthSales = currentMonthSalesResult._sum.servicePrice || 0;
+
 
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-2xl font-bold">Dashboard</h1>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Patients</CardTitle>
@@ -62,17 +89,31 @@ export default async function DashboardPage() {
             </p>
           </CardContent>
         </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Current Month Sales</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{formatCurrency(currentMonthSales)}</div>
+            <p className="text-xs text-muted-foreground">
+              Revenue for this month
+            </p>
+          </CardContent>
+        </Card>
       </div>
-      <Card>
-        <CardHeader>
-          <CardTitle>Welcome to Vedi</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p>
-            This is your central hub for managing patients, services, and appointments. Use the navigation on the left to get started.
-          </p>
-        </CardContent>
-      </Card>
+      <Tabs defaultValue="sales">
+        <TabsList>
+            <TabsTrigger value="sales">Sales</TabsTrigger>
+            <TabsTrigger value="appointments">Appointments</TabsTrigger>
+        </TabsList>
+        <TabsContent value="sales">
+            <SalesChart />
+        </TabsContent>
+        <TabsContent value="appointments">
+            <AppointmentsChart services={services}/>
+        </TabsContent>
+    </Tabs>
     </div>
   );
 }

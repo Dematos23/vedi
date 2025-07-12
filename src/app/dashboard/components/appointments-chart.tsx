@@ -79,13 +79,15 @@ export function AppointmentsChart({ services }: AppointmentsChartProps) {
                     <SelectItem value="year">Year</SelectItem>
                 </SelectContent>
             </Select>
-            <MultiSelect
-                options={serviceOptions}
-                selected={selectedServices}
-                onChange={setSelectedServices}
-                className="min-w-[200px]"
-                placeholder="Filter by service..."
-            />
+            <div className="z-10">
+              <MultiSelect
+                  options={serviceOptions}
+                  selected={selectedServices}
+                  onChange={setSelectedServices}
+                  className="min-w-[200px]"
+                  placeholder="Filter by service..."
+              />
+            </div>
           </div>
           {loading ? (
              <Skeleton className="h-[350px] w-full" />
