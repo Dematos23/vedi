@@ -1,3 +1,4 @@
+
 import {
   Card,
   CardContent,
@@ -32,7 +33,7 @@ export default async function PatientDetailPage({ params }: { params: { id: stri
         orderBy: {
           date: 'desc',
         },
-        take: 5,
+        take: 10, // Fetch more appointments for the main view
       },
     },
   });
@@ -54,7 +55,41 @@ export default async function PatientDetailPage({ params }: { params: { id: stri
       </div>
       <div className="grid md:grid-cols-3 gap-6">
         <div className="md:col-span-2 grid gap-6">
-           <NoteSummarizer patientId={patient.id} initialNotes={patient.notes || ""} />
+          <Card>
+            <CardHeader>
+              <CardTitle>Appointment History</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Service</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Price</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {patient.appointments.length > 0 ? (
+                    patient.appointments.map((appt) => (
+                      <TableRow key={appt.id}>
+                        <TableCell>
+                          <Badge variant="outline">{appt.service.name}</Badge>
+                        </TableCell>
+                        <TableCell>{format(appt.date, "PPP")}</TableCell>
+                        <TableCell>{appt.service.price}</TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                     <TableRow>
+                        <TableCell colSpan={3} className="h-24 text-center">
+                          No appointments found.
+                        </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
         </div>
         <div className="grid gap-6">
           <Card>
@@ -74,32 +109,9 @@ export default async function PatientDetailPage({ params }: { params: { id: stri
                 <span className="font-medium text-muted-foreground">Address</span>
                 <span className="text-right">{patient.address}</span>
               </div>
-    
             </CardContent>
           </Card>
-           <Card>
-            <CardHeader>
-              <CardTitle>Appointment History</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Service</TableHead>
-                    <TableHead>Date</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {patient.appointments.map((appt) => (
-                    <TableRow key={appt.id}>
-                      <TableCell><Badge variant="outline">{appt.service.name}</Badge></TableCell>
-                      <TableCell>{format(appt.date, "PP")}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+          <NoteSummarizer patientId={patient.id} initialNotes={patient.notes || ""} />
         </div>
       </div>
     </div>
