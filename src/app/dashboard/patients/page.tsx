@@ -18,15 +18,49 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
+import { Search } from "./components/search";
 
-export default async function PatientsPage() {
-  const patients = await prisma.patient.findMany();
+export default async function PatientsPage({
+  searchParams,
+}: {
+  searchParams?: {
+    query?: string;
+  };
+}) {
+  const query = searchParams?.query || "";
+  const patients = await prisma.patient.findMany({
+    where: {
+      OR: [
+        {
+          name: {
+            contains: query,
+            mode: "insensitive",
+          },
+        },
+        {
+          lastname: {
+            contains: query,
+            mode: "insensitive",
+          },
+        },
+        {
+          email: {
+            contains: query,
+            mode: "insensitive",
+          },
+        },
+      ],
+    },
+  });
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Patients</CardTitle>
         <CardDescription>A list of your current patients.</CardDescription>
+        <div className="pt-4">
+            <Search placeholder="Search by name or email..." />
+        </div>
       </CardHeader>
       <CardContent>
         <Table>
@@ -60,6 +94,13 @@ export default async function PatientsPage() {
                 </TableCell>
               </TableRow>
             ))}
+             {patients.length === 0 && (
+                <TableRow>
+                    <TableCell colSpan={4} className="h-24 text-center">
+                    No results found.
+                    </TableCell>
+                </TableRow>
+            )}
           </TableBody>
         </Table>
       </CardContent>
