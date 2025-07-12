@@ -1,12 +1,12 @@
+
 "use client";
 
 import * as React from "react";
-import { format, subDays, startOfMonth, startOfYear, startOfWeek } from "date-fns";
+import { format } from "date-fns";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 import { DateRange } from "react-day-picker";
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { DatePickerWithRange } from "@/components/date-picker-with-range";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getChartData } from "@/lib/actions";
@@ -16,7 +16,7 @@ type TimeUnit = "day" | "week" | "month" | "year";
 
 export function SalesChart() {
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>({
-    from: subDays(new Date(), 29),
+    from: new Date(new Date().getFullYear(), 0, 1),
     to: new Date(),
   });
   const [timeUnit, setTimeUnit] = React.useState<TimeUnit>("day");

@@ -1,7 +1,8 @@
+
 "use client";
 
 import * as React from "react";
-import { format, subDays } from "date-fns";
+import { format } from "date-fns";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 import { DateRange } from "react-day-picker";
 import type { Service } from "@prisma/client";
@@ -21,7 +22,7 @@ interface AppointmentsChartProps {
 
 export function AppointmentsChart({ services }: AppointmentsChartProps) {
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>({
-    from: subDays(new Date(), 29),
+    from: new Date(new Date().getFullYear(), 0, 1),
     to: new Date(),
   });
   const [timeUnit, setTimeUnit] = React.useState<TimeUnit>("day");
