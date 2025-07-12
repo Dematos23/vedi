@@ -20,14 +20,14 @@ import {
 import { format } from "date-fns";
 import Link from "next/link";
 import { NoteSummarizer } from "./components/note-summarizer";
-import { ArrowLeft, Eye, Save, Wand2 } from "lucide-react";
+import { ArrowLeft, Eye, Wand2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { notFound } from "next/navigation";
-import { updatePatientNotes } from "@/lib/actions";
 import { summarizeSessionNotes } from "@/ai/flows/summarize-session-notes";
 import { useToast } from "@/hooks/use-toast";
 import type { Patient, Appointment, Service } from "@prisma/client";
 import prisma from "@/lib/prisma";
+import { ExportPdfButton } from "./components/export-pdf-button";
 
 type PatientWithAppointments = Patient & {
   appointments: (Appointment & {
@@ -40,7 +40,6 @@ function PatientDetailPage({ patient }: { patient: PatientWithAppointments }) {
   const [notes, setNotes] = React.useState(patient.notes || "");
   const [summary, setSummary] = React.useState<string | null>(null);
   const [isSummarizing, setIsSummarizing] = React.useState(false);
-  const [isSaving, setIsSaving] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const { toast } = useToast();
 
@@ -67,35 +66,14 @@ function PatientDetailPage({ patient }: { patient: PatientWithAppointments }) {
     }
   };
 
-  const handleSaveNotes = async () => {
-    setIsSaving(true);
-    try {
-      await updatePatientNotes(patient.id, notes);
-      toast({
-        title: "Success",
-        description: "Patient notes have been saved.",
-      });
-    } catch (e) {
-       toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to save notes. Please try again.",
-      });
-      console.error(e);
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-
   if (!patient) {
     notFound();
   }
 
   return (
     <div className="grid gap-6">
-      <div className="flex items-center gap-4">
-        <Button asChild variant="outline" size="icon">
+      <div id="patient-header" className="flex items-center gap-4">
+        <Button asChild variant="outline" size="icon" className="print:hidden">
           <Link href="/dashboard/patients">
             <ArrowLeft className="h-4 w-4" />
             <span className="sr-only">Back to Patients</span>
@@ -105,14 +83,11 @@ function PatientDetailPage({ patient }: { patient: PatientWithAppointments }) {
       </div>
       <div className="grid md:grid-cols-3 gap-6">
         <div className="md:col-span-2 grid gap-6">
-          <Card>
+          <Card id="appointment-history">
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Appointment History</CardTitle>
-               <div className="flex gap-2">
-                  <Button onClick={handleSaveNotes} disabled={isSaving || !notes}>
-                      <Save className="mr-2 h-4 w-4" />
-                      {isSaving ? "Saving..." : "Save Notes"}
-                  </Button>
+               <div className="flex gap-2 print:hidden">
+                  <ExportPdfButton patientName={`${patient.name} ${patient.lastname}`} />
                   <Button onClick={handleSummarize} disabled={isSummarizing || !notes}>
                   <Wand2 className="mr-2 h-4 w-4" />
                   {isSummarizing ? "Summarizing..." : "Summarize with AI"}
@@ -140,7 +115,7 @@ function PatientDetailPage({ patient }: { patient: PatientWithAppointments }) {
                         </TableCell>
                         <TableCell>{format(appt.date, "PPP")}</TableCell>
                         <TableCell>{appt.service.price}</TableCell>
-                        <TableCell className="text-right">
+                        <TableCell className="text-right print:hidden">
                             <Button asChild variant="outline" size="sm">
                                 <Link href={`/dashboard/appointments/${appt.id}`}>
                                 <Eye className="mr-2 h-4 w-4" />
@@ -163,7 +138,7 @@ function PatientDetailPage({ patient }: { patient: PatientWithAppointments }) {
           </Card>
         </div>
         <div className="grid gap-6">
-          <Card>
+          <Card id="patient-details">
             <CardHeader>
               <CardTitle>Patient Details</CardTitle>
             </CardHeader>
@@ -182,14 +157,16 @@ function PatientDetailPage({ patient }: { patient: PatientWithAppointments }) {
               </div>
             </CardContent>
           </Card>
-           <NoteSummarizer 
-            patientId={patient.id}
-            initialNotes={patient.notes || ""}
-            onNotesChange={setNotes}
-            summary={summary}
-            isSummarizing={isSummarizing}
-            error={error}
-          />
+           <div id="therapist-notes">
+             <NoteSummarizer 
+              patientId={patient.id}
+              initialNotes={patient.notes || ""}
+              onNotesChange={setNotes}
+              summary={summary}
+              isSummarizing={isSummarizing}
+              error={error}
+            />
+           </div>
         </div>
       </div>
     </div>
