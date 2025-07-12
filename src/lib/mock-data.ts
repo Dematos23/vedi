@@ -48,8 +48,8 @@ export const generateMockAppointments = (patients: Patient[], services: Service[
         for (let i = 0; i < 3; i++) {
             const randomService = services[Math.floor(Math.random() * services.length)];
             const date = (i % 2 === 0) 
-                ? faker.date.past(1) // A past appointment
-                : faker.date.future(1); // A future appointment
+                ? faker.date.past({ years: 1 }) // A past appointment
+                : faker.date.future({ years: 1 }); // A future appointment
             
             appointments.push({
                 patientId: patient.id,
