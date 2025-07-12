@@ -20,7 +20,7 @@ import {
 import { format } from "date-fns";
 import Link from "next/link";
 import { NoteSummarizer } from "./components/note-summarizer";
-import { ArrowLeft, Save, Wand2 } from "lucide-react";
+import { ArrowLeft, Eye, Save, Wand2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { notFound } from "next/navigation";
 import { updatePatientNotes } from "@/lib/actions";
@@ -118,6 +118,9 @@ function PatientDetailPage({ patient }: { patient: PatientWithAppointments }) {
                     <TableHead>Service</TableHead>
                     <TableHead>Date</TableHead>
                     <TableHead>Price</TableHead>
+                    <TableHead>
+                      <span className="sr-only">Actions</span>
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -129,11 +132,19 @@ function PatientDetailPage({ patient }: { patient: PatientWithAppointments }) {
                         </TableCell>
                         <TableCell>{format(appt.date, "PPP")}</TableCell>
                         <TableCell>{appt.service.price}</TableCell>
+                        <TableCell className="text-right">
+                            <Button asChild variant="outline" size="sm">
+                                <Link href={`/dashboard/appointments/${appt.id}`}>
+                                <Eye className="mr-2 h-4 w-4" />
+                                View
+                                </Link>
+                            </Button>
+                        </TableCell>
                       </TableRow>
                     ))
                   ) : (
                      <TableRow>
-                        <TableCell colSpan={3} className="h-24 text-center">
+                        <TableCell colSpan={4} className="h-24 text-center">
                           No appointments found.
                         </TableCell>
                     </TableRow>
