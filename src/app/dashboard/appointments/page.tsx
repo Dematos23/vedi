@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import { format } from "date-fns";
+import Link from "next/link";
 import {
   Table,
   TableBody,
@@ -16,6 +17,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Eye } from "lucide-react";
 import { NewAppointmentSheet } from "./components/new-appointment-sheet";
 
 export default async function AppointmentsPage() {
@@ -51,6 +54,9 @@ export default async function AppointmentsPage() {
               <TableHead>Service</TableHead>
               <TableHead className="hidden md:table-cell">Date</TableHead>
               <TableHead className="hidden md:table-cell">Time</TableHead>
+              <TableHead>
+                <span className="sr-only">Actions</span>
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -66,8 +72,23 @@ export default async function AppointmentsPage() {
                 <TableCell className="hidden md:table-cell">
                   {format(appt.date, "p")}
                 </TableCell>
+                <TableCell className="text-right">
+                  <Button asChild variant="outline" size="sm">
+                    <Link href={`/dashboard/appointments/${appt.id}`}>
+                      <Eye className="mr-2 h-4 w-4" />
+                      View
+                    </Link>
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
+             {appointments.length === 0 && (
+                <TableRow>
+                    <TableCell colSpan={5} className="h-24 text-center">
+                    No appointments found.
+                    </TableCell>
+                </TableRow>
+            )}
           </TableBody>
         </Table>
       </CardContent>
