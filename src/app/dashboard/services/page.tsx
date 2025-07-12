@@ -5,14 +5,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import prisma from "@/lib/prisma";
+import { NewServiceForm } from "./components/new-service-form";
 
 export default async function ServicesPage() {
-  const services = await prisma.service.findMany();
+  const services = await prisma.service.findMany({
+    orderBy: {
+      name: 'asc'
+    }
+  });
 
   return (
     <div className="grid gap-6 md:grid-cols-2">
@@ -25,27 +26,7 @@ export default async function ServicesPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form className="grid gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="name">Service Name</Label>
-                <Input
-                  id="name"
-                  placeholder="e.g., Individual Therapy"
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
-                  placeholder="Describe the service..."
-                  required
-                />
-              </div>
-              <Button type="submit" className="w-full">
-                Register Service
-              </Button>
-            </form>
+            <NewServiceForm />
           </CardContent>
         </Card>
       </div>

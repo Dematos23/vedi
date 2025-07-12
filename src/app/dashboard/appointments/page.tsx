@@ -1,11 +1,5 @@
-// This file is intentionally left with client-side data fetching setup.
-// A future step will be to create the API routes to provide the data.
-"use client";
-
-import * as React from "react";
+import prisma from "@/lib/prisma";
 import { format } from "date-fns";
-import { PlusCircle } from "lucide-react";
-
 import {
   Table,
   TableBody,
@@ -21,42 +15,22 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { DatePicker } from "@/components/date-picker";
-import {
-  mockAppointments,
-  mockPatients,
-  mockServices,
-} from "@/lib/mock-data";
+import { NewAppointmentSheet } from "./components/new-appointment-sheet";
 
-export default function AppointmentsPage() {
-  const [date, setDate] = React.useState<Date | undefined>(new Date());
+export default async function AppointmentsPage() {
+  const appointments = await prisma.appointment.findMany({
+    include: {
+      patient: true,
+      service: true,
+    },
+    orderBy: {
+      date: 'desc'
+    }
+  });
 
-  // Since we don't have APIs yet, we'll continue to use mock data here.
-  const appointmentsWithDetails = mockAppointments.map((appt) => ({
-    ...appt,
-    patient: mockPatients.find(p => p.id === appt.patientId),
-    service: mockServices.find(s => s.id === appt.serviceId),
-  }));
+  const patients = await prisma.patient.findMany();
+  const services = await prisma.service.findMany();
 
   return (
     <Card>
@@ -67,77 +41,7 @@ export default function AppointmentsPage() {
             Manage and schedule your appointments.
           </CardDescription>
         </div>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button size="sm" className="gap-1">
-              <PlusCircle className="h-4 w-4" />
-              New Appointment
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Schedule Appointment</DialogTitle>
-              <DialogDescription>
-                Fill in the details to create a new appointment.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="patient" className="text-right">
-                  Patient
-                </Label>
-                <Select>
-                  <SelectTrigger className="col-span-3">
-                    <SelectValue placeholder="Select a patient" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {mockPatients.map((patient) => (
-                      <SelectItem key={patient.id} value={patient.id}>
-                        {patient.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="service" className="text-right">
-                  Service
-                </Label>
-                <Select>
-                  <SelectTrigger className="col-span-3">
-                    <SelectValue placeholder="Select a service" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {mockServices.map((service) => (
-                      <SelectItem key={service.id} value={service.id}>
-                        {service.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="date" className="text-right">
-                  Date
-                </Label>
-                <DatePicker date={date} setDate={setDate} className="col-span-3"/>
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="description" className="text-right">
-                  Description
-                </Label>
-                <Textarea
-                  id="description"
-                  placeholder="Session details..."
-                  className="col-span-3"
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button type="submit">Schedule</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <NewAppointmentSheet patients={patients} services={services} />
       </CardHeader>
       <CardContent>
         <Table>
@@ -150,11 +54,11 @@ export default function AppointmentsPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {appointmentsWithDetails.map((appt) => (
+            {appointments.map((appt) => (
               <TableRow key={appt.id}>
-                <TableCell className="font-medium">{appt.patient?.name}</TableCell>
+                <TableCell className="font-medium">{appt.patient.name}</TableCell>
                 <TableCell>
-                  <Badge variant="outline">{appt.service?.name}</Badge>
+                  <Badge variant="outline">{appt.service.name}</Badge>
                 </TableCell>
                 <TableCell className="hidden md:table-cell">
                   {format(appt.date, "PPP")}

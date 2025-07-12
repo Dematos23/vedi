@@ -54,7 +54,7 @@ export default async function PatientDetailPage({ params }: { params: { id: stri
       </div>
       <div className="grid md:grid-cols-3 gap-6">
         <div className="md:col-span-2 grid gap-6">
-           <NoteSummarizer initialNotes={patient.notes || ""} />
+           <NoteSummarizer patientId={patient.id} initialNotes={patient.notes || ""} />
         </div>
         <div className="grid gap-6">
           <Card>
