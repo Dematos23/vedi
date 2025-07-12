@@ -16,7 +16,7 @@ import { startOfMonth, endOfMonth } from 'date-fns';
 export default async function DashboardPage() {
   const totalPatients = await prisma.patient.count();
   const totalServices = await prisma.service.count();
-  const upcomingAppointments = await prisma.appointment.count({
+  const upcomingAppointmentsCount = await prisma.appointment.count({
     where: {
       date: {
         gte: new Date(),
@@ -30,19 +30,19 @@ export default async function DashboardPage() {
   const startOfCurrentMonth = startOfMonth(now);
   const endOfCurrentMonth = endOfMonth(now);
 
-  const currentMonthSalesResult = await prisma.appointment.aggregate({
-    _sum: {
-      servicePrice: true,
-    },
+  const currentMonthAppointments = await prisma.appointment.findMany({
     where: {
       date: {
         gte: startOfCurrentMonth,
         lte: endOfCurrentMonth,
       },
     },
+    include: {
+        service: true
+    }
   });
 
-  const currentMonthSales = currentMonthSalesResult._sum.servicePrice || 0;
+  const currentMonthSales = currentMonthAppointments.reduce((total, appt) => total + appt.service.price, 0);
 
 
   return (
@@ -83,7 +83,7 @@ export default async function DashboardPage() {
             <CalendarDays className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+{upcomingAppointments}</div>
+            <div className="text-2xl font-bold">+{upcomingAppointmentsCount}</div>
             <p className="text-xs text-muted-foreground">
               All upcoming appointments
             </p>
