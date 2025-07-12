@@ -128,7 +128,7 @@ function PatientDetailPage({ patient }: { patient: PatientWithAppointments }) {
                     patient.appointments.map((appt) => (
                       <TableRow key={appt.id}>
                         <TableCell>
-                          <Badge variant="outline">{appt.service.name}</Badge>
+                          <Badge variant="outline" className="border-none rounded-none px-0">{appt.service.name}</Badge>
                         </TableCell>
                         <TableCell>{format(appt.date, "PPP")}</TableCell>
                         <TableCell>{appt.service.price}</TableCell>
