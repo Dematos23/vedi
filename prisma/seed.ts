@@ -50,6 +50,8 @@ async function main() {
         description: appointment.description,
         patientId: appointment.patientId,
         serviceId: appointment.serviceId,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       },
     });
   }
