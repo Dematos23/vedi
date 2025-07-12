@@ -25,7 +25,7 @@ export function AppointmentsChart({ services }: AppointmentsChartProps) {
     from: new Date(new Date().getFullYear(), 0, 1),
     to: new Date(),
   });
-  const [timeUnit, setTimeUnit] = React.useState<TimeUnit>("day");
+  const [timeUnit, setTimeUnit] = React.useState<TimeUnit>("month");
   const [selectedServices, setSelectedServices] = React.useState<string[]>([]);
   const [data, setData] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState(true);
