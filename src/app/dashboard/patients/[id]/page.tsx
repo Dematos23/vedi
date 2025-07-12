@@ -1,7 +1,9 @@
 
-"use client";
-
 import * as React from "react";
+import { notFound } from "next/navigation";
+import prisma from "@/lib/prisma";
+import type { Patient, Appointment, Service } from "@prisma/client";
+
 import {
   Card,
   CardContent,
@@ -22,11 +24,8 @@ import Link from "next/link";
 import { NoteSummarizer } from "./components/note-summarizer";
 import { ArrowLeft, Eye, Wand2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { notFound } from "next/navigation";
 import { summarizeSessionNotes } from "@/ai/flows/summarize-session-notes";
 import { useToast } from "@/hooks/use-toast";
-import type { Patient, Appointment, Service } from "@prisma/client";
-import prisma from "@/lib/prisma";
 import { ExportPdfButton } from "./components/export-pdf-button";
 
 type PatientWithAppointments = Patient & {
@@ -35,7 +34,8 @@ type PatientWithAppointments = Patient & {
   })[];
 };
 
-
+// All the interactive logic is now in this client component
+"use client";
 function PatientDetailPage({ patient }: { patient: PatientWithAppointments }) {
   const [notes, setNotes] = React.useState(patient.notes || "");
   const [summary, setSummary] = React.useState<string | null>(null);
@@ -174,7 +174,7 @@ function PatientDetailPage({ patient }: { patient: PatientWithAppointments }) {
 }
 
 
-// This wrapper fetches data on the server and passes it to the client component.
+// This wrapper is now the default export and a true Server Component.
 export default async function PatientDetailPageWrapper({ params }: { params: { id: string } }) {
   const patient = await prisma.patient.findUnique({
     where: { id: params.id },
@@ -195,5 +195,6 @@ export default async function PatientDetailPageWrapper({ params }: { params: { i
     notFound();
   }
 
+  // It fetches the data and passes it to the client component.
   return <PatientDetailPage patient={patient} />;
 }
