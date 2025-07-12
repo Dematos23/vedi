@@ -17,7 +17,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import prisma from "@/lib/prisma";
 import { format } from "date-fns";
 import Link from "next/link";
 import { NoteSummarizer } from "./components/note-summarizer";
@@ -28,6 +27,7 @@ import { updatePatientNotes } from "@/lib/actions";
 import { summarizeSessionNotes } from "@/ai/flows/summarize-session-notes";
 import { useToast } from "@/hooks/use-toast";
 import type { Patient, Appointment, Service } from "@prisma/client";
+import prisma from "@/lib/prisma";
 
 type PatientWithAppointments = Patient & {
   appointments: (Appointment & {
@@ -35,7 +35,8 @@ type PatientWithAppointments = Patient & {
   })[];
 };
 
-export default function PatientDetailPage({ patient }: { patient: PatientWithAppointments }) {
+
+function PatientDetailPage({ patient }: { patient: PatientWithAppointments }) {
   const [notes, setNotes] = React.useState(patient.notes || "");
   const [summary, setSummary] = React.useState<string | null>(null);
   const [isSummarizing, setIsSummarizing] = React.useState(false);
@@ -99,7 +100,7 @@ export default function PatientDetailPage({ patient }: { patient: PatientWithApp
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Appointment History</CardTitle>
-              <div className="flex gap-2">
+               <div className="flex gap-2">
                   <Button onClick={handleSaveNotes} disabled={isSaving || !notes}>
                       <Save className="mr-2 h-4 w-4" />
                       {isSaving ? "Saving..." : "Save Notes"}
@@ -162,7 +163,7 @@ export default function PatientDetailPage({ patient }: { patient: PatientWithApp
               </div>
             </CardContent>
           </Card>
-          <NoteSummarizer 
+           <NoteSummarizer 
             notes={notes} 
             setNotes={setNotes}
             summary={summary}
@@ -174,6 +175,7 @@ export default function PatientDetailPage({ patient }: { patient: PatientWithApp
     </div>
   );
 }
+
 
 // This wrapper fetches data on the server and passes it to the client component.
 export default async function PatientDetailPageWrapper({ params }: { params: { id: string } }) {
@@ -196,5 +198,5 @@ export default async function PatientDetailPageWrapper({ params }: { params: { i
     notFound();
   }
 
-  return <PatientDetailPage clientPatient={patient} />;
+  return <PatientDetailPage patient={patient} />;
 }
