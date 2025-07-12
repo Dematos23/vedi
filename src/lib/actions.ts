@@ -60,6 +60,26 @@ export async function createAppointment(
   revalidatePath("/dashboard/appointments");
 }
 
+export async function updateAppointmentDescription(appointmentId: string, description: string) {
+    if (!appointmentId) {
+        throw new Error("Appointment ID is required.");
+    }
+
+    const updatedAppointment = await prisma.appointment.update({
+        where: { id: appointmentId },
+        data: { description },
+        include: {
+          patient: true,
+          service: true,
+        }
+    });
+
+    revalidatePath(`/dashboard/appointments`);
+    revalidatePath(`/dashboard/appointments/${appointmentId}`);
+    
+    return updatedAppointment;
+}
+
 
 // Patient Actions
 export async function updatePatientNotes(patientId: string, notes: string) {
