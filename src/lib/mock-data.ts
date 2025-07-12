@@ -69,7 +69,7 @@ export const generateMockAppointments = (patients: Patient[], services: Service[
                 patientId: patient.id,
                 serviceId: randomService.id,
                 date: convertToPeruTime(date),
-                description: faker.lorem.sentence(),
+                description: `Session focused on cognitive restructuring techniques to address anxiety. Patient reported progress in identifying automatic negative thoughts. We practiced mindfulness exercises to ground them during moments of panic. Homework assigned: thought record for the upcoming week.`,
             });
         }
     });
