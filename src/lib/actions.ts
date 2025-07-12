@@ -82,6 +82,29 @@ export async function updateAppointmentDescription(appointmentId: string, descri
 
 
 // Patient Actions
+const patientSchema = z.object({
+    name: z.string().min(2, "Name must be at least 2 characters."),
+    lastname: z.string().min(2, "Last name must be at least 2 characters."),
+    email: z.string().email("Please enter a valid email address."),
+    phone: z.string().optional(),
+    address: z.string().optional(),
+});
+
+export async function createPatient(data: z.infer<typeof patientSchema>) {
+    const validatedFields = patientSchema.safeParse(data);
+
+    if (!validatedFields.success) {
+        throw new Error("Invalid patient data.");
+    }
+
+    await prisma.patient.create({
+        data: validatedFields.data,
+    });
+
+    revalidatePath("/dashboard/patients");
+}
+
+
 export async function updatePatientNotes(patientId: string, notes: string) {
     if (!patientId) {
         throw new Error("Patient ID is required.");

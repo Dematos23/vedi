@@ -20,6 +20,7 @@ import { Eye } from "lucide-react";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { Search } from "./components/search";
+import { NewPatientSheet } from "./components/new-patient-sheet";
 
 export default async function PatientsPage({
   searchParams,
@@ -57,8 +58,13 @@ export default async function PatientsPage({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Patients</CardTitle>
-        <CardDescription>A list of your current patients.</CardDescription>
+        <div className="flex items-center justify-between">
+            <div>
+                <CardTitle>Patients</CardTitle>
+                <CardDescription>A list of your current patients.</CardDescription>
+            </div>
+            <NewPatientSheet />
+        </div>
         <div className="pt-4">
             <Search placeholder="Search by name or email..." />
         </div>
