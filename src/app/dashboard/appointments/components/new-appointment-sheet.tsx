@@ -127,7 +127,7 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select a patient" />
-                      </SelectTrigger>
+                      </Trigger>
                     </FormControl>
                     <SelectContent>
                       {patients.map((patient) => (
