@@ -75,6 +75,37 @@ function MainSidebar() {
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter>
+         <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="h-auto w-full justify-start gap-2 p-2"
+              >
+                <Avatar className="size-8">
+                  <AvatarImage
+                    src="https://placehold.co/32x32.png"
+                    alt="@therapist"
+                    data-ai-hint="person user"
+                  />
+                  <AvatarFallback>TH</AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col items-start truncate">
+                    <span className="font-medium">The Therapist</span>
+                    <span className="text-xs text-muted-foreground">the.therapist@vedi.com</span>
+                </div>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="mb-2 ml-2">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <DropdownMenuItem>Support</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link href="/login">Logout</Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         <SidebarMenu>
           <SidebarMenuItem>
              <Link href="/login">
@@ -102,34 +133,6 @@ export default function DashboardLayout({
         <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
           <SidebarTrigger className="sm:hidden" />
           <div className="flex-1" />
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon"
-                className="overflow-hidden rounded-full"
-              >
-                <Avatar>
-                  <AvatarImage
-                    src="https://placehold.co/32x32.png"
-                    alt="@therapist"
-                    data-ai-hint="person user"
-                  />
-                  <AvatarFallback>TH</AvatarFallback>
-                </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Settings</DropdownMenuItem>
-              <DropdownMenuItem>Support</DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <Link href="/login">Logout</Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </header>
         <main className="flex-1 p-4 sm:px-6 sm:py-0">{children}</main>
       </SidebarInset>
