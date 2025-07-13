@@ -60,7 +60,7 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
     resolver: zodResolver(appointmentSchema),
     defaultValues: {
       date: new Date(),
-      price: '' as any,
+      price: undefined,
       description: '',
       patientId: undefined,
       serviceId: undefined,
@@ -76,10 +76,10 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
     if (selectedServiceId) {
       const service = services.find(s => s.id === selectedServiceId);
       if (service) {
-        form.setValue("price", service.price);
+        form.setValue("price", Number(service.price));
       }
     } else {
-      form.setValue("price", '' as any);
+      form.resetField("price");
     }
   }, [selectedServiceId, services, form]);
 
@@ -93,7 +93,7 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
       setOpen(false);
       form.reset({
          date: new Date(),
-         price: '' as any,
+         price: undefined,
          patientId: undefined,
          serviceId: undefined,
          description: ''
@@ -187,6 +187,8 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
                         step="0.01"
                         placeholder="150.00"
                         {...field}
+                        value={field.value === undefined ? '' : field.value}
+                        onChange={e => field.onChange(e.target.valueAsNumber)}
                         disabled={!selectedServiceId}
                       />
                     </FormControl>
