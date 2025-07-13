@@ -76,7 +76,7 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
         form.setValue("price", Number(service.price));
       }
     } else {
-        form.setValue("price", '' as any); // Set to empty string instead of resetting
+      form.setValue("price", '' as any); // Set to empty string instead of resetting
     }
   }, [selectedServiceId, services, form]);
 
