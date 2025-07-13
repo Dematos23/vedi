@@ -47,12 +47,12 @@ export function Filters({ allServices }: FiltersProps) {
     replace(`${pathname}?${params.toString()}`);
   }, 300);
 
-  const handleSortChange = (value: string) => {
+  const handleDateRangeChange = (value: string) => {
      const params = new URLSearchParams(searchParams);
-     if (value) {
-        params.set("orderBy", value);
+     if (value && value !== 'all') {
+        params.set("dateRange", value);
      } else {
-        params.delete("orderBy");
+        params.delete("dateRange");
      }
      replace(`${pathname}?${params.toString()}`);
   };
@@ -90,15 +90,19 @@ export function Filters({ allServices }: FiltersProps) {
               className="min-w-[200px]"
           />
           <Select 
-            defaultValue={searchParams.get("orderBy") || "desc"}
-            onValueChange={handleSortChange}
+            defaultValue={searchParams.get("dateRange") || "all"}
+            onValueChange={handleDateRangeChange}
           >
               <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Sort by date" />
+                  <SelectValue placeholder="Filter by date" />
               </SelectTrigger>
               <SelectContent>
-                  <SelectItem value="desc">Newest First</SelectItem>
-                  <SelectItem value="asc">Oldest First</SelectItem>
+                  <SelectItem value="all">All</SelectItem>
+                  <SelectItem value="today">Today</SelectItem>
+                  <SelectItem value="this_week">This Week</SelectItem>
+                  <SelectItem value="this_month">This Month</SelectItem>
+                  <SelectItem value="this_year">This Year</SelectItem>
+                  <SelectItem value="next_month">Next Month</SelectItem>
               </SelectContent>
           </Select>
       </div>
@@ -126,17 +130,21 @@ export function Filters({ allServices }: FiltersProps) {
                   />
                 </div>
                  <div>
-                    <Label>Sort by Date</Label>
+                    <Label>Filter by Date</Label>
                     <Select 
-                        defaultValue={searchParams.get("orderBy") || "desc"}
-                        onValueChange={handleSortChange}
+                        defaultValue={searchParams.get("dateRange") || "all"}
+                        onValueChange={handleDateRangeChange}
                     >
                         <SelectTrigger>
-                            <SelectValue placeholder="Sort by date" />
+                            <SelectValue placeholder="Filter by date" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="desc">Newest First</SelectItem>
-                            <SelectItem value="asc">Oldest First</SelectItem>
+                            <SelectItem value="all">All</SelectItem>
+                            <SelectItem value="today">Today</SelectItem>
+                            <SelectItem value="this_week">This Week</SelectItem>
+                            <SelectItem value="this_month">This Month</SelectItem>
+                            <SelectItem value="this_year">This Year</SelectItem>
+                            <SelectItem value="next_month">Next Month</SelectItem>
                         </SelectContent>
                     </Select>
                  </div>

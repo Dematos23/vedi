@@ -1,6 +1,6 @@
 
 import prisma from "@/lib/prisma";
-import { format } from "date-fns";
+import { format, startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, addMonths } from "date-fns";
 import Link from "next/link";
 import {
   Table,
@@ -24,16 +24,37 @@ import { NewAppointmentSheet } from "./components/new-appointment-sheet";
 import { Filters } from "./components/filters";
 import type { Prisma } from "@prisma/client";
 
+const getDateRange = (rangeKey: string) => {
+    const now = new Date();
+    switch (rangeKey) {
+        case 'today':
+            return { gte: startOfDay(now), lte: endOfDay(now) };
+        case 'this_week':
+            return { gte: startOfWeek(now), lte: endOfWeek(now) };
+        case 'this_month':
+            return { gte: startOfMonth(now), lte: endOfMonth(now) };
+        case 'this_year':
+            return { gte: startOfYear(now), lte: endOfYear(now) };
+        case 'next_month':
+            const nextMonth = addMonths(now, 1);
+            return { gte: startOfMonth(nextMonth), lte: endOfMonth(nextMonth) };
+        default:
+            return {};
+    }
+}
+
 export default async function AppointmentsPage({
   searchParams,
 }: {
   searchParams: {
     query?: string;
     service?: string;
-    orderBy?: "asc" | "desc";
+    dateRange?: string;
   };
 }) {
-  const { query = "", service: serviceId, orderBy = "desc" } = searchParams;
+  const { query = "", service: serviceId, dateRange } = searchParams;
+  
+  const dateFilter = dateRange ? getDateRange(dateRange) : {};
 
   const where: Prisma.AppointmentWhereInput = {
     ...(query && {
@@ -46,6 +67,9 @@ export default async function AppointmentsPage({
     ...(serviceId && {
       serviceId: serviceId,
     }),
+    ...(dateRange && {
+        date: dateFilter,
+    })
   };
 
   const appointments = await prisma.appointment.findMany({
@@ -55,7 +79,7 @@ export default async function AppointmentsPage({
       service: true,
     },
     orderBy: {
-      date: orderBy,
+      date: 'desc',
     },
   });
 
