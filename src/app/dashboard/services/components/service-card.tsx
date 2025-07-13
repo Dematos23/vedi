@@ -121,6 +121,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
         title: "Success",
         description: `Service has been ${isInactive ? 'activated' : 'deactivated'}.`,
       });
+      setIsEditing(false);
     } catch (error) {
        toast({
         variant: "destructive",
