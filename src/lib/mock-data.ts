@@ -34,17 +34,11 @@ const mockServices: Omit<Service, 'id' | 'createdAt' | 'updatedAt'>[] = [
     { name: 'Grief Counseling', price: new Decimal(145.00), duration: 50, description: 'Support for individuals who have experienced the loss of a loved one.', status: 'ACTIVE' }
 ];
 
-const convertToPeruTime = (date: Date) => {
-    // Current offset for the machine running the seed
-    const localOffset = date.getTimezoneOffset() * 60000; 
-    // Peru is UTC-5
-    const peruOffset = -5 * 3600 * 1000;
-    
-    // Get UTC time
-    const utc = date.getTime() + localOffset;
-
-    // Create a new date object for Peru time
-    return new Date(utc + peruOffset);
+const convertToSafeDate = (date: Date) => {
+    // To avoid timezone issues during SSR/CSR hydration, we can return the date in a consistent format like ISO string
+    // or just the Date object itself if the database driver and server handle it consistently.
+    // For this mock, we'll just return the date object as is, assuming consistent handling.
+    return date;
 }
 
 
@@ -69,7 +63,7 @@ export const generateMockAppointments = (patients: Patient[], services: Service[
                 patientId: patient.id,
                 serviceId: randomService.id,
                 price: randomService.price,
-                date: convertToPeruTime(date),
+                date: convertToSafeDate(date),
                 description: `Session focused on cognitive restructuring techniques to address anxiety. Patient reported progress in identifying automatic negative thoughts. We practiced mindfulness exercises to ground them during moments of panic. Homework assigned: thought record for the upcoming week.`,
             });
         }
