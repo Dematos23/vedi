@@ -58,8 +58,10 @@ export function Combobox({ options, value, onChange, placeholder = "Select optio
                 <CommandItem
                   key={option.value}
                   value={option.label} // Use label for searching
-                  onSelect={() => { // Use value for changing
-                    onChange(option.value === value ? "" : option.value)
+                  onSelect={(currentValue) => { // onSelect provides the "value" prop, which is the label
+                    // Find the corresponding option to get its value (the id)
+                    const selectedValue = options.find(o => o.label.toLowerCase() === currentValue.toLowerCase())?.value || "";
+                    onChange(selectedValue === value ? "" : selectedValue)
                     setOpen(false)
                   }}
                 >
