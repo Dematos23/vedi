@@ -60,6 +60,7 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
     resolver: zodResolver(appointmentSchema),
     defaultValues: {
       date: new Date(),
+      price: '' as any, // Initialize as empty string to keep it controlled
     },
   });
 
@@ -75,7 +76,7 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
         form.setValue("price", Number(service.price));
       }
     } else {
-        form.resetField("price");
+        form.setValue("price", '' as any); // Set to empty string instead of resetting
     }
   }, [selectedServiceId, services, form]);
 
@@ -151,7 +152,7 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select a service" />
-                        </SelectTrigger>
+                        </Trigger>
                       </FormControl>
                       <SelectContent>
                         {activeServices.map((service) => (
