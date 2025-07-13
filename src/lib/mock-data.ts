@@ -1,6 +1,5 @@
 import { Patient, Service, Appointment } from '@prisma/client';
 import { faker } from '@faker-js/faker';
-import { Decimal } from '@prisma/client/runtime/library';
 
 // Use a consistent seed for reproducibility
 faker.seed(123);
@@ -19,19 +18,19 @@ for (let i = 0; i < 10; i++) {
 }
 
 const mockServices: Omit<Service, 'id' | 'createdAt' | 'updatedAt'>[] = [
-    { name: 'Individual Therapy', price: new Decimal(150.00), duration: 50, description: 'One-on-one therapy session with a licensed therapist.', status: 'ACTIVE' },
-    { name: 'Couples Counseling', price: new Decimal(200.00), duration: 60, description: 'Therapy session for couples to improve their relationship.', status: 'ACTIVE' },
-    { name: 'Family Therapy', price: new Decimal(250.00), duration: 90, description: 'Therapy session for families to resolve conflicts.', status: 'ACTIVE' },
-    { name: 'Cognitive Behavioral Therapy (CBT)', price: new Decimal(160.00), duration: 50, description: 'A talk therapy that helps you manage your problems by changing the way you think and behave.', status: 'ACTIVE' },
-    { name: 'Dialectical Behavior Therapy (DBT)', price: new Decimal(170.00), duration: 50, description: 'A therapy designed to help people suffering from mood disorders as well as those who need to change patterns of behavior.', status: 'ACTIVE' },
-    { name: 'Adolescent Counseling', price: new Decimal(140.00), duration: 45, description: 'Specialized counseling for teenagers dealing with various life challenges.', status: 'ACTIVE' },
-    { name: 'Group Therapy', price: new Decimal(80.00), duration: 90, description: 'A therapy session with a group of people who share similar experiences.', status: 'ACTIVE' },
-    { name: 'Mindfulness and Stress Reduction', price: new Decimal(120.00), duration: 60, description: 'Techniques to manage stress and improve mental clarity.', status: 'ACTIVE' },
-    { name: 'Trauma-Informed Therapy', price: new Decimal(180.00), duration: 60, description: 'An approach to therapy that recognizes and emphasizes understanding how the traumatic experience impacts mental, behavioral, emotional, physical, and spiritual well-being.', status: 'ACTIVE' },
-    { name: 'Career Counseling', price: new Decimal(100.00), duration: 50, description: 'Guidance and support for individuals making career decisions.', status: 'ACTIVE' },
-    { name: 'Art Therapy', price: new Decimal(130.00), duration: 75, description: 'Using creative methods of drawing, painting, and sculpting to help people express themselves.', status: 'ACTIVE' },
-    { name: 'Play Therapy', price: new Decimal(135.00), duration: 45, description: 'A method of therapy that uses play to help children express their feelings and experiences.', status: 'ACTIVE' },
-    { name: 'Grief Counseling', price: new Decimal(145.00), duration: 50, description: 'Support for individuals who have experienced the loss of a loved one.', status: 'ACTIVE' }
+    { name: 'Individual Therapy', price: 150.00, duration: 50, description: 'One-on-one therapy session with a licensed therapist.', status: 'ACTIVE' },
+    { name: 'Couples Counseling', price: 200.00, duration: 60, description: 'Therapy session for couples to improve their relationship.', status: 'ACTIVE' },
+    { name: 'Family Therapy', price: 250.00, duration: 90, description: 'Therapy session for families to resolve conflicts.', status: 'ACTIVE' },
+    { name: 'Cognitive Behavioral Therapy (CBT)', price: 160.00, duration: 50, description: 'A talk therapy that helps you manage your problems by changing the way you think and behave.', status: 'ACTIVE' },
+    { name: 'Dialectical Behavior Therapy (DBT)', price: 170.00, duration: 50, description: 'A therapy designed to help people suffering from mood disorders as well as those who need to change patterns of behavior.', status: 'ACTIVE' },
+    { name: 'Adolescent Counseling', price: 140.00, duration: 45, description: 'Specialized counseling for teenagers dealing with various life challenges.', status: 'ACTIVE' },
+    { name: 'Group Therapy', price: 80.00, duration: 90, description: 'A therapy session with a group of people who share similar experiences.', status: 'ACTIVE' },
+    { name: 'Mindfulness and Stress Reduction', price: 120.00, duration: 60, description: 'Techniques to manage stress and improve mental clarity.', status: 'ACTIVE' },
+    { name: 'Trauma-Informed Therapy', price: 180.00, duration: 60, description: 'An approach to therapy that recognizes and emphasizes understanding how the traumatic experience impacts mental, behavioral, emotional, physical, and spiritual well-being.', status: 'ACTIVE' },
+    { name: 'Career Counseling', price: 100.00, duration: 50, description: 'Guidance and support for individuals making career decisions.', status: 'ACTIVE' },
+    { name: 'Art Therapy', price: 130.00, duration: 75, description: 'Using creative methods of drawing, painting, and sculpting to help people express themselves.', status: 'ACTIVE' },
+    { name: 'Play Therapy', price: 135.00, duration: 45, description: 'A method of therapy that uses play to help children express their feelings and experiences.', status: 'ACTIVE' },
+    { name: 'Grief Counseling', price: 145.00, duration: 50, description: 'Support for individuals who have experienced the loss of a loved one.', status: 'ACTIVE' }
 ];
 
 const convertToSafeDate = (date: Date) => {

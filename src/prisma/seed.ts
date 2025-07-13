@@ -1,4 +1,4 @@
-import { PrismaClient, ServiceStatus } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { mockPatients, mockServices, generateMockAppointments } from '../src/lib/mock-data';
 
 const prisma = new PrismaClient();
