@@ -168,10 +168,6 @@ export function ServiceCard({ service }: ServiceCardProps) {
                   <Pencil className="h-5 w-5" />
                   <span className="sr-only">Edit Service</span>
                 </Button>
-                <Button variant="ghost" size="icon" onClick={handleToggleStatus}>
-                   {isInactive ? <Power className="h-5 w-5" /> : <PowerOff className="h-5 w-5" />}
-                   <span className="sr-only">{isInactive ? 'Activate' : 'Deactivate'} Service</span>
-                </Button>
               </div>
             )}
           </CardHeader>
@@ -238,31 +234,37 @@ export function ServiceCard({ service }: ServiceCardProps) {
           </CardContent>
           {isEditing && (
             <CardFooter className="justify-end gap-2">
-                 <AlertDialog open={showDeleteAlert} onOpenChange={setShowDeleteAlert}>
-                    <AlertDialogTrigger asChild>
-                         <Button variant="destructive-outline" size="icon" type="button">
-                            <Trash2 className="h-4 w-4" />
-                            <span className="sr-only">Delete Service</span>
-                         </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                        <AlertDialogHeader>
-                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            This action cannot be undone. This will permanently delete the service.
-                        </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={handleDeleteAttempt}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        >
-                            Delete
-                        </AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
+                <div className="flex-grow flex justify-start gap-2">
+                    <AlertDialog open={showDeleteAlert} onOpenChange={setShowDeleteAlert}>
+                        <AlertDialogTrigger asChild>
+                            <Button variant="destructive-outline" size="icon" type="button">
+                                <Trash2 className="h-4 w-4" />
+                                <span className="sr-only">Delete Service</span>
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                This action cannot be undone. This will permanently delete the service.
+                            </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                                onClick={handleDeleteAttempt}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            >
+                                Delete
+                            </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                    <Button variant="ghost" size="icon" type="button" onClick={handleToggleStatus}>
+                        {isInactive ? <Power className="h-5 w-5" /> : <PowerOff className="h-5 w-5" />}
+                        <span className="sr-only">{isInactive ? 'Activate' : 'Deactivate'} Service</span>
+                    </Button>
+                </div>
               <Button variant="ghost" type="button" onClick={handleCancel} disabled={form.formState.isSubmitting}>
                 Cancel
               </Button>
