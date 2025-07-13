@@ -13,7 +13,7 @@ const serviceSchema = z.object({
   description: z
     .string()
     .min(10, "Description must be at least 10 characters."),
-  price: z.coerce.number().positive("Price must be a positive number."),
+  price: z.coerce.number().positive("Price must be a positive number.").refine(val => (val.toString().split('.')[1] || []).length <= 2, "Price can have at most 2 decimal places."),
   duration: z.coerce.number().int().positive("Duration must be a positive integer."),
 });
 
@@ -96,7 +96,7 @@ const appointmentSchema = z.object({
   patientId: z.string(),
   serviceId: z.string(),
   date: z.date(),
-  price: z.coerce.number().positive("Price must be a positive number."),
+  price: z.coerce.number().positive("Price must be a positive number.").refine(val => (val.toString().split('.')[1] || []).length <= 2, "Price can have at most 2 decimal places."),
   description: z.string().optional(),
 });
 

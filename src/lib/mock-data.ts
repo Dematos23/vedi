@@ -5,7 +5,7 @@ import { faker } from '@faker-js/faker';
 faker.seed(123);
 
 // Generate Patients
-const mockPatients: Omit<Patient, 'id' | 'createdAt' | 'updatedAt'>[] = [];
+const mockPatients: Omit<Patient, 'id' | 'createdAt' | 'updatedAt' | 'notes'>[] = [];
 for (let i = 0; i < 10; i++) {
   mockPatients.push({
     name: faker.person.firstName(),
@@ -13,7 +13,6 @@ for (let i = 0; i < 10; i++) {
     email: faker.internet.email(),
     phone: faker.phone.number(),
     address: faker.location.streetAddress(true),
-    notes: faker.lorem.paragraph(),
   });
 }
 
@@ -34,10 +33,7 @@ const mockServices: Omit<Service, 'id' | 'createdAt' | 'updatedAt'>[] = [
 ];
 
 const convertToSafeDate = (date: Date) => {
-    // To avoid timezone issues during SSR/CSR hydration, we can return the date in a consistent format like ISO string
-    // or just the Date object itself if the database driver and server handle it consistently.
-    // For this mock, we'll just return the date object as is, assuming consistent handling.
-    return date;
+    return new Date(date.toUTCString());
 }
 
 const roundUpToNearest15Minutes = (date: Date): Date => {
@@ -45,15 +41,13 @@ const roundUpToNearest15Minutes = (date: Date): Date => {
   const minutes = newDate.getMinutes();
 
   if (minutes % 15 === 0) {
-    // Already at a 15-minute interval, no change needed
     newDate.setSeconds(0, 0);
     return newDate;
   }
   
   const roundedMinutes = Math.ceil(minutes / 15) * 15;
-  newDate.setMinutes(roundedMinutes, 0, 0); // Set minutes, and reset seconds and milliseconds
+  newDate.setMinutes(roundedMinutes, 0, 0);
 
-  // If rounding up pushes it to the next hour (e.g., from 46 to 60)
   if (roundedMinutes === 60) {
       newDate.setHours(newDate.getHours() + 1);
       newDate.setMinutes(0);

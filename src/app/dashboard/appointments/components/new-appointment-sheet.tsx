@@ -42,7 +42,7 @@ const appointmentSchema = z.object({
   patientId: z.string({ required_error: "Please select a patient." }),
   serviceId: z.string({ required_error: "Please select a service." }),
   date: z.date({ required_error: "Please select a date." }),
-  price: z.coerce.number().positive("Price must be a positive number."),
+  price: z.coerce.number().positive("Price must be a positive number.").refine(val => (val.toString().split('.')[1] || []).length <= 2, "Price can have at most 2 decimal places."),
   description: z.string().optional(),
 });
 
@@ -76,7 +76,7 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
     if (selectedServiceId) {
       const service = services.find(s => s.id === selectedServiceId);
       if (service) {
-        form.setValue("price", Number(service.price));
+        form.setValue("price", service.price);
       }
     } else {
       form.setValue("price", '' as any);
@@ -184,7 +184,8 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
                     <FormControl>
                       <Input
                         type="number"
-                        placeholder="150"
+                        step="0.01"
+                        placeholder="150.00"
                         {...field}
                         disabled={!selectedServiceId}
                       />
