@@ -76,7 +76,7 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
         form.setValue("price", Number(service.price));
       }
     } else {
-      form.setValue("price", '' as any); // Set to empty string instead of resetting
+      form.setValue("price", '' as any);
     }
   }, [selectedServiceId, services, form]);
 
@@ -88,7 +88,13 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
         description: "New appointment has been scheduled.",
       });
       setOpen(false);
-      form.reset();
+      form.reset({
+         date: new Date(),
+         price: '' as any,
+         patientId: undefined,
+         serviceId: undefined,
+         description: '',
+      });
     } catch (error) {
       toast({
         variant: "destructive",
