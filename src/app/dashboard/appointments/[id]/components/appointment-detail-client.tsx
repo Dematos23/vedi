@@ -24,7 +24,6 @@ import type { SerializableAppointmentWithDetails } from "../page";
 // This is now a dedicated client component
 export function AppointmentDetailClient({ appointmentData }: { appointmentData: SerializableAppointmentWithDetails }) {
   const [appointment, setAppointment] = React.useState(appointmentData);
-  const [description, setDescription] = React.useState(appointment.description || "");
   const [isEditing, setIsEditing] = React.useState(false);
   const [isSaving, setIsSaving] = React.useState(false);
   const { toast } = useToast();
@@ -32,7 +31,7 @@ export function AppointmentDetailClient({ appointmentData }: { appointmentData: 
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const updatedAppointment = await updateAppointmentDescription(appointment.id, description);
+      const updatedAppointment = await updateAppointmentDescription(appointment.id, appointment.description || "");
       
       // We need to re-serialize the date from the server action result
       const serializableUpdatedAppointment: SerializableAppointmentWithDetails = {
@@ -56,7 +55,7 @@ export function AppointmentDetailClient({ appointmentData }: { appointmentData: 
     }
   };
   
-  const { patient, service, date } = appointment;
+  const { patient, service, date, description } = appointment;
 
   return (
     <div id="appointment-view" className="grid gap-6">
@@ -128,8 +127,8 @@ export function AppointmentDetailClient({ appointmentData }: { appointmentData: 
            {isEditing ? (
               <div className="grid gap-4">
                 <Textarea 
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                  value={description || ""}
+                  onChange={(e) => setAppointment({...appointment, description: e.target.value})}
                   placeholder="Enter session notes here..."
                   className="min-h-[150px]"
                 />
@@ -145,7 +144,10 @@ export function AppointmentDetailClient({ appointmentData }: { appointmentData: 
         </CardContent>
          {isEditing && (
           <CardFooter className="justify-end gap-2 print:hidden">
-            <Button variant="ghost" onClick={() => setIsEditing(false)} disabled={isSaving}>Cancel</Button>
+            <Button variant="ghost" onClick={() => {
+                setIsEditing(false);
+                setAppointment(appointmentData); // Reset to original data on cancel
+            }} disabled={isSaving}>Cancel</Button>
             <Button onClick={handleSave} disabled={isSaving}>
               <Save className="mr-2 h-4 w-4" />
               {isSaving ? "Saving..." : "Save Notes"}
