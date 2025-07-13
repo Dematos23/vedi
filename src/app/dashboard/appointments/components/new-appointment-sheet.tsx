@@ -60,7 +60,10 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
     resolver: zodResolver(appointmentSchema),
     defaultValues: {
       date: new Date(),
-      price: '' as any,
+      price: '' as any, // Initialize as empty string to be a controlled component
+      description: '',
+      patientId: undefined,
+      serviceId: undefined,
     },
   });
 
