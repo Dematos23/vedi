@@ -106,16 +106,6 @@ function MainSidebar() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        <SidebarMenu>
-          <SidebarMenuItem>
-             <Link href="/login">
-              <SidebarMenuButton>
-                <LogOut />
-                Logout
-              </SidebarMenuButton>
-            </Link>
-          </SidebarMenuItem>
-        </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
   );
