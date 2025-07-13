@@ -41,6 +41,28 @@ const convertToSafeDate = (date: Date) => {
     return date;
 }
 
+const roundUpToNearest15Minutes = (date: Date): Date => {
+  const newDate = new Date(date);
+  const minutes = newDate.getMinutes();
+
+  if (minutes % 15 === 0) {
+    // Already at a 15-minute interval, no change needed
+    newDate.setSeconds(0, 0);
+    return newDate;
+  }
+  
+  const roundedMinutes = Math.ceil(minutes / 15) * 15;
+  newDate.setMinutes(roundedMinutes, 0, 0); // Set minutes, and reset seconds and milliseconds
+
+  // If rounding up pushes it to the next hour (e.g., from 46 to 60)
+  if (roundedMinutes === 60) {
+      newDate.setHours(newDate.getHours() + 1);
+      newDate.setMinutes(0);
+  }
+
+  return newDate;
+};
+
 
 // This function will be called by the seed script.
 // It generates appointments dynamically based on the created patients and services.
@@ -55,9 +77,11 @@ export const generateMockAppointments = (patients: Patient[], services: Service[
         // Create 3 appointments for each patient
         for (let i = 0; i < 3; i++) {
             const randomService = services[Math.floor(Math.random() * services.length)];
-            const date = (i % 2 === 0) 
+            const randomDate = (i % 2 === 0) 
                 ? faker.date.past({ years: 1 }) // A past appointment
                 : faker.date.future({ years: 1 }); // A future appointment
+            
+            const date = roundUpToNearest15Minutes(randomDate);
             
             appointments.push({
                 patientId: patient.id,
