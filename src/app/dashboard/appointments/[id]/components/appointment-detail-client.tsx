@@ -27,6 +27,19 @@ export function AppointmentDetailClient({ appointmentData }: { appointmentData: 
   const [isEditing, setIsEditing] = React.useState(false);
   const [isSaving, setIsSaving] = React.useState(false);
   const { toast } = useToast();
+  
+  // State to hold the client-side formatted date to prevent hydration mismatch
+  const [formattedDate, setFormattedDate] = React.useState("");
+
+  React.useEffect(() => {
+    // This effect runs only on the client, after the component has mounted.
+    // This ensures the date/time is formatted in the user's timezone without
+    // mismatching the server-rendered HTML.
+    if (appointment.date) {
+      setFormattedDate(format(new Date(appointment.date), "PPP 'at' p"));
+    }
+  }, [appointment.date]);
+
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -55,7 +68,7 @@ export function AppointmentDetailClient({ appointmentData }: { appointmentData: 
     }
   };
   
-  const { patient, service, date, description } = appointment;
+  const { patient, service, description } = appointment;
 
   return (
     <div id="appointment-view" className="grid gap-6">
@@ -75,7 +88,8 @@ export function AppointmentDetailClient({ appointmentData }: { appointmentData: 
         <CardHeader>
           <CardTitle>{service.name}</CardTitle>
           <CardDescription>
-            Scheduled on {format(new Date(date), "PPP 'at' p")}
+            {/* Render a placeholder or loading state on initial render */}
+            {formattedDate ? `Scheduled on ${formattedDate}` : "Loading date..."}
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-6">

@@ -1,3 +1,4 @@
+
 import { Patient, Service, Appointment } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 
@@ -33,20 +34,23 @@ const mockServices: Omit<Service, 'id' | 'createdAt' | 'updatedAt'>[] = [
 ];
 
 const convertToSafeDate = (date: Date) => {
-    return new Date(date.toUTCString());
+    // This function is less critical now, but ensures we're working with a clean Date object.
+    return new Date(date.toISOString());
 }
 
 const roundUpToNearest15Minutes = (date: Date): Date => {
   const newDate = new Date(date);
   const minutes = newDate.getMinutes();
+  
+  // Set seconds and milliseconds to 0 to avoid minor inconsistencies
+  newDate.setSeconds(0, 0);
 
   if (minutes % 15 === 0) {
-    newDate.setSeconds(0, 0);
     return newDate;
   }
   
   const roundedMinutes = Math.ceil(minutes / 15) * 15;
-  newDate.setMinutes(roundedMinutes, 0, 0);
+  newDate.setMinutes(roundedMinutes);
 
   if (roundedMinutes === 60) {
       newDate.setHours(newDate.getHours() + 1);
