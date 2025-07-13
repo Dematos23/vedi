@@ -17,19 +17,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Eye } from "lucide-react";
 import { NewAppointmentSheet } from "./components/new-appointment-sheet";
-import { Search } from "../patients/components/search";
-import { MultiSelect } from "@/components/ui/multi-select";
 import { Filters } from "./components/filters";
 import type { Prisma } from "@prisma/client";
 
@@ -38,12 +29,11 @@ export default async function AppointmentsPage({
 }: {
   searchParams: {
     query?: string;
-    services?: string;
+    service?: string;
     orderBy?: "asc" | "desc";
   };
 }) {
-  const { query = "", services: servicesParam, orderBy = "desc" } = searchParams;
-  const serviceIds = servicesParam ? servicesParam.split(',') : [];
+  const { query = "", service: serviceId, orderBy = "desc" } = searchParams;
 
   const where: Prisma.AppointmentWhereInput = {
     ...(query && {
@@ -53,10 +43,8 @@ export default async function AppointmentsPage({
         { service: { name: { contains: query, mode: "insensitive" } } },
       ],
     }),
-    ...(serviceIds.length > 0 && {
-      serviceId: {
-        in: serviceIds,
-      },
+    ...(serviceId && {
+      serviceId: serviceId,
     }),
   };
 

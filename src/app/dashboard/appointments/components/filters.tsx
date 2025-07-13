@@ -8,7 +8,7 @@ import type { Service } from "@prisma/client";
 import { Search as SearchIcon, ListFilter } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
-import { MultiSelect } from "@/components/ui/multi-select";
+import { Combobox } from "@/components/ui/combobox";
 import {
   Select,
   SelectContent,
@@ -34,9 +34,6 @@ export function Filters({ allServices }: FiltersProps) {
   const { replace } = useRouter();
 
   const serviceOptions = allServices.map(s => ({ value: s.id, label: s.name }));
-  const initialServices = searchParams.get('services')?.split(',') || [];
-  
-  const [selectedServices, setSelectedServices] = React.useState<string[]>(initialServices);
   const [open, setOpen] = React.useState(false);
 
 
@@ -60,16 +57,15 @@ export function Filters({ allServices }: FiltersProps) {
      replace(`${pathname}?${params.toString()}`);
   };
 
-  React.useEffect(() => {
+  const handleServiceChange = (value: string) => {
     const params = new URLSearchParams(searchParams);
-    if (selectedServices.length > 0) {
-      params.set("services", selectedServices.join(','));
+    if (value) {
+      params.set("service", value);
     } else {
-      params.delete("services");
+      params.delete("service");
     }
     replace(`${pathname}?${params.toString()}`);
-  }, [selectedServices, pathname, replace, searchParams]);
-  
+  };
 
   return (
     <div className="flex flex-col md:flex-row items-center gap-4 pt-4">
@@ -86,12 +82,12 @@ export function Filters({ allServices }: FiltersProps) {
 
        {/* Desktop Filters */}
       <div className="hidden md:flex items-center gap-4">
-          <MultiSelect
+          <Combobox
               options={serviceOptions}
-              selected={selectedServices}
-              onChange={setSelectedServices}
-              className="min-w-[200px]"
+              value={searchParams.get("service") || ""}
+              onChange={handleServiceChange}
               placeholder="Filter by service..."
+              className="min-w-[200px]"
           />
           <Select 
             defaultValue={searchParams.get("orderBy") || "desc"}
@@ -119,11 +115,14 @@ export function Filters({ allServices }: FiltersProps) {
             <PopoverContent className="w-[--radix-popover-trigger-width] space-y-4">
                 <div>
                   <Label>Filter by Service</Label>
-                   <MultiSelect
+                   <Combobox
                       options={serviceOptions}
-                      selected={selectedServices}
-                      onChange={setSelectedServices}
-                      placeholder="Select services..."
+                      value={searchParams.get("service") || ""}
+                      onChange={(value) => {
+                        handleServiceChange(value);
+                        setOpen(false);
+                      }}
+                      placeholder="Select a service..."
                   />
                 </div>
                  <div>
