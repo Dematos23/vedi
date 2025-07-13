@@ -187,7 +187,7 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
                         step="0.01"
                         placeholder="150.00"
                         {...field}
-                        value={field.value === undefined ? '' : field.value}
+                        value={field.value === undefined || isNaN(field.value) ? '' : field.value}
                         onChange={e => field.onChange(e.target.valueAsNumber)}
                         disabled={!selectedServiceId}
                       />
