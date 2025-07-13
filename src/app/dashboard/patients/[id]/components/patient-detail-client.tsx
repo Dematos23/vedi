@@ -28,6 +28,7 @@ import { Button } from "@/components/ui/button";
 import { summarizeSessionNotes } from "@/ai/flows/summarize-session-notes";
 import { useToast } from "@/hooks/use-toast";
 import { ExportPdfButton } from "./export-pdf-button";
+import { formatCurrency } from "@/lib/utils";
 
 // All the interactive logic is in this client component
 export function PatientDetailClient({ patient }: { patient: PatientWithAppointments }) {
@@ -108,7 +109,7 @@ export function PatientDetailClient({ patient }: { patient: PatientWithAppointme
                           <Badge variant="outline" className="border-none rounded-none px-0">{appt.service.name}</Badge>
                         </TableCell>
                         <TableCell>{format(appt.date, "PPP")}</TableCell>
-                        <TableCell>{appt.service.price}</TableCell>
+                        <TableCell>{formatCurrency(Number(appt.price))}</TableCell>
                         <TableCell className="text-right print:hidden">
                             <Button asChild variant="outline" size="sm">
                                 <Link href={`/dashboard/appointments/${appt.id}`}>

@@ -1,6 +1,9 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -17,38 +20,38 @@ model Patient {
   email        String        @unique
   phone        String?
   address      String?
-  notes        String?
+  notes        String?       @db.Text
+  appointments Appointment[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
-  appointments Appointment[]
 }
 
 model Service {
   id           String        @id @default(cuid())
   name         String
   description  String
-  price        Float
-  duration     Int
-  status       ServiceStatus @default(ACTIVE)
+  price        Decimal @db.Decimal(10, 2)
+  duration     Int // in minutes
+  appointments Appointment[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
-  appointments Appointment[]
-}
-
-model Appointment {
-  id          String   @id @default(cuid())
-  patientId   String
-  serviceId   String
-  date        DateTime
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  patient Patient @relation(fields: [patientId], references: [id])
-  service Service @relation(fields: [serviceId], references: [id])
+  status       ServiceStatus @default(ACTIVE)
 }
 
 enum ServiceStatus {
   ACTIVE
   INACTIVE
+}
+
+model Appointment {
+  id          String   @id @default(cuid())
+  date        DateTime
+  description String?  @db.Text
+  price       Decimal @db.Decimal(10, 2)
+  patient     Patient  @relation(fields: [patientId], references: [id])
+  patientId   String
+  service     Service  @relation(fields: [serviceId], references: [id])
+  serviceId   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

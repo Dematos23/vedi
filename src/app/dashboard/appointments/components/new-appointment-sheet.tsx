@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { PlusCircle } from "lucide-react";
@@ -30,7 +30,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { DatePicker } from "@/components/date-picker";
@@ -42,6 +42,7 @@ const appointmentSchema = z.object({
   patientId: z.string({ required_error: "Please select a patient." }),
   serviceId: z.string({ required_error: "Please select a service." }),
   date: z.date({ required_error: "Please select a date." }),
+  price: z.coerce.number().positive("Price must be a positive number."),
   description: z.string().optional(),
 });
 
@@ -61,6 +62,22 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
       date: new Date(),
     },
   });
+
+  const selectedServiceId = useWatch({
+    control: form.control,
+    name: "serviceId",
+  });
+
+  React.useEffect(() => {
+    if (selectedServiceId) {
+      const service = services.find(s => s.id === selectedServiceId);
+      if (service) {
+        form.setValue("price", Number(service.price));
+      }
+    } else {
+        form.resetField("price");
+    }
+  }, [selectedServiceId, services, form]);
 
   const onSubmit = async (data: AppointmentFormValues) => {
     try {
@@ -123,30 +140,50 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="serviceId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Service</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="serviceId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Service</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a service" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {activeServices.map((service) => (
+                          <SelectItem key={service.id} value={service.id}>
+                            {service.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+               <FormField
+                control={form.control}
+                name="price"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Price ($)</FormLabel>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a service" />
-                      </SelectTrigger>
+                      <Input 
+                        type="number" 
+                        placeholder="150" 
+                        {...field} 
+                        disabled={!selectedServiceId}
+                      />
                     </FormControl>
-                    <SelectContent>
-                      {activeServices.map((service) => (
-                        <SelectItem key={service.id} value={service.id}>
-                          {service.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
              <FormField
               control={form.control}
               name="date"

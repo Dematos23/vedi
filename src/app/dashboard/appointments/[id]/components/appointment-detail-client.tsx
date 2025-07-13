@@ -94,7 +94,7 @@ export function AppointmentDetailClient({ appointmentData }: { appointmentData: 
                 <h3 className="font-semibold text-lg">Service Details</h3>
                 <div className="flex items-center gap-4">
                     <DollarSign className="h-5 w-5 text-muted-foreground" />
-                    <span className="font-medium">{formatCurrency(service.price)}</span>
+                    <span className="font-medium">{formatCurrency(Number(appointment.price))}</span>
                 </div>
                  <div className="flex items-center gap-4">
                     <Clock className="h-5 w-5 text-muted-foreground" />

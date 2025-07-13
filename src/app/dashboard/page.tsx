@@ -37,12 +37,9 @@ export default async function DashboardPage() {
         lte: endOfCurrentMonth,
       },
     },
-    include: {
-        service: true
-    }
   });
 
-  const currentMonthSales = currentMonthAppointments.reduce((total, appt) => total + appt.service.price, 0);
+  const currentMonthSales = currentMonthAppointments.reduce((total, appt) => total + Number(appt.price), 0);
 
 
   return (

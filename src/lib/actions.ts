@@ -30,7 +30,7 @@ export async function createService(data: z.infer<typeof serviceSchema>) {
       description: validatedFields.data.description,
       price: validatedFields.data.price,
       duration: validatedFields.data.duration,
-      // status defaults to ACTIVE
+      status: 'ACTIVE',
     },
   });
 
@@ -96,6 +96,7 @@ const appointmentSchema = z.object({
   patientId: z.string(),
   serviceId: z.string(),
   date: z.date(),
+  price: z.coerce.number().positive("Price must be a positive number."),
   description: z.string().optional(),
 });
 
@@ -211,7 +212,7 @@ export async function getChartData(input: z.infer<typeof chartDataSchema>) {
     const dateTrunc = `DATE_TRUNC('${timeUnit}', "date")`;
     
     const aggregationField = aggregateBy === 'sum' 
-      ? `SUM(s.price)` // Sum of service price
+      ? `SUM(a.price)` // Sum of appointment price
       : `COUNT(a.id)`; // Count of appointments
     
     const rawQuery = `
@@ -219,7 +220,6 @@ export async function getChartData(input: z.infer<typeof chartDataSchema>) {
         ${dateTrunc} AS "date",
         ${aggregationField} AS "total"
       FROM "Appointment" AS a
-      ${aggregateBy === 'sum' ? 'JOIN "Service" AS s ON a."serviceId" = s.id' : ''}
       WHERE a.date >= $1 AND a.date <= $2
       ${serviceIds && serviceIds.length > 0 ? `AND a."serviceId" IN (${serviceIds.map(id => `'${id}'`).join(',')})` : ''}
       GROUP BY 1
