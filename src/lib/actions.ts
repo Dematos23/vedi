@@ -117,9 +117,12 @@ export async function createAppointment(
       throw new Error("Cannot book an appointment for an inactive service.");
   }
 
+  const { description, ...restOfData } = validatedFields.data;
+
   await prisma.appointment.create({
     data: {
-      ...validatedFields.data,
+      ...restOfData,
+      description: description || '',
     },
   });
 
