@@ -88,7 +88,11 @@ export default async function AppointmentsPage({
   const allPatients = await prisma.patient.findMany();
   const allServices = await prisma.service.findMany();
 
-  const currentParams = new URLSearchParams(searchParams as any);
+  const currentParams = new URLSearchParams();
+  if (query) currentParams.set('query', query);
+  if (serviceId) currentParams.set('service', serviceId);
+  if (dateRange) currentParams.set('dateRange', dateRange);
+
   const newSortOrder = sort === 'asc' ? 'desc' : 'asc';
   currentParams.set('sort', newSortOrder);
   const sortLink = `/dashboard/appointments?${currentParams.toString()}`;
