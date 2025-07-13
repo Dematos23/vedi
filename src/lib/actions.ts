@@ -34,7 +34,7 @@ export async function createService(data: z.infer<typeof serviceSchema>) {
     },
   });
 
-  revalidatePath("/dashboard/services");
+  revalidatePath("/services");
 }
 
 export async function updateService(data: z.infer<typeof serviceSchema>) {
@@ -51,7 +51,7 @@ export async function updateService(data: z.infer<typeof serviceSchema>) {
         data: serviceData,
     });
 
-    revalidatePath("/dashboard/services");
+    revalidatePath("/services");
 }
 
 export async function deleteService(serviceId: string) {
@@ -71,8 +71,8 @@ export async function deleteService(serviceId: string) {
         where: { id: serviceId },
     });
 
-    revalidatePath("/dashboard/services");
-    revalidatePath("/dashboard/appointments");
+    revalidatePath("/services");
+    revalidatePath("/appointments");
 }
 
 
@@ -86,8 +86,8 @@ export async function toggleServiceStatus(serviceId: string, status: ServiceStat
         data: { status },
     });
 
-    revalidatePath("/dashboard/services");
-    revalidatePath("/dashboard/appointments");
+    revalidatePath("/services");
+    revalidatePath("/appointments");
 }
 
 
@@ -126,7 +126,7 @@ export async function createAppointment(
     },
   });
 
-  revalidatePath("/dashboard/appointments");
+  revalidatePath("/appointments");
 }
 
 export async function updateAppointmentDescription(appointmentId: string, description: string) {
@@ -143,8 +143,8 @@ export async function updateAppointmentDescription(appointmentId: string, descri
         }
     });
 
-    revalidatePath(`/dashboard/appointments`);
-    revalidatePath(`/dashboard/appointments/${appointmentId}`);
+    revalidatePath(`/appointments`);
+    revalidatePath(`/appointments/${appointmentId}`);
     
     return updatedAppointment;
 }
@@ -170,7 +170,7 @@ export async function createPatient(data: z.infer<typeof patientSchema>) {
         data: validatedFields.data,
     });
 
-    revalidatePath("/dashboard/patients");
+    revalidatePath("/patients");
 }
 
 
@@ -184,7 +184,7 @@ export async function updatePatientNotes(patientId: string, notes: string) {
         data: { notes },
     });
 
-    revalidatePath(`/dashboard/patients/${patientId}`);
+    revalidatePath(`/patients/${patientId}`);
 }
 
 // Chart Actions

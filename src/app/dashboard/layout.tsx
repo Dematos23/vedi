@@ -6,7 +6,6 @@ import {
   BriefcaseMedical,
   CalendarDays,
   LayoutDashboard,
-  LogOut,
   UsersRound,
 } from "lucide-react";
 import {
@@ -37,9 +36,9 @@ import { usePathname } from "next/navigation";
 
 const navItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { href: "/dashboard/patients", icon: UsersRound, label: "Patients" },
-  { href: "/dashboard/services", icon: BriefcaseMedical, label: "Services" },
-  { href: "/dashboard/appointments", icon: CalendarDays, label: "Appointments" },
+  { href: "/patients", icon: UsersRound, label: "Patients" },
+  { href: "/services", icon: BriefcaseMedical, label: "Services" },
+  { href: "/appointments", icon: CalendarDays, label: "Appointments" },
 ];
 
 function MainSidebar() {
