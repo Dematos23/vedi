@@ -227,8 +227,14 @@ export async function getChartData(input: z.infer<typeof chartDataSchema>) {
     `;
 
     try {
-        const result = await prisma.$queryRawUnsafe(rawQuery, startDate, endDate);
-        return result as { date: Date, total: number | bigint }[];
+        const result: { date: Date, total: number | bigint | object }[] = await prisma.$queryRawUnsafe(rawQuery, startDate, endDate);
+        
+        // Convert Decimal to Number for client-side compatibility
+        return result.map(item => ({
+            ...item,
+            total: Number(item.total)
+        }));
+
     } catch (error) {
         console.error("Failed to fetch chart data:", error);
         throw new Error("Could not fetch chart data.");
