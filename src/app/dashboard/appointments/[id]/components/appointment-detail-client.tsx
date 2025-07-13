@@ -19,10 +19,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { updateAppointmentDescription } from "@/lib/actions";
 import { ExportAppointmentPdfButton } from "./export-appointment-pdf";
-import type { AppointmentWithDetails } from "../page";
+import type { SerializableAppointmentWithDetails } from "../page";
 
 // This is now a dedicated client component
-export function AppointmentDetailClient({ appointmentData }: { appointmentData: AppointmentWithDetails }) {
+export function AppointmentDetailClient({ appointmentData }: { appointmentData: SerializableAppointmentWithDetails }) {
   const [appointment, setAppointment] = React.useState(appointmentData);
   const [description, setDescription] = React.useState(appointment.description || "");
   const [isEditing, setIsEditing] = React.useState(false);
@@ -33,7 +33,13 @@ export function AppointmentDetailClient({ appointmentData }: { appointmentData: 
     setIsSaving(true);
     try {
       const updatedAppointment = await updateAppointmentDescription(appointment.id, description);
-      setAppointment(updatedAppointment as AppointmentWithDetails);
+      
+      // We need to re-serialize the date from the server action result
+      const serializableUpdatedAppointment: SerializableAppointmentWithDetails = {
+          ...updatedAppointment,
+          date: updatedAppointment.date.toISOString(),
+      };
+      setAppointment(serializableUpdatedAppointment);
       toast({
         title: "Success",
         description: "Appointment notes have been updated.",

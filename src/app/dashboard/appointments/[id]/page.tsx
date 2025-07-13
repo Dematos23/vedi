@@ -10,6 +10,12 @@ export type AppointmentWithDetails = Appointment & {
   service: Service;
 };
 
+// This is a serializable version of the above type for client components
+export type SerializableAppointmentWithDetails = Omit<AppointmentWithDetails, 'date'> & {
+  date: string;
+};
+
+
 // This wrapper is now the default export and a true Server Component.
 export default async function AppointmentDetailPageWrapper({ params }: { params: { id:string } }) {
   const appointment = await prisma.appointment.findUnique({
@@ -23,7 +29,13 @@ export default async function AppointmentDetailPageWrapper({ params }: { params:
   if (!appointment) {
     notFound();
   }
+  
+  // Serialize the date to an ISO string before passing to the client component
+  const serializableAppointment: SerializableAppointmentWithDetails = {
+    ...appointment,
+    date: appointment.date.toISOString(),
+  };
 
   // It fetches the data and passes it to the client component.
-  return <AppointmentDetailClient appointmentData={appointment} />;
+  return <AppointmentDetailClient appointmentData={serializableAppointment} />;
 }
