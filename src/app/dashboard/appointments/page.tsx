@@ -19,10 +19,11 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Eye } from "lucide-react";
+import { Eye, ArrowUpDown } from "lucide-react";
 import { NewAppointmentSheet } from "./components/new-appointment-sheet";
 import { Filters } from "./components/filters";
 import type { Prisma } from "@prisma/client";
+import { cn } from "@/lib/utils";
 
 const getDateRange = (rangeKey: string) => {
     const now = new Date();
@@ -50,9 +51,10 @@ export default async function AppointmentsPage({
     query?: string;
     service?: string;
     dateRange?: string;
+    sort?: string;
   };
 }) {
-  const { query = "", service: serviceId, dateRange } = searchParams;
+  const { query = "", service: serviceId, dateRange, sort = "desc" } = searchParams;
   
   const dateFilter = dateRange ? getDateRange(dateRange) : {};
 
@@ -79,12 +81,17 @@ export default async function AppointmentsPage({
       service: true,
     },
     orderBy: {
-      date: 'desc',
+      date: sort === 'asc' ? 'asc' : 'desc',
     },
   });
 
   const allPatients = await prisma.patient.findMany();
   const allServices = await prisma.service.findMany();
+
+  const currentParams = new URLSearchParams(searchParams as any);
+  const newSortOrder = sort === 'asc' ? 'desc' : 'asc';
+  currentParams.set('sort', newSortOrder);
+  const sortLink = `/dashboard/appointments?${currentParams.toString()}`;
 
   return (
     <Card>
@@ -106,7 +113,12 @@ export default async function AppointmentsPage({
             <TableRow>
               <TableHead>Patient</TableHead>
               <TableHead>Service</TableHead>
-              <TableHead className="hidden md:table-cell">Date</TableHead>
+              <TableHead className="hidden md:table-cell">
+                <Link href={sortLink} className="flex items-center gap-2 hover:underline">
+                  Date
+                  <ArrowUpDown className="h-4 w-4" />
+                </Link>
+              </TableHead>
               <TableHead className="hidden md:table-cell">Time</TableHead>
               <TableHead>
                 <span className="sr-only">Actions</span>
