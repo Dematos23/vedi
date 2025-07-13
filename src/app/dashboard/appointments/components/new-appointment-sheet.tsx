@@ -60,7 +60,7 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
     resolver: zodResolver(appointmentSchema),
     defaultValues: {
       date: new Date(),
-      price: '' as any, // Initialize as empty string to keep it controlled
+      price: '' as any,
     },
   });
 
@@ -93,7 +93,7 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
          price: '' as any,
          patientId: undefined,
          serviceId: undefined,
-         description: '',
+         description: ''
       });
     } catch (error) {
       toast({
@@ -179,10 +179,10 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
                   <FormItem>
                     <FormLabel>Price ($)</FormLabel>
                     <FormControl>
-                      <Input 
-                        type="number" 
-                        placeholder="150" 
-                        {...field} 
+                      <Input
+                        type="number"
+                        placeholder="150"
+                        {...field}
                         disabled={!selectedServiceId}
                       />
                     </FormControl>
