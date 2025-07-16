@@ -1,3 +1,4 @@
+
 import {
   Card,
   CardContent,
@@ -24,7 +25,13 @@ export default async function DashboardPage() {
     },
   });
   
-  const services = await prisma.service.findMany();
+  const servicesData = await prisma.service.findMany();
+  // Convert Decimal to number for client component consumption
+  const services = servicesData.map(service => ({
+    ...service,
+    price: Number(service.price),
+  }));
+
 
   const now = new Date();
   const startOfCurrentMonth = startOfMonth(now);
