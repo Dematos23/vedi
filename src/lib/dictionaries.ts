@@ -181,9 +181,13 @@ export const dictionaries = {
         sessionNotesDescription: "Ver o editar las notas de la sesión a continuación.",
         editNotes: "Editar Notas",
         saveNotes: "Guardar Notas",
-        savingNotes: "Guardando...",
+        saving: "Guardando...",
         cancel: "Cancelar",
-        noNotes: "Aún no se han añadido notas para esta sesión."
+        noNotes: "Aún no se han añadido notas para esta sesión.",
+        // Agenda View
+        agendaView: "Vista de Agenda",
+        agendaViewDescription: "Visualiza el horario diario de un terapeuta.",
+        selectTherapist: "Seleccionar un terapeuta"
     },
     therapists: {
         title: "Terapeutas",
@@ -454,7 +458,11 @@ export const dictionaries = {
         saveNotes: "Save Notes",
         savingNotes: "Saving...",
         cancel: "Cancel",
-        noNotes: "No notes have been added for this session yet."
+        noNotes: "No notes have been added for this session yet.",
+        // Agenda View
+        agendaView: "Agenda View",
+        agendaViewDescription: "View a therapist's daily schedule.",
+        selectTherapist: "Select a therapist"
     },
     therapists: {
         title: "Therapists",
@@ -494,36 +502,36 @@ export const dictionaries = {
       noTechniquesFound: "No techniques found.",
       techniqueName: "Technique Name",
       descriptionLabel: "Description",
-      therapists: "Therapists",
-      actions: "Actions",
-      view: "View",
+      therapists: "Terapeutas",
+      actions: "Acciones",
+      view: "Ver",
       // Technique Card
-      edit: "Edit",
-      delete: "Delete",
-      save: "Save",
-      saving: "Saving...",
-      cancel: "Cancel",
-      areYouSure: "Are you sure?",
-      deleteWarning: "This action cannot be undone. This will permanently delete the technique.",
-      cannotDelete: "Cannot Delete Technique",
-      deactivationWarning: "This technique is associated with services or therapists and cannot be deleted.",
+      edit: "Editar",
+      delete: "Eliminar",
+      save: "Guardar",
+      saving: "Guardando...",
+      cancel: "Cancelar",
+      areYouSure: "¿Estás seguro?",
+      deleteWarning: "Esta acción no se puede deshacer. Esto eliminará permanentemente la técnica.",
+      cannotDelete: "No se puede eliminar la técnica",
+      deactivationWarning: "Esta técnica está asociada con servicios o terapeutas y no puede ser eliminada.",
       // New Technique Sheet
-      registerNewTechnique: "Register New Technique",
-      addNewTechnique: "Add a new therapeutic technique to the registry.",
-      techniqueNameExample: "e.g., Cognitive Restructuring",
-      descriptionPlaceholder: "Describe the technique...",
-      registering: "Registering...",
-      registerTechnique: "Register Technique",
+      registerNewTechnique: "Registrar Nueva Técnica",
+      addNewTechnique: "Añade una nueva técnica terapéutica al registro.",
+      techniqueNameExample: "p. ej., Terapia Cognitiva",
+      descriptionPlaceholder: "Describe la técnica...",
+      registering: "Registrando...",
+      registerTechnique: "Registrar Técnica",
       // Detail Page
-      backToTechniques: "Back to Techniques",
-      techniqueDetails: "Technique Details",
-      servicesUsingTechnique: "Services Using This Technique",
-      noServicesFound: "No services found using this technique.",
-      therapistsAssigned: "Therapists Assigned to This Technique",
-      noTherapistsFound: "No therapists found assigned to this technique.",
-      therapist: "Therapist",
-      status: "Status",
-      performance: "Performance"
+      backToTechniques: "Volver a Técnicas",
+      techniqueDetails: "Detalles de la Técnica",
+      servicesUsingTechnique: "Servicios que Utilizan esta Técnica",
+      noServicesFound: "No se han encontrado servicios que utilicen esta técnica.",
+      therapistsAssigned: "Terapeutas Asignados a esta Técnica",
+      noTherapistsFound: "No se han encontrado terapeutas asignados a esta técnica.",
+      therapist: "Terapeuta",
+      status: "Estado",
+      performance: "Desempeño"
     },
     enums: {
       appointmentStatus: {
@@ -547,3 +555,5 @@ export const dictionaries = {
 };
 
 export type Dictionary = typeof dictionaries.es;
+
+    
