@@ -22,7 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Eye, ArrowUpDown } from "lucide-react";
 import { NewAppointmentSheet } from "./components/new-appointment-sheet";
 import { Filters } from "./components/filters";
-import type { Prisma } from "@prisma/client";
+import type { Prisma, AppointmentStatus } from "@prisma/client";
 import { cn, getFullName } from "@/lib/utils";
 
 const getDateRange = (rangeKey: string) => {
@@ -52,9 +52,10 @@ export default async function AppointmentsPage({
     service?: string;
     dateRange?: string;
     sort?: string;
+    status?: string;
   };
 }) {
-  const { query = "", service: serviceId, dateRange, sort = "desc" } = searchParams;
+  const { query = "", service: serviceId, dateRange, sort = "desc", status = "PROGRAMMED" } = searchParams;
   
   const dateFilter = dateRange ? getDateRange(dateRange) : {};
 
@@ -71,8 +72,12 @@ export default async function AppointmentsPage({
     }),
     ...(dateRange && {
         date: dateFilter,
-    })
+    }),
   };
+
+  if (status && status !== 'ALL') {
+    where.status = status as AppointmentStatus;
+  }
 
   const appointments = await prisma.appointment.findMany({
     where,
@@ -92,6 +97,7 @@ export default async function AppointmentsPage({
   if (query) currentParams.set('query', query);
   if (serviceId) currentParams.set('service', serviceId);
   if (dateRange) currentParams.set('dateRange', dateRange);
+  if (status) currentParams.set('status', status);
 
   const newSortOrder = sort === 'asc' ? 'desc' : 'asc';
   currentParams.set('sort', newSortOrder);

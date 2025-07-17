@@ -4,7 +4,7 @@
 import * as React from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useDebouncedCallback } from "use-debounce";
-import type { Service } from "@prisma/client";
+import type { Service, AppointmentStatus } from "@prisma/client";
 import { Search as SearchIcon, ListFilter } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
@@ -67,6 +67,16 @@ export function Filters({ allServices }: FiltersProps) {
     replace(`${pathname}?${params.toString()}`);
   };
 
+  const handleStatusChange = (value: string) => {
+    const params = new URLSearchParams(searchParams);
+    if (value && value !== 'ALL') {
+      params.set("status", value);
+    } else {
+      params.delete("status");
+    }
+    replace(`${pathname}?${params.toString()}`);
+  }
+
   return (
     <div className="flex flex-col md:flex-row items-center gap-4 pt-4">
       <div className="relative w-full md:flex-1">
@@ -82,6 +92,19 @@ export function Filters({ allServices }: FiltersProps) {
 
        {/* Desktop Filters */}
       <div className="hidden md:flex items-center gap-4">
+          <Select
+            defaultValue={searchParams.get("status") || "PROGRAMMED"}
+            onValueChange={handleStatusChange}
+          >
+              <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Filter by status" />
+              </SelectTrigger>
+              <SelectContent>
+                  <SelectItem value="ALL">All Statuses</SelectItem>
+                  <SelectItem value="PROGRAMMED">Programmed</SelectItem>
+                  <SelectItem value="DONE">Done</SelectItem>
+              </SelectContent>
+          </Select>
           <Combobox
               options={serviceOptions}
               value={searchParams.get("service") || ""}
@@ -117,6 +140,22 @@ export function Filters({ allServices }: FiltersProps) {
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="w-[--radix-popover-trigger-width] space-y-4">
+                 <div>
+                    <Label>Filter by Status</Label>
+                    <Select
+                      defaultValue={searchParams.get("status") || "PROGRAMMED"}
+                      onValueChange={handleStatusChange}
+                    >
+                        <SelectTrigger>
+                            <SelectValue placeholder="Filter by status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="ALL">All Statuses</SelectItem>
+                            <SelectItem value="PROGRAMMED">Programmed</SelectItem>
+                            <SelectItem value="DONE">Done</SelectItem>
+                        </SelectContent>
+                    </Select>
+                 </div>
                 <div>
                   <Label>Filter by Service</Label>
                    <Combobox
