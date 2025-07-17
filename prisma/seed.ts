@@ -1,5 +1,5 @@
 
-import { PrismaClient, UserTechniqueStatus } from '@prisma/client';
+import { PrismaClient, UserTechniqueStatusType } from '@prisma/client';
 import { mockUsers, generateMockPatients, mockServices, mockTechniques, generateMockSalesAndBalances, generateMockAppointments } from '../src/lib/mock-data';
 import { faker } from '@faker-js/faker';
 
