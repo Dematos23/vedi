@@ -144,7 +144,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col h-full">
           <CardHeader className="flex-row items-start justify-between">
-            <div className="grid gap-2">
+            <div className={cn("grid gap-2", isEditing && "w-full")}>
               {isEditing ? (
                 <FormField
                   control={form.control}
