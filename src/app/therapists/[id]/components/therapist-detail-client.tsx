@@ -119,11 +119,8 @@ export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
                       <Progress value={tech._count.userTechniqueUsageLogs} max={100} />
                       <span className="text-sm font-mono text-muted-foreground text-center">{tech._count.userTechniqueUsageLogs} uses</span>
                       <Badge 
-                        variant="secondary" 
-                        className={cn("justify-center text-white", {
-                          "bg-sky-500 hover:bg-sky-500/80": tech.status === 'PRACTITIONER',
-                          "bg-green-600 hover:bg-green-600/80": tech.status === 'THERAPIST',
-                        })}
+                        variant={tech.status === 'PRACTITIONER' ? 'secondary' : 'default'}
+                        className="justify-center"
                       >
                         {tech.status}
                       </Badge>
