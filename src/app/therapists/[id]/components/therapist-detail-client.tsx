@@ -25,7 +25,6 @@ import Link from "next/link";
 import { formatCurrency, getFullName, cn } from "@/lib/utils";
 import type { getTherapistPerformance } from "@/lib/actions";
 import { Progress } from "@/components/ui/progress";
-import { UserTechniqueStatusType } from "@prisma/client";
 
 type Unpacked<T> = T extends (infer U)[] ? U : T;
 type PerformanceData = Awaited<ReturnType<typeof getTherapistPerformance>>;
@@ -122,8 +121,8 @@ export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
                       <Badge 
                         variant="secondary" 
                         className={cn("justify-center text-white", {
-                          "bg-sky-500 hover:bg-sky-500/80": tech.status === UserTechniqueStatusType.PRACTITIONER,
-                          "bg-green-600 hover:bg-green-600/80": tech.status === UserTechniqueStatusType.THERAPIST,
+                          "bg-sky-500 hover:bg-sky-500/80": tech.status === 'PRACTITIONER',
+                          "bg-green-600 hover:bg-green-600/80": tech.status === 'THERAPIST',
                         })}
                       >
                         {tech.status}
