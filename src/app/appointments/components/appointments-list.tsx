@@ -103,7 +103,7 @@ export function AppointmentsList({ appointments, allPatients, allServices, searc
                   {appt.service && <Badge variant="outline">{appt.service.name}</Badge>}
                 </TableCell>
                 <TableCell className="hidden md:table-cell">
-                  {format(new Date(appt.date), "PPP")}
+                  {isClient ? format(new Date(appt.date), "PPP") : ""}
                 </TableCell>
                 <TableCell className="hidden md:table-cell">
                   {isClient ? format(new Date(appt.date), "p") : ""}
