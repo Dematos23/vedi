@@ -30,8 +30,10 @@ import { createPatient } from "@/lib/actions";
 
 const patientSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
+  secondname: z.string().optional(),
   lastname: z.string().min(2, "Last name must be at least 2 characters."),
-  email: z.string().email("Please enter a valid email address."),
+  secondlastname: z.string().optional(),
+  email: z.string().email("Please enter a valid email address.").optional().or(z.literal('')),
   phone: z.string().optional(),
   address: z.string().optional(),
 });
@@ -43,6 +45,15 @@ export function NewPatientSheet() {
   const { toast } = useToast();
   const form = useForm<PatientFormValues>({
     resolver: zodResolver(patientSchema),
+    defaultValues: {
+      name: "",
+      secondname: "",
+      lastname: "",
+      secondlastname: "",
+      email: "",
+      phone: "",
+      address: ""
+    }
   });
 
   const onSubmit = async (data: PatientFormValues) => {
@@ -80,32 +91,62 @@ export function NewPatientSheet() {
         </SheetHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 py-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>First Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="John" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="lastname"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Last Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Doe" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>First Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="John" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+               <FormField
+                control={form.control}
+                name="secondname"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Middle Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Michael" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+             <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="lastname"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Last Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Doe" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+               <FormField
+                control={form.control}
+                name="secondlastname"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Second Last Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Smith" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <FormField
               control={form.control}
               name="email"

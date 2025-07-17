@@ -1,5 +1,4 @@
 
-
 import prisma from "@/lib/prisma";
 import { format, startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, addMonths } from "date-fns";
 import Link from "next/link";
@@ -24,7 +23,7 @@ import { Eye, ArrowUpDown } from "lucide-react";
 import { NewAppointmentSheet } from "./components/new-appointment-sheet";
 import { Filters } from "./components/filters";
 import type { Prisma } from "@prisma/client";
-import { cn } from "@/lib/utils";
+import { cn, getFullName } from "@/lib/utils";
 
 const getDateRange = (rangeKey: string) => {
     const now = new Date();
@@ -62,8 +61,8 @@ export default async function AppointmentsPage({
   const where: Prisma.AppointmentWhereInput = {
     ...(query && {
       OR: [
-        { patient: { name: { contains: query, mode: "insensitive" } } },
-        { patient: { lastname: { contains: query, mode: "insensitive" } } },
+        { patients: { some: { name: { contains: query, mode: "insensitive" } } } },
+        { patients: { some: { lastname: { contains: query, mode: "insensitive" } } } },
         { service: { name: { contains: query, mode: "insensitive" } } },
       ],
     }),
@@ -78,7 +77,7 @@ export default async function AppointmentsPage({
   const appointments = await prisma.appointment.findMany({
     where,
     include: {
-      patient: true,
+      patients: true,
       service: true,
     },
     orderBy: {
@@ -116,7 +115,7 @@ export default async function AppointmentsPage({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Patient</TableHead>
+              <TableHead>Patient(s)</TableHead>
               <TableHead>Service</TableHead>
               <TableHead className="hidden md:table-cell">
                 <Link href={sortLink} className="flex items-center gap-2 hover:underline">
@@ -125,6 +124,7 @@ export default async function AppointmentsPage({
                 </Link>
               </TableHead>
               <TableHead className="hidden md:table-cell">Time</TableHead>
+               <TableHead>Status</TableHead>
               <TableHead>
                 <span className="sr-only">Actions</span>
               </TableHead>
@@ -133,15 +133,22 @@ export default async function AppointmentsPage({
           <TableBody>
             {appointments.map((appt) => (
               <TableRow key={appt.id}>
-                <TableCell className="font-medium">{`${appt.patient.name} ${appt.patient.lastname}`}</TableCell>
+                <TableCell className="font-medium">
+                  {appt.patients.map(p => getFullName(p)).join(', ')}
+                </TableCell>
                 <TableCell>
-                  <Badge variant="outline">{appt.service.name}</Badge>
+                  {appt.service && <Badge variant="outline">{appt.service.name}</Badge>}
                 </TableCell>
                 <TableCell className="hidden md:table-cell">
                   {format(new Date(appt.date), "PPP")}
                 </TableCell>
                 <TableCell className="hidden md:table-cell">
                   {format(new Date(appt.date), "p")}
+                </TableCell>
+                <TableCell>
+                  <Badge variant={appt.status === 'DONE' ? 'secondary' : 'default'}>
+                    {appt.status}
+                  </Badge>
                 </TableCell>
                 <TableCell className="text-right">
                   <Button asChild variant="outline" size="sm">
@@ -155,7 +162,7 @@ export default async function AppointmentsPage({
             ))}
              {appointments.length === 0 && (
                 <TableRow>
-                    <TableCell colSpan={5} className="h-24 text-center">
+                    <TableCell colSpan={6} className="h-24 text-center">
                     No appointments found.
                     </TableCell>
                 </TableRow>

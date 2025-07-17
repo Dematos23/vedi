@@ -34,11 +34,13 @@ export function AppointmentsChart({ services }: AppointmentsChartProps) {
     const fetchData = async () => {
       if (dateRange?.from && dateRange?.to) {
         setLoading(true);
+        // This chart now shows "sales count" instead of appointment count,
+        // as appointments no longer have a direct price.
         const chartData = await getChartData({
             startDate: dateRange.from,
             endDate: dateRange.to,
             timeUnit,
-            model: 'appointment',
+            model: 'sale',
             serviceIds: selectedServices.length > 0 ? selectedServices : undefined,
             aggregateBy: 'count'
         });
@@ -60,9 +62,9 @@ export function AppointmentsChart({ services }: AppointmentsChartProps) {
   return (
       <Card>
         <CardHeader>
-          <CardTitle>Appointments Overview</CardTitle>
+          <CardTitle>Sales Count Overview</CardTitle>
           <CardDescription>
-            Track appointment volume over a selected period.
+            Track number of sales over a selected period.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

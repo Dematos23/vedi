@@ -31,7 +31,8 @@ export function SalesChart() {
             startDate: dateRange.from,
             endDate: dateRange.to,
             timeUnit,
-            model: 'appointment',
+            model: 'sale', // Now fetches from sales
+            aggregateBy: 'sum'
         });
         setData(chartData);
         setLoading(false);

@@ -4,7 +4,7 @@
 import { revalidatePath } from "next/cache";
 import prisma from "./prisma";
 import * as z from "zod";
-import type { ServiceStatus } from "@prisma/client";
+import { AppointmentStatus, Concurrency, type ServiceStatus } from "@prisma/client";
 
 // Service Actions
 const serviceSchema = z.object({
@@ -85,7 +85,7 @@ export async function toggleServiceStatus(serviceId: string, status: ServiceStat
         where: { id: serviceId },
         data: { status },
     });
-
+    
     revalidatePath("/services");
     revalidatePath("/appointments");
 }
@@ -93,10 +93,10 @@ export async function toggleServiceStatus(serviceId: string, status: ServiceStat
 
 // Appointment Actions
 const appointmentSchema = z.object({
-  patientId: z.string(),
+  patientIds: z.array(z.string()).min(1, "At least one patient is required."),
   serviceId: z.string(),
   date: z.date(),
-  price: z.coerce.number().positive("Price must be a positive number.").refine(val => (val.toString().split('.')[1] || []).length <= 2, "Price can have at most 2 decimal places."),
+  concurrency: z.nativeEnum(Concurrency),
   description: z.string().optional(),
 });
 
@@ -106,23 +106,27 @@ export async function createAppointment(
   const validatedFields = appointmentSchema.safeParse(data);
 
   if (!validatedFields.success) {
+    console.error(validatedFields.error.flatten().fieldErrors);
     throw new Error("Invalid appointment data.");
   }
+
+  const { patientIds, ...restOfData } = validatedFields.data;
   
   const service = await prisma.service.findUnique({
-      where: { id: validatedFields.data.serviceId }
+      where: { id: restOfData.serviceId }
   });
 
   if (!service || service.status === 'INACTIVE') {
       throw new Error("Cannot book an appointment for an inactive service.");
   }
 
-  const { description, ...restOfData } = validatedFields.data;
-
   await prisma.appointment.create({
     data: {
       ...restOfData,
-      description: description || '',
+      description: restOfData.description || '',
+      patients: {
+        connect: patientIds.map(id => ({ id }))
+      }
     },
   });
 
@@ -138,7 +142,7 @@ export async function updateAppointmentDescription(appointmentId: string, descri
         where: { id: appointmentId },
         data: { description },
         include: {
-          patient: true,
+          patients: true,
           service: true,
         }
     });
@@ -149,12 +153,82 @@ export async function updateAppointmentDescription(appointmentId: string, descri
     return updatedAppointment;
 }
 
+export async function completeAppointment(appointmentId: string, patientId: string) {
+  return await prisma.$transaction(async (tx) => {
+    // 1. Find the appointment and related service
+    const appointment = await tx.appointment.findUnique({
+      where: { id: appointmentId },
+      include: { service: true },
+    });
+
+    if (!appointment || !appointment.service) {
+      throw new Error("Appointment or associated service not found.");
+    }
+    
+    if (appointment.status === 'DONE') {
+      throw new Error("Appointment is already completed.");
+    }
+
+    // 2. Find the patient's service balance for this service
+    // This assumes the patient has a balance from a sale.
+    // In a real app, you might need more complex logic to find the right balance.
+    const serviceBalance = await tx.patientServiceBalance.findFirst({
+      where: {
+        patientId: patientId,
+        serviceId: appointment.serviceId,
+        used: {
+          lt: prisma.patientServiceBalance.fields.total, // Ensure there are remaining sessions
+        },
+      },
+      orderBy: {
+        createdAt: 'asc', // Use the oldest balance first
+      },
+    });
+
+    if (!serviceBalance) {
+      throw new Error("No available service balance found for this patient and service.");
+    }
+
+    // 3. Increment the 'used' count on the balance
+    const updatedBalance = await tx.patientServiceBalance.update({
+      where: { id: serviceBalance.id },
+      data: { used: { increment: 1 } },
+    });
+
+    // 4. Create a usage log record
+    await tx.patientServiceUsage.create({
+      data: {
+        appointmentId: appointment.id,
+        balanceId: updatedBalance.id,
+        quantity: 1, // Consuming one session
+      },
+    });
+
+    // 5. Update the appointment status to 'DONE'
+    const completedAppointment = await tx.appointment.update({
+      where: { id: appointmentId },
+      data: { status: AppointmentStatus.DONE },
+    });
+    
+    // Potentially create UserTechniqueUsageLog here if techniques are used in the appointment
+    // This part is omitted for simplicity but would be added here.
+
+    revalidatePath(`/appointments`);
+    revalidatePath(`/appointments/${appointmentId}`);
+    revalidatePath(`/patients/${patientId}`);
+
+    return completedAppointment;
+  });
+}
+
 
 // Patient Actions
 const patientSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters."),
+    secondname: z.string().optional(),
     lastname: z.string().min(2, "Last name must be at least 2 characters."),
-    email: z.string().email("Please enter a valid email address."),
+    secondlastname: z.string().optional(),
+    email: z.string().email("Please enter a valid email address.").optional().or(z.literal('')),
     phone: z.string().optional(),
     address: z.string().optional(),
 });
@@ -192,7 +266,7 @@ const chartDataSchema = z.object({
     startDate: z.date(),
     endDate: z.date(),
     timeUnit: z.enum(["day", "week", "month", "year"]),
-    model: z.enum(["appointment"]),
+    model: z.enum(["sale"]), // Changed from appointment to sale
     serviceIds: z.array(z.string()).optional(),
     aggregateBy: z.enum(["sum", "count"]).default("sum"),
 });
@@ -211,20 +285,20 @@ export async function getChartData(input: z.infer<typeof chartDataSchema>) {
         where.serviceId = { in: serviceIds };
     }
     
-    // Determine the date truncation unit based on the database
     const dateTrunc = `DATE_TRUNC('${timeUnit}', "date")`;
     
+    // Aggregate on the Sale model now
     const aggregationField = aggregateBy === 'sum' 
-      ? `SUM(a.price)` // Sum of appointment price
-      : `COUNT(a.id)`; // Count of appointments
+      ? `SUM(s.amount)` // Sum of sale amount
+      : `COUNT(s.id)`; // Count of sales
     
     const rawQuery = `
       SELECT
         ${dateTrunc} AS "date",
         ${aggregationField} AS "total"
-      FROM "Appointment" AS a
-      WHERE a.date >= $1 AND a.date <= $2
-      ${serviceIds && serviceIds.length > 0 ? `AND a."serviceId" IN (${serviceIds.map(id => `'${id}'`).join(',')})` : ''}
+      FROM "Sale" AS s
+      WHERE s.date >= $1 AND s.date <= $2
+      ${serviceIds && serviceIds.length > 0 ? `AND s."serviceId" IN (${serviceIds.map(id => `'${id}'`).join(',')})` : ''}
       GROUP BY 1
       ORDER BY 1 ASC;
     `;
@@ -232,7 +306,6 @@ export async function getChartData(input: z.infer<typeof chartDataSchema>) {
     try {
         const result: { date: Date, total: number | bigint | object }[] = await prisma.$queryRawUnsafe(rawQuery, startDate, endDate);
         
-        // Convert Decimal to Number for client-side compatibility
         return result.map(item => ({
             ...item,
             total: Number(item.total)

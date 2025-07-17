@@ -10,46 +10,42 @@ import {
   CardDescription,
   CardFooter,
 } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowLeft, User, Clock, DollarSign, BookText, Pencil, Save } from "lucide-react";
+import { ArrowLeft, User, Clock, DollarSign, BookText, Pencil, Save, CheckCircle } from "lucide-react";
 import { format } from "date-fns";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, getFullName } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { updateAppointmentDescription } from "@/lib/actions";
+import { updateAppointmentDescription, completeAppointment } from "@/lib/actions";
 import { ExportAppointmentPdfButton } from "./export-appointment-pdf";
 import type { SerializableAppointmentWithDetails } from "../page";
+import { AppointmentStatus } from "@prisma/client";
 
-// This is now a dedicated client component
 export function AppointmentDetailClient({ appointmentData }: { appointmentData: SerializableAppointmentWithDetails }) {
   const [appointment, setAppointment] = React.useState(appointmentData);
   const [isEditing, setIsEditing] = React.useState(false);
   const [isSaving, setIsSaving] = React.useState(false);
+  const [isCompleting, setIsCompleting] = React.useState(false);
   const { toast } = useToast();
   
-  // State to hold the client-side formatted date to prevent hydration mismatch
   const [formattedDate, setFormattedDate] = React.useState("");
 
   React.useEffect(() => {
-    // This effect runs only on the client, after the component has mounted.
-    // This ensures the date/time is formatted in the user's timezone without
-    // mismatching the server-rendered HTML.
     if (appointment.date) {
       setFormattedDate(format(new Date(appointment.date), "PPP 'at' p"));
     }
   }, [appointment.date]);
 
-
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const updatedAppointment = await updateAppointmentDescription(appointment.id, appointment.description || "");
+      const result = await updateAppointmentDescription(appointment.id, appointment.description || "");
       
-      // We need to re-serialize the date from the server action result
       const serializableUpdatedAppointment: SerializableAppointmentWithDetails = {
-          ...updatedAppointment,
-          date: updatedAppointment.date.toISOString(),
+          ...result,
+          date: result.date.toISOString(),
       };
       setAppointment(serializableUpdatedAppointment);
       toast({
@@ -67,8 +63,50 @@ export function AppointmentDetailClient({ appointmentData }: { appointmentData: 
       setIsSaving(false);
     }
   };
+
+  const handleComplete = async () => {
+    if (appointment.patients.length > 1) {
+        // This is a simplified logic. A real app might have a modal to select which patient's balance to use.
+        toast({
+            variant: "destructive",
+            title: "Action Required",
+            description: "Completing appointments with multiple patients is not yet supported in this demo.",
+        });
+        return;
+    }
+    
+    setIsCompleting(true);
+    try {
+        const patientId = appointment.patients[0].id;
+        const result = await completeAppointment(appointment.id, patientId);
+        const serializableResult: SerializableAppointmentWithDetails = {
+            ...result,
+            patients: appointment.patients, // result from action doesn't include relations
+            service: appointment.service,
+            date: result.date.toISOString(),
+        }
+        setAppointment(serializableResult);
+        toast({
+            title: "Success",
+            description: "Appointment has been marked as done.",
+        });
+    } catch(error) {
+        const message = error instanceof Error ? error.message : "An unknown error occurred.";
+        toast({
+            variant: "destructive",
+            title: "Completion Failed",
+            description: message,
+        });
+    } finally {
+        setIsCompleting(false);
+    }
+  }
   
-  const { patient, service, description } = appointment;
+  const { patients, service, description, status } = appointment;
+
+  if (!service) {
+    return <div>Service not found for this appointment.</div>;
+  }
 
   return (
     <div id="appointment-view" className="grid gap-6">
@@ -79,41 +117,59 @@ export function AppointmentDetailClient({ appointmentData }: { appointmentData: 
             <span className="sr-only">Back to Appointments</span>
           </Link>
         </Button>
-        <h1 className="text-2xl font-bold">Appointment Details</h1>
-        <div className="ml-auto">
+        <div className="flex-1">
+            <h1 className="text-2xl font-bold">Appointment Details</h1>
+        </div>
+        <div className="flex items-center gap-2">
+          {status === AppointmentStatus.PROGRAMMED && (
+              <Button onClick={handleComplete} disabled={isCompleting}>
+                  <CheckCircle className="mr-2 h-4 w-4" />
+                  {isCompleting ? "Completing..." : "Mark as Done"}
+              </Button>
+          )}
           <ExportAppointmentPdfButton appointmentId={appointment.id} serviceName={service.name} />
         </div>
       </div>
       <Card>
         <CardHeader>
-          <CardTitle>{service.name}</CardTitle>
-          <CardDescription>
-            {/* Render a placeholder or loading state on initial render */}
-            {formattedDate ? `Scheduled on ${formattedDate}` : "Loading date..."}
-          </CardDescription>
+          <div className="flex justify-between items-start">
+            <div>
+              <CardTitle>{service.name}</CardTitle>
+              <CardDescription>
+                {formattedDate ? `Scheduled on ${formattedDate}` : "Loading date..."}
+              </CardDescription>
+            </div>
+            <Badge variant={status === 'DONE' ? 'secondary' : 'default'} className="text-sm">
+                {status}
+            </Badge>
+          </div>
         </CardHeader>
         <CardContent className="grid gap-6">
           <div className="grid md:grid-cols-2 gap-6">
             <div className="grid gap-4">
                 <h3 className="font-semibold text-lg">Patient Information</h3>
-                <div className="flex items-center gap-4">
-                    <User className="h-5 w-5 text-muted-foreground" />
-                    <span className="font-medium">{`${patient.name} ${patient.lastname}`}</span>
-                </div>
-                 <div className="flex items-center gap-4">
-                    <span className="font-medium text-muted-foreground pl-9">Email</span>
-                    <span>{patient.email}</span>
-                </div>
-                 <div className="flex items-center gap-4">
-                    <span className="font-medium text-muted-foreground pl-9">Phone</span>
-                    <span>{patient.phone}</span>
-                </div>
+                {patients.map(patient => (
+                  <div key={patient.id}>
+                    <div className="flex items-center gap-4">
+                        <User className="h-5 w-5 text-muted-foreground" />
+                        <span className="font-medium">{getFullName(patient)}</span>
+                    </div>
+                    {patient.email && <div className="flex items-center gap-4">
+                        <span className="font-medium text-muted-foreground pl-9">Email</span>
+                        <span>{patient.email}</span>
+                    </div>}
+                     {patient.phone && <div className="flex items-center gap-4">
+                        <span className="font-medium text-muted-foreground pl-9">Phone</span>
+                        <span>{patient.phone}</span>
+                    </div>}
+                  </div>  
+                ))}
             </div>
              <div className="grid gap-4">
                 <h3 className="font-semibold text-lg">Service Details</h3>
                 <div className="flex items-center gap-4">
                     <DollarSign className="h-5 w-5 text-muted-foreground" />
-                    <span className="font-medium">{formatCurrency(Number(appointment.price))}</span>
+                    <span className="font-medium">{formatCurrency(Number(service.price))}</span>
                 </div>
                  <div className="flex items-center gap-4">
                     <Clock className="h-5 w-5 text-muted-foreground" />
@@ -130,7 +186,7 @@ export function AppointmentDetailClient({ appointmentData }: { appointmentData: 
             <CardTitle>Session Notes</CardTitle>
             <CardDescription>View or edit session notes below.</CardDescription>
           </div>
-          {!isEditing && (
+          {!isEditing && status === 'PROGRAMMED' && (
             <Button variant="outline" size="sm" onClick={() => setIsEditing(true)} className="print:hidden">
               <Pencil className="mr-2 h-4 w-4" />
               Edit Notes

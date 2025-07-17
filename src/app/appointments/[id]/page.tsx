@@ -6,8 +6,8 @@ import type { Appointment, Patient, Service } from "@prisma/client";
 import { AppointmentDetailClient } from "./components/appointment-detail-client";
 
 export type AppointmentWithDetails = Appointment & {
-  patient: Patient;
-  service: Service;
+  patients: Patient[];
+  service: Service | null;
 };
 
 // This is a serializable version of the above type for client components
@@ -15,13 +15,12 @@ export type SerializableAppointmentWithDetails = Omit<AppointmentWithDetails, 'd
   date: string;
 };
 
-
 // This wrapper is now the default export and a true Server Component.
 export default async function AppointmentDetailPageWrapper({ params }: { params: { id:string } }) {
   const appointment = await prisma.appointment.findUnique({
     where: { id: params.id },
     include: {
-      patient: true,
+      patients: true,
       service: true,
     },
   });

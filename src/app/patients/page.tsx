@@ -21,6 +21,7 @@ import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { Search } from "./components/search";
 import { NewPatientSheet } from "./components/new-patient-sheet";
+import { getFullName } from "@/lib/utils";
 
 export default async function PatientsPage({
   searchParams,
@@ -84,7 +85,7 @@ export default async function PatientsPage({
           <TableBody>
             {patients.map((patient) => (
               <TableRow key={patient.id}>
-                <TableCell className="font-medium">{`${patient.name} ${patient.lastname}`}</TableCell>
+                <TableCell className="font-medium">{getFullName(patient)}</TableCell>
                 <TableCell className="hidden md:table-cell">
                   {patient.email}
                 </TableCell>

@@ -13,6 +13,7 @@ import { SalesChart } from "./components/sales-chart";
 import { AppointmentsChart } from "./components/appointments-chart";
 import { formatCurrency } from "@/lib/utils";
 import { startOfMonth, endOfMonth } from 'date-fns';
+import { AppointmentStatus } from "@prisma/client";
 
 export default async function DashboardPage() {
   const totalPatients = await prisma.patient.count();
@@ -22,31 +23,29 @@ export default async function DashboardPage() {
       date: {
         gte: new Date(),
       },
+      status: AppointmentStatus.PROGRAMMED,
     },
   });
   
-  const servicesData = await prisma.service.findMany();
-  // Convert Decimal to number for client component consumption
-  const services = servicesData.map(service => ({
-    ...service,
-    price: Number(service.price),
-  }));
-
+  const services = await prisma.service.findMany();
 
   const now = new Date();
   const startOfCurrentMonth = startOfMonth(now);
   const endOfCurrentMonth = endOfMonth(now);
 
-  const currentMonthAppointments = await prisma.appointment.findMany({
+  const currentMonthSales = await prisma.sale.aggregate({
     where: {
       date: {
         gte: startOfCurrentMonth,
         lte: endOfCurrentMonth,
       },
     },
+    _sum: {
+      amount: true,
+    }
   });
-
-  const currentMonthSales = currentMonthAppointments.reduce((total, appt) => total + Number(appt.price), 0);
+  
+  const totalSalesCurrentMonth = currentMonthSales._sum.amount || 0;
 
 
   return (
@@ -89,7 +88,7 @@ export default async function DashboardPage() {
           <CardContent>
             <div className="text-2xl font-bold">+{upcomingAppointmentsCount}</div>
             <p className="text-xs text-muted-foreground">
-              All upcoming appointments
+              All upcoming programmed appointments
             </p>
           </CardContent>
         </Card>
@@ -99,7 +98,7 @@ export default async function DashboardPage() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(currentMonthSales)}</div>
+            <div className="text-2xl font-bold">{formatCurrency(totalSalesCurrentMonth)}</div>
             <p className="text-xs text-muted-foreground">
               Revenue for this month
             </p>

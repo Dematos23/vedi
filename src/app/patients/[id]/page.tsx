@@ -2,13 +2,16 @@
 import * as React from "react";
 import { notFound } from "next/navigation";
 import prisma from "@/lib/prisma";
-import type { Patient, Appointment, Service } from "@prisma/client";
+import type { Patient, Appointment, Service, PatientServiceBalance } from "@prisma/client";
 import { PatientDetailClient } from "./components/patient-detail-client";
 
 
-export type PatientWithAppointments = Patient & {
+export type PatientWithDetails = Patient & {
   appointments: (Appointment & {
-    service: Service;
+    service: Service | null;
+  })[];
+  patientServiceBalances: (PatientServiceBalance & {
+      service: Service;
   })[];
 };
 
@@ -26,6 +29,11 @@ export default async function PatientDetailPageWrapper({ params }: { params: { i
         },
         take: 10,
       },
+      patientServiceBalances: {
+        include: {
+            service: true
+        }
+      }
     },
   });
 
