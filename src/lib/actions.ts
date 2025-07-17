@@ -25,6 +25,10 @@ export async function createService(data: z.infer<typeof serviceSchema>) {
     throw new Error("Invalid service data.");
   }
 
+  // This assumes a logged-in user context would provide the userId.
+  // For this demo, we'll find the first therapist and assign it.
+  const therapist = await prisma.user.findFirst({ where: { type: UserType.THERAPIST } });
+
   await prisma.service.create({
     data: {
       name: validatedFields.data.name,
@@ -32,6 +36,7 @@ export async function createService(data: z.infer<typeof serviceSchema>) {
       price: validatedFields.data.price,
       duration: validatedFields.data.duration,
       status: 'ACTIVE',
+      userId: therapist?.id
     },
   });
 
@@ -67,6 +72,12 @@ export async function deleteService(serviceId: string) {
 
     if (appointmentCount > 0) {
         throw new Error("This service has appointments and cannot be deleted.");
+    }
+    
+    // Also need to check for patient service balances and sales
+    const balanceCount = await prisma.patientServiceBalance.count({ where: { serviceId } });
+    if (balanceCount > 0) {
+        throw new Error("This service has patient balances and cannot be deleted.");
     }
 
     await prisma.service.delete({
@@ -173,18 +184,16 @@ export async function completeAppointment(appointmentId: string, patientId: stri
     }
 
     // 2. Find the patient's service balance for this service
-    // This assumes the patient has a balance from a sale.
-    // In a real app, you might need more complex logic to find the right balance.
     const serviceBalance = await tx.patientServiceBalance.findFirst({
       where: {
         patientId: patientId,
         serviceId: appointment.serviceId,
         used: {
-          lt: tx.patientServiceBalance.fields.total, // Ensure there are remaining sessions
+          lt: tx.patientServiceBalance.fields.total,
         },
       },
       orderBy: {
-        createdAt: 'asc', // Use the oldest balance first
+        createdAt: 'asc',
       },
     });
 
@@ -203,7 +212,7 @@ export async function completeAppointment(appointmentId: string, patientId: stri
       data: {
         appointmentId: appointment.id,
         balanceId: updatedBalance.id,
-        quantity: 1, // Consuming one session
+        quantity: 1, 
       },
     });
 
@@ -213,9 +222,6 @@ export async function completeAppointment(appointmentId: string, patientId: stri
       data: { status: AppointmentStatus.DONE },
     });
     
-    // Potentially create UserTechniqueUsageLog here if techniques are used in the appointment
-    // This part is omitted for simplicity but would be added here.
-
     revalidatePath(`/appointments`);
     revalidatePath(`/appointments/${appointmentId}`);
     revalidatePath(`/patients/${patientId}`);
@@ -243,15 +249,12 @@ export async function createPatient(data: z.infer<typeof patientSchema>) {
         throw new Error("Invalid patient data.");
     }
 
-    // This assumes a logged-in user context would provide the userId.
-    // For this demo, we'll hardcode it or leave it null if the schema allows.
-    // To make this work with the current logic, let's find the first therapist.
     const therapist = await prisma.user.findFirst({ where: { type: UserType.THERAPIST }});
 
     await prisma.patient.create({
         data: {
             ...validatedFields.data,
-            userId: therapist?.id, // Assign patient to the first therapist found.
+            userId: therapist?.id,
         },
     });
 
@@ -277,7 +280,7 @@ const chartDataSchema = z.object({
     startDate: z.date(),
     endDate: z.date(),
     timeUnit: z.enum(["day", "week", "month", "year"]),
-    model: z.enum(["sale"]), // Changed from appointment to sale
+    model: z.enum(["sale"]),
     serviceIds: z.array(z.string()).optional(),
     aggregateBy: z.enum(["sum", "count"]).default("sum"),
 });
@@ -298,10 +301,9 @@ export async function getChartData(input: z.infer<typeof chartDataSchema>) {
     
     const dateTrunc = `DATE_TRUNC('${timeUnit}', "date")`;
     
-    // Aggregate on the Sale model now
     const aggregationField = aggregateBy === 'sum' 
-      ? `SUM(s.amount)` // Sum of sale amount
-      : `COUNT(s.id)`; // Count of sales
+      ? `SUM(s.amount)`
+      : `COUNT(s.id)`;
     
     let queryParams: (Date | string)[] = [startDate, endDate];
     let serviceIdFilter = '';
@@ -356,7 +358,7 @@ export async function getTherapistPerformance(therapistId: string) {
   });
 
   if (!therapist || therapist.type !== UserType.THERAPIST) {
-    throw new Error("Therapist not found.");
+    throw new Error('Therapist not found.');
   }
   
   const assignedPatients = await prisma.patient.findMany({
@@ -406,17 +408,31 @@ export async function getTherapistPerformance(therapistId: string) {
     }
   });
 
-  const techniquesPerformance = await prisma.userTechnique.findMany({
-      where: { userId: therapistId },
-      include: {
-          technique: true,
-          _count: {
-              select: {
-                  userTechniqueUsageLogs: true
-              }
-          }
-      }
+  const userTechniques = await prisma.userTechnique.findMany({
+    where: { userId: therapistId },
+    include: {
+        technique: true,
+    }
   });
+
+  const techniquesPerformance = await Promise.all(
+    userTechniques.map(async (userTechnique) => {
+        const usageCount = await prisma.userTechniqueUsageLog.count({
+            where: {
+                userId: therapistId,
+                techniqueId: userTechnique.techniqueId,
+            },
+        });
+
+        return {
+            ...userTechnique,
+            _count: {
+                userTechniqueUsageLogs: usageCount,
+            },
+        };
+    })
+  );
+
 
   return {
     ...therapist,
