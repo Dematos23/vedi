@@ -50,9 +50,10 @@ model Patient {
 }
 
 model Technique {
-  id          String @id @default(cuid())
-  name        String
-  description String
+  id                           String @id @default(cuid())
+  name                         String
+  description                  String
+  requiredSessionsForTherapist Int    @default(10) // número de sesiones para pasar a therapista
 
   users                  UserTechniqueStatus[]
   services               Service[]
@@ -115,11 +116,12 @@ model Sale {
 }
 
 model Appointment {
-  id          String            @id @default(cuid())
-  date        DateTime
-  concurrency Concurrency
-  status      AppointmentStatus @default(PROGRAMMED)
-  description String?
+  id               String            @id @default(cuid())
+  date             DateTime
+  concurrency      Concurrency
+  status           AppointmentStatus @default(PROGRAMMED)
+  description      String?
+  validatedByGuide Boolean           @default(false) 
 
   patients               Patient[]
   serviceId              String?
@@ -136,7 +138,7 @@ model Appointment {
 model PatientServiceBalance {
   id    String @id @default(cuid())
   total Int // Total servicios comprados
-  used  Int @default(0) // Servicios ya utilizados
+  used  Int    @default(0) // Servicios ya utilizados
 
   patient              Patient               @relation(fields: [patientId], references: [id], onDelete: Cascade)
   patientId            String
