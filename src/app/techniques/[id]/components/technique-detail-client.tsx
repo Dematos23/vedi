@@ -24,8 +24,6 @@ export function TechniqueDetailClient({ technique }: { technique: TechniqueWithD
   const { dictionary } = useLanguage();
   const d = dictionary.techniques;
 
-  const maxPerformance = Math.max(...users.map(u => u._count.userTechniqueUsageLogs), 0) || 1;
-
   return (
     <div className="grid gap-6">
       <div className="flex items-center gap-4">
@@ -72,7 +70,7 @@ export function TechniqueDetailClient({ technique }: { technique: TechniqueWithD
                                 </TableCell>
                                 <TableCell>
                                     <div className="flex items-center gap-4">
-                                        <Progress value={(status._count.userTechniqueUsageLogs / maxPerformance) * 100} className="w-full" />
+                                        <Progress value={status._count.userTechniqueUsageLogs} max={100} className="w-full" />
                                         <span className="text-sm font-mono text-muted-foreground">{status._count.userTechniqueUsageLogs}</span>
                                     </div>
                                 </TableCell>
