@@ -184,7 +184,7 @@ model UserTechniqueUsageLog {
   @@unique([userId, techniqueId, appointmentId])
 }
 
-model UserTechnique {
+model UserTechniqueStatus {
   id     String          @id @default(cuid())
   status TechniqueStatus @default(PRACTITIONER)
 
