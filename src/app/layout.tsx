@@ -6,6 +6,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { usePathname } from "next/navigation";
 import { MainLayout } from "@/components/main-layout";
+import { LanguageProvider } from "@/contexts/language-context";
 
 // Note: Metadata cannot be exported from a client component. 
 // If you need dynamic metadata, you'll need a different approach.
@@ -31,13 +32,15 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
-        {isLoginPage ? (
-          children
-        ) : (
-          <MainLayout>
-            {children}
-          </MainLayout>
-        )}
+        <LanguageProvider>
+          {isLoginPage ? (
+            children
+          ) : (
+            <MainLayout>
+              {children}
+            </MainLayout>
+          )}
+        </LanguageProvider>
         <Toaster />
       </body>
     </html>

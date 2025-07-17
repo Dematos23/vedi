@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   UsersRound,
   HeartPulse,
+  Globe,
 } from "lucide-react";
 import {
   SidebarProvider,
@@ -22,6 +23,7 @@ import {
   SidebarInset,
   SidebarTrigger,
   useSidebar,
+  SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
@@ -32,23 +34,53 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { usePathname } from "next/navigation";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useLanguage } from "@/contexts/language-context";
 
+function LanguageSwitcher() {
+  const { locale, setLocale, dictionary } = useLanguage();
 
-const navItems = [
-  { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { href: "/patients", icon: UsersRound, label: "Patients" },
-  { href: "/services", icon: BriefcaseMedical, label: "Services" },
-  { href: "/appointments", icon: CalendarDays, label: "Appointments" },
-  { href: "/therapists", icon: HeartPulse, label: "Therapists" },
-];
+  return (
+     <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            className="h-auto w-full justify-start gap-2 p-2"
+          >
+            <Globe className="size-8 p-1 text-muted-foreground" />
+             <div className="flex flex-col items-start truncate">
+                <span className="font-medium">{dictionary.language}</span>
+                <span className="text-xs text-muted-foreground">{locale.toUpperCase()}</span>
+            </div>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="mb-2 ml-2">
+            <DropdownMenuRadioGroup value={locale} onValueChange={(value) => setLocale(value as 'es' | 'en')}>
+                <DropdownMenuRadioItem value="es">Español</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="en">English</DropdownMenuRadioItem>
+            </DropdownMenuRadioGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+  )
+}
 
 function MainSidebar() {
   const pathname = usePathname();
   const { isMobile, setOpen } = useSidebar();
+  const { dictionary } = useLanguage();
+
+  const navItems = [
+    { href: "/dashboard", icon: LayoutDashboard, label: dictionary.sidebar.dashboard },
+    { href: "/patients", icon: UsersRound, label: dictionary.sidebar.patients },
+    { href: "/services", icon: BriefcaseMedical, label: dictionary.sidebar.services },
+    { href: "/appointments", icon: CalendarDays, label: dictionary.sidebar.appointments },
+    { href: "/therapists", icon: HeartPulse, label: dictionary.sidebar.therapists },
+  ];
 
   const handleLinkClick = () => {
     if(isMobile) {
@@ -79,6 +111,8 @@ function MainSidebar() {
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter>
+         <LanguageSwitcher />
+         <SidebarSeparator />
          <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
