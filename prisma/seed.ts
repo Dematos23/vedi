@@ -61,7 +61,24 @@ async function main() {
     console.log(`- Assigned ${techniquesToAssign.length} techniques to ${user.name}`);
   }
 
-  // Loop through each therapist to create their own data
+  // Seed Services globally (not tied to a therapist initially)
+  const allCreatedServices = [];
+  for (const serviceData of mockServices) {
+      const requiredTechniques = faker.helpers.arrayElements(createdTechniques, faker.number.int({ min: 1, max: 2 }));
+      const service = await prisma.service.create({
+          data: {
+              ...serviceData,
+              techniques: {
+                  connect: requiredTechniques.map(t => ({ id: t.id }))
+              }
+          },
+      });
+      allCreatedServices.push(service);
+  }
+  console.log(`\nSeeded ${allCreatedServices.length} global services and linked techniques.`);
+
+
+  // Loop through each therapist to create their own patient-related data
   for (const user of createdUsers) {
     console.log(`\nSeeding data for ${user.name} ${user.lastname}...`);
 
@@ -79,40 +96,8 @@ async function main() {
     }
     console.log(`- Seeded ${createdPatients.length} patients.`);
 
-    // Get therapist's techniques
-    const therapistTechniques = await prisma.userTechniqueStatus.findMany({
-      where: { userId: user.id },
-      include: { technique: true },
-    });
-    const therapistTechniqueIds = therapistTechniques.map(ut => ut.techniqueId);
-
-    // Seed Services for the current therapist and associate with techniques
-    const createdServices = [];
-    const servicesForTherapist = [];
-    for (const serviceData of mockServices) {
-        // A service is relevant if the therapist has at least one of its required techniques
-        const requiredTechniques = faker.helpers.arrayElements(createdTechniques, faker.number.int({ min: 1, max: 2 }));
-        
-        const service = await prisma.service.create({
-            data: {
-                ...serviceData,
-                userId: user.id,
-                techniques: {
-                    connect: requiredTechniques.map(t => ({ id: t.id }))
-                }
-            },
-        });
-        createdServices.push(service);
-
-        const hasSkill = requiredTechniques.some(rt => therapistTechniqueIds.includes(rt.id));
-        if (hasSkill) {
-            servicesForTherapist.push({ service, techniques: requiredTechniques });
-        }
-    }
-    console.log(`- Seeded ${createdServices.length} services and linked techniques.`);
-
     // Generate and Seed Sales and PatientServiceBalances for this therapist's patients
-    const mockSales = generateMockSalesAndBalances(createdPatients, createdServices);
+    const mockSales = generateMockSalesAndBalances(createdPatients, allCreatedServices);
     for (const saleData of mockSales) {
       const sale = await prisma.sale.create({
         data: saleData,
@@ -131,26 +116,68 @@ async function main() {
     }
     console.log(`- Seeded ${mockSales.length} sales and created corresponding service balances.`);
     
-    // Generate and Seed Appointments, respecting therapist skills
-    const mockAppointments = generateMockAppointments(createdPatients, user.id, servicesForTherapist);
-    for (const { appointmentData, techniquesUsed } of mockAppointments) {
-      const appt = await prisma.appointment.create({
-        data: appointmentData,
-      });
+    // Get therapist's techniques to determine which services they can offer
+    const therapistTechniqueIds = (await prisma.userTechniqueStatus.findMany({
+      where: { userId: user.id },
+    })).map(ut => ut.techniqueId);
 
-      // If the appointment is done, log the technique usage
-      if (appt.status === 'DONE' && techniquesUsed.length > 0) {
-        const techniqueToLog = faker.helpers.arrayElement(techniquesUsed);
-        await prisma.userTechniqueUsageLog.create({
-            data: {
-                userId: user.id,
-                techniqueId: techniqueToLog.id,
-                appointmentId: appt.id
+    const servicesForTherapist = await prisma.service.findMany({
+        where: { techniques: { some: { id: { in: therapistTechniqueIds } } } },
+        include: { techniques: true }
+    });
+
+    let totalAppointments = 0;
+    // Generate and Seed Appointments, respecting therapist skills
+    for(const patient of createdPatients) {
+        const mockAppointments = generateMockAppointments(patient, servicesForTherapist);
+        totalAppointments += mockAppointments.length;
+
+        for (const { appointmentData, techniquesUsed, service } of mockAppointments) {
+            const appt = await prisma.appointment.create({
+                data: appointmentData,
+            });
+
+            // If the appointment is done, log the technique usage and update balance
+            if (appt.status === 'DONE') {
+                // Log technique usage
+                if (techniquesUsed.length > 0) {
+                    const techniqueToLog = faker.helpers.arrayElement(techniquesUsed);
+                    await prisma.userTechniqueUsageLog.create({
+                        data: {
+                            userId: user.id,
+                            techniqueId: techniqueToLog.id,
+                            appointmentId: appt.id
+                        }
+                    });
+                }
+                
+                // Update service balance
+                const serviceBalance = await prisma.patientServiceBalance.findFirst({
+                    where: {
+                        patientId: patient.id,
+                        serviceId: service.id,
+                        used: { lt: prisma.patientServiceBalance.fields.total }
+                    },
+                    orderBy: { createdAt: 'asc' }
+                });
+
+                if (serviceBalance) {
+                   const updatedBalance = await prisma.patientServiceBalance.update({
+                        where: { id: serviceBalance.id },
+                        data: { used: { increment: 1 } }
+                    });
+                    await prisma.patientServiceUsage.create({
+                        data: {
+                            appointmentId: appt.id,
+                            balanceId: updatedBalance.id,
+                            quantity: 1
+                        }
+                    });
+                }
             }
-        });
-      }
+        }
     }
-    console.log(`- Seeded ${mockAppointments.length} appointments with realistic therapist skills.`);
+    console.log(`- Seeded ${totalAppointments} appointments with realistic therapist skills and updated balances.`);
   }
 
   console.log(`\nSeeding finished.`);

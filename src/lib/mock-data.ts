@@ -1,7 +1,7 @@
 
 import { faker } from '@faker-js/faker';
 import type { User, Patient, Service, Sale, Appointment, Technique } from '@prisma/client';
-import { AppointmentStatus, Concurrency, ServiceStatus, UserType, UserTechniqueStatusType } from '@prisma/client';
+import { AppointmentStatus, Concurrency, ServiceStatus, UserType } from '@prisma/client';
 
 // Use a consistent seed for reproducibility
 faker.seed(123);
@@ -55,6 +55,7 @@ export const generateMockPatients = (count: number): Omit<Patient, 'id' | 'creat
             email: faker.internet.email(),
             phone: faker.phone.number(),
             address: faker.location.streetAddress(true),
+            notes: "Initial consultation notes. Patient expressed concerns about work-related stress and difficulty sleeping. Discussed potential coping strategies and scheduled a follow-up.",
         });
     }
     return patients;
@@ -75,7 +76,7 @@ const roundUpToNearest15Minutes = (date: Date): Date => {
   const minutes = newDate.getMinutes();
   const roundedMinutes = Math.ceil(minutes / 15) * 15;
   newDate.setMinutes(roundedMinutes);
-  if (roundedMinutes === 60) {
+  if (roundedMinutes >= 60) {
       newDate.setHours(newDate.getHours() + 1);
       newDate.setMinutes(0);
   }
@@ -89,8 +90,10 @@ export const generateMockSalesAndBalances = (patients: Patient[], services: Serv
     
     patients.forEach(patient => {
         // Give each patient a balance for 1 or 2 services
-        for(let i=0; i< faker.number.int({min: 1, max: 2}); i++) {
-            const randomService = services[Math.floor(Math.random() * services.length)];
+        const activeServices = services.filter(s => s.status === 'ACTIVE');
+        const servicesToBuy = faker.helpers.arrayElements(activeServices, faker.number.int({min: 1, max: 2}));
+        
+        for(const randomService of servicesToBuy) {
              sales.push({
                 patientId: patient.id,
                 serviceId: randomService.id,
@@ -104,41 +107,58 @@ export const generateMockSalesAndBalances = (patients: Patient[], services: Serv
 
 // This is a more complex appointment generator that respects therapist-technique-service relationships
 export const generateMockAppointments = (
-    patients: Patient[],
-    therapistId: string,
+    patient: Patient,
     servicesForTherapist: { service: Service, techniques: Technique[] }[]
-): { appointmentData: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt' | 'packageId' | 'patients'>, techniquesUsed: Technique[] }[] => {
+): { appointmentData: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt' | 'packageId' | 'patients'>, techniquesUsed: Technique[], service: Service }[] => {
     
-    const appointments: { appointmentData: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt' | 'packageId' | 'patients'>, techniquesUsed: Technique[] }[] = [];
-    if (!patients.length || !servicesForTherapist.length) return [];
+    const appointments: { appointmentData: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt' | 'packageId' | 'patients'>, techniquesUsed: Technique[], service: Service }[] = [];
+    if (!servicesForTherapist.length) return [];
     
-    patients.forEach(patient => {
-        // Create 2-3 appointments for each patient with this therapist
-        for (let i = 0; i < faker.number.int({ min: 2, max: 3 }); i++) {
-            const { service, techniques } = servicesForTherapist[Math.floor(Math.random() * servicesForTherapist.length)];
-            
-            const isPastAppointment = i % 2 === 0;
-            const randomDate = isPastAppointment
-                ? faker.date.between({ from: new Date(new Date().setDate(new Date().getDate() - 60)), to: new Date(new Date().setDate(new Date().getDate() - 1)) })
-                : faker.date.between({ from: new Date(), to: new Date(new Date().setDate(new Date().getDate() + 60)) });
+    // Determine the number of past and future appointments
+    const pastAppointmentsCount = faker.number.int({ min: 1, max: 3 });
+    const futureAppointmentsCount = faker.number.int({ min: 1, max: 2 });
 
-            const appointmentStatus = isPastAppointment ? AppointmentStatus.DONE : AppointmentStatus.PROGRAMMED;
+    // Create past appointments
+    for (let i = 0; i < pastAppointmentsCount; i++) {
+        const { service, techniques } = faker.helpers.arrayElement(servicesForTherapist);
+        const randomDate = faker.date.between({ from: new Date(new Date().setDate(new Date().getDate() - 90)), to: new Date(new Date().setDate(new Date().getDate() - 1)) });
+        
+        const appointmentData: any = {
+            date: roundUpToNearest15Minutes(randomDate),
+            concurrency: Concurrency.SINGLE,
+            status: AppointmentStatus.DONE,
+            description: `Completed session for ${service.name}. Patient discussed progress on goals.`,
+            serviceId: service.id,
+            patients: { connect: [{ id: patient.id }] },
+        };
+        
+        appointments.push({
+            appointmentData,
+            techniquesUsed: techniques,
+            service,
+        });
+    }
 
-            const appointmentData: any = {
-                date: roundUpToNearest15Minutes(randomDate),
-                concurrency: Concurrency.SINGLE,
-                status: appointmentStatus,
-                description: `Scheduled session for ${service.name}.`,
-                serviceId: service.id,
-                patients: { connect: [{ id: patient.id }] }, // Connect patient
-            };
-            
-            appointments.push({
-                appointmentData,
-                techniquesUsed: techniques,
-            });
-        }
-    });
+    // Create future appointments
+    for (let i = 0; i < futureAppointmentsCount; i++) {
+        const { service, techniques } = faker.helpers.arrayElement(servicesForTherapist);
+        const randomDate = faker.date.between({ from: new Date(new Date().setDate(new Date().getDate() + 1)), to: new Date(new Date().setDate(new Date().getDate() + 90)) });
+
+        const appointmentData: any = {
+            date: roundUpToNearest15Minutes(randomDate),
+            concurrency: Concurrency.SINGLE,
+            status: AppointmentStatus.PROGRAMMED,
+            description: `Scheduled session for ${service.name}.`,
+            serviceId: service.id,
+            patients: { connect: [{ id: patient.id }] },
+        };
+
+        appointments.push({
+            appointmentData,
+            techniquesUsed: techniques,
+            service,
+        });
+    }
 
     return appointments;
 }
