@@ -119,10 +119,14 @@ export function MainLayout({
     <SidebarProvider>
       <MainSidebar />
       <SidebarInset className="flex flex-col">
-        <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
-          <SidebarTrigger className="sm:hidden" />
+        {/* Mobile Header */}
+        <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-4 sm:hidden">
+          <SidebarTrigger />
           <div className="flex-1" />
+          {/* You can add mobile-specific header items here */}
         </header>
+
+        {/* Main Content */}
         <main className="flex-1 p-4 sm:px-6 sm:py-0">{children}</main>
       </SidebarInset>
     </SidebarProvider>
