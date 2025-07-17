@@ -12,16 +12,19 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowLeft, User, Clock, DollarSign, Eye } from "lucide-react";
+import { ArrowLeft, Clock, DollarSign, Eye } from "lucide-react";
 import { format } from "date-fns";
-import { formatCurrency, getFullName, cn } from "@/lib/utils";
+import { formatCurrency, getFullName } from "@/lib/utils";
 import type { SerializableServiceWithDetails } from "../page";
 import { Table, TableBody, TableCell, TableHeader, TableHead, TableRow } from "@/components/ui/table";
 import { ServiceStatus } from "@prisma/client";
+import { useLanguage } from "@/contexts/language-context";
 
 export function ServiceDetailClient({ serviceData }: { serviceData: SerializableServiceWithDetails }) {
   const { name, description, price, duration, status, appointments } = serviceData;
   const isInactive = status === ServiceStatus.INACTIVE;
+  const { dictionary } = useLanguage();
+  const d = dictionary.services;
 
   return (
     <div className="grid gap-6">
@@ -29,7 +32,7 @@ export function ServiceDetailClient({ serviceData }: { serviceData: Serializable
         <Button asChild variant="outline" size="icon">
           <Link href="/services">
             <ArrowLeft className="h-4 w-4" />
-            <span className="sr-only">Back to Services</span>
+            <span className="sr-only">{d.backToServices}</span>
           </Link>
         </Button>
         <div className="flex-1">
@@ -43,21 +46,21 @@ export function ServiceDetailClient({ serviceData }: { serviceData: Serializable
       </div>
       <Card>
         <CardHeader>
-            <CardTitle>Service Details</CardTitle>
+            <CardTitle>{d.serviceDetails}</CardTitle>
             <CardDescription>{description}</CardDescription>
         </CardHeader>
         <CardContent className="grid md:grid-cols-3 gap-6">
             <div className="flex items-center gap-4">
                 <DollarSign className="h-5 w-5 text-muted-foreground" />
                 <div className="grid gap-0.5">
-                    <div className="font-semibold">Price</div>
+                    <div className="font-semibold">{d.price}</div>
                     <div className="text-muted-foreground">{formatCurrency(price)}</div>
                 </div>
             </div>
              <div className="flex items-center gap-4">
                 <Clock className="h-5 w-5 text-muted-foreground" />
                  <div className="grid gap-0.5">
-                    <div className="font-semibold">Duration</div>
+                    <div className="font-semibold">{d.duration}</div>
                     <div className="text-muted-foreground">{duration} minutes</div>
                 </div>
             </div>
@@ -66,18 +69,18 @@ export function ServiceDetailClient({ serviceData }: { serviceData: Serializable
 
        <Card>
         <CardHeader>
-            <CardTitle>Recent Appointments</CardTitle>
-            <CardDescription>A list of recent appointments using this service.</CardDescription>
+            <CardTitle>{d.recentAppointments}</CardTitle>
+            <CardDescription>{d.recentAppointmentsDescription}</CardDescription>
         </CardHeader>
         <CardContent>
              <Table>
                 <TableHeader>
                     <TableRow>
-                    <TableHead>Patient(s)</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Status</TableHead>
+                    <TableHead>{d.patient}</TableHead>
+                    <TableHead>{d.date}</TableHead>
+                    <TableHead>{d.status}</TableHead>
                     <TableHead>
-                        <span className="sr-only">Actions</span>
+                        <span className="sr-only">{d.actions}</span>
                     </TableHead>
                     </TableRow>
                 </TableHeader>
@@ -98,7 +101,7 @@ export function ServiceDetailClient({ serviceData }: { serviceData: Serializable
                             <Button asChild variant="outline" size="sm">
                                 <Link href={`/appointments/${appt.id}`}>
                                 <Eye className="mr-2 h-4 w-4" />
-                                View
+                                {d.view}
                                 </Link>
                             </Button>
                             </TableCell>
@@ -107,7 +110,7 @@ export function ServiceDetailClient({ serviceData }: { serviceData: Serializable
                     ) : (
                         <TableRow>
                             <TableCell colSpan={4} className="h-24 text-center">
-                            No appointments found for this service.
+                            {d.noAppointmentsFound}
                             </TableCell>
                         </TableRow>
                     )}

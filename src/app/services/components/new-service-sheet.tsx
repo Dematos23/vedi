@@ -13,23 +13,26 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { NewServiceForm } from "./new-service-form";
+import { useLanguage } from "@/contexts/language-context";
 
 export function NewServiceSheet() {
   const [open, setOpen] = React.useState(false);
+  const { dictionary } = useLanguage();
+  const d = dictionary.services;
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button size="sm" className="gap-1">
           <PlusCircle className="h-4 w-4" />
-          New Service
+          {d.newService}
         </Button>
       </SheetTrigger>
       <SheetContent>
         <SheetHeader>
-          <SheetTitle>Register New Service</SheetTitle>
+          <SheetTitle>{d.registerNewService}</SheetTitle>
           <SheetDescription>
-            Add a new therapy or service to the registry.
+            {d.addNewService}
           </SheetDescription>
         </SheetHeader>
         <NewServiceForm onFormSubmit={() => setOpen(false)} />

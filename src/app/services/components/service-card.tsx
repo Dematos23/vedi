@@ -10,7 +10,6 @@ import Link from "next/link";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -42,6 +41,7 @@ import { Pencil, Trash2, Save, Power, PowerOff, Eye } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { updateService, deleteService, toggleServiceStatus } from "@/lib/actions";
 import { Badge } from "@/components/ui/badge";
+import { useLanguage } from "@/contexts/language-context";
 
 const serviceSchema = z.object({
   id: z.string(),
@@ -62,6 +62,8 @@ export function ServiceCard({ service }: ServiceCardProps) {
   const [showDeleteAlert, setShowDeleteAlert] = React.useState(false);
   const [showDeactivationAlert, setShowDeactivationAlert] = React.useState(false);
   const { toast } = useToast();
+  const { dictionary } = useLanguage();
+  const d = dictionary.services;
 
   const form = useForm<ServiceFormValues>({
     resolver: zodResolver(serviceSchema),
@@ -69,7 +71,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
       id: service.id,
       name: service.name,
       description: service.description,
-      price: service.price,
+      price: Number(service.price),
       duration: service.duration,
     },
   });
@@ -149,7 +151,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Service Name</FormLabel>
+                      <FormLabel>{d.serviceName}</FormLabel>
                       <FormControl>
                         <Input {...field} className="text-lg font-semibold" />
                       </FormControl>
@@ -160,7 +162,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
               ) : (
                 <div className="flex items-center gap-2">
                   <CardTitle>{service.name}</CardTitle>
-                  {isInactive && <Badge variant="destructive">Inactive</Badge>}
+                  {isInactive && <Badge variant="destructive">{d.inactive}</Badge>}
                 </div>
               )}
             </div>
@@ -168,7 +170,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
               <div className="flex gap-1">
                  <Button variant="ghost" size="icon" onClick={() => setIsEditing(true)}>
                   <Pencil className="h-5 w-5" />
-                  <span className="sr-only">Edit Service</span>
+                  <span className="sr-only">{d.edit}</span>
                 </Button>
               </div>
             )}
@@ -181,7 +183,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
                   name="description"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Description</FormLabel>
+                      <FormLabel>{d.descriptionLabel}</FormLabel>
                       <FormControl>
                         <Textarea {...field} />
                       </FormControl>
@@ -195,7 +197,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
                     name="price"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Price ($)</FormLabel>
+                        <FormLabel>{d.priceLabel}</FormLabel>
                         <FormControl>
                           <Input type="number" step="0.01" {...field} />
                         </FormControl>
@@ -208,7 +210,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
                     name="duration"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Duration (min)</FormLabel>
+                        <FormLabel>{d.durationLabel}</FormLabel>
                         <FormControl>
                           <Input type="number" {...field} />
                         </FormControl>
@@ -229,7 +231,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
                     </p>
                 </div>
                 <div className="text-right">
-                    <p className="font-semibold text-lg">{formatCurrency(service.price)}</p>
+                    <p className="font-semibold text-lg">{formatCurrency(Number(service.price))}</p>
                 </div>
               </div>
             )}
@@ -242,45 +244,45 @@ export function ServiceCard({ service }: ServiceCardProps) {
                             <AlertDialogTrigger asChild>
                                 <Button variant="destructive-outline" size="icon" type="button">
                                     <Trash2 className="h-4 w-4" />
-                                    <span className="sr-only">Delete Service</span>
+                                    <span className="sr-only">{d.delete}</span>
                                 </Button>
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                                 <AlertDialogHeader>
-                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                <AlertDialogTitle>{d.areYouSure}</AlertDialogTitle>
                                 <AlertDialogDescription>
-                                    This action cannot be undone. This will permanently delete the service.
+                                    {d.deleteWarning}
                                 </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogCancel>{d.cancel}</AlertDialogCancel>
                                 <AlertDialogAction
                                     onClick={handleDeleteAttempt}
                                     className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                                 >
-                                    Delete
+                                    {d.delete}
                                 </AlertDialogAction>
                                 </AlertDialogFooter>
                             </AlertDialogContent>
                         </AlertDialog>
                         <Button variant="ghost" size="icon" type="button" onClick={handleToggleStatus}>
                             {isInactive ? <Power className="h-5 w-5" /> : <PowerOff className="h-5 w-5" />}
-                            <span className="sr-only">{isInactive ? 'Activate' : 'Deactivate'} Service</span>
+                            <span className="sr-only">{isInactive ? d.activate : d.deactivate} Service</span>
                         </Button>
                     </div>
                   <Button variant="ghost" type="button" onClick={handleCancel} disabled={form.formState.isSubmitting}>
-                    Cancel
+                    {d.cancel}
                   </Button>
                   <Button type="submit" disabled={form.formState.isSubmitting}>
                     <Save className="mr-2 h-4 w-4" />
-                    {form.formState.isSubmitting ? "Saving..." : "Save"}
+                    {form.formState.isSubmitting ? d.saving : d.save}
                   </Button>
                 </>
              ) : (
                 <Button asChild variant="secondary" className="w-full">
                     <Link href={`/services/${service.id}`}>
                         <Eye className="mr-2 h-4 w-4" />
-                        View Details
+                        {d.viewDetails}
                     </Link>
                 </Button>
              )}
@@ -288,19 +290,18 @@ export function ServiceCard({ service }: ServiceCardProps) {
         </form>
       </Form>
       
-      {/* Deactivation Alert */}
       <AlertDialog open={showDeactivationAlert} onOpenChange={setShowDeactivationAlert}>
         <AlertDialogContent>
             <AlertDialogHeader>
-            <AlertDialogTitle>Cannot Delete Service</AlertDialogTitle>
+            <AlertDialogTitle>{d.cannotDelete}</AlertDialogTitle>
             <AlertDialogDescription>
-                This service has appointments associated with it and cannot be deleted. Would you like to deactivate it instead? Deactivated services will not appear when creating new appointments.
+                {d.deactivationWarning}
             </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{d.cancel}</AlertDialogCancel>
             <AlertDialogAction onClick={handleToggleStatus}>
-                Deactivate
+                {d.deactivate}
             </AlertDialogAction>
             </AlertDialogFooter>
         </AlertDialogContent>

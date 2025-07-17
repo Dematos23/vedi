@@ -42,7 +42,7 @@ export default async function ServiceDetailPage({ params }: { params: { id:strin
   
   const serializableService: SerializableServiceWithDetails = {
     ...service,
-    price: service.price,
+    price: Number(service.price),
     appointments: service.appointments.map(appt => ({
         ...appt,
         date: appt.date.toISOString(),

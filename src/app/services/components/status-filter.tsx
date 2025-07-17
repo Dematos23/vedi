@@ -10,12 +10,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { ServiceStatus } from "@prisma/client";
+import { useLanguage } from "@/contexts/language-context";
 
 export function StatusFilter() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
+  const { dictionary } = useLanguage();
+  const d = dictionary.services;
 
   const handleStatusChange = (status: string) => {
     const params = new URLSearchParams(searchParams);
@@ -33,12 +35,12 @@ export function StatusFilter() {
         onValueChange={handleStatusChange}
     >
       <SelectTrigger className="w-full md:w-[180px]">
-        <SelectValue placeholder="Filter by status" />
+        <SelectValue placeholder={d.filterByStatus} />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="ALL">All Statuses</SelectItem>
-        <SelectItem value="ACTIVE">Active</SelectItem>
-        <SelectItem value="INACTIVE">Inactive</SelectItem>
+        <SelectItem value="ALL">{d.allStatuses}</SelectItem>
+        <SelectItem value="ACTIVE">{d.active}</SelectItem>
+        <SelectItem value="INACTIVE">{d.inactive}</SelectItem>
       </SelectContent>
     </Select>
   );

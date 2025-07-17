@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { createService } from "@/lib/actions";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/contexts/language-context";
 
 const serviceSchema = z.object({
   name: z.string().min(3, "Service name must be at least 3 characters."),
@@ -33,6 +34,9 @@ interface NewServiceFormProps {
 
 export function NewServiceForm({ onFormSubmit }: NewServiceFormProps) {
   const { toast } = useToast();
+  const { dictionary } = useLanguage();
+  const d = dictionary.services;
+
   const form = useForm<ServiceFormValues>({
     resolver: zodResolver(serviceSchema),
     defaultValues: {
@@ -71,9 +75,9 @@ export function NewServiceForm({ onFormSubmit }: NewServiceFormProps) {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Service Name</FormLabel>
+              <FormLabel>{d.serviceName}</FormLabel>
               <FormControl>
-                <Input placeholder="e.g., Individual Therapy" {...field} />
+                <Input placeholder={d.serviceNameExample} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -84,9 +88,9 @@ export function NewServiceForm({ onFormSubmit }: NewServiceFormProps) {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
+              <FormLabel>{d.descriptionLabel}</FormLabel>
               <FormControl>
-                <Textarea placeholder="Describe the service..." {...field} />
+                <Textarea placeholder={d.descriptionPlaceholder} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -98,7 +102,7 @@ export function NewServiceForm({ onFormSubmit }: NewServiceFormProps) {
             name="price"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Price ($)</FormLabel>
+                <FormLabel>{d.priceLabel}</FormLabel>
                 <FormControl>
                   <Input type="number" step="0.01" placeholder="150.00" {...field} />
                 </FormControl>
@@ -111,7 +115,7 @@ export function NewServiceForm({ onFormSubmit }: NewServiceFormProps) {
             name="duration"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Duration (min)</FormLabel>
+                <FormLabel>{d.durationLabel}</FormLabel>
                 <FormControl>
                   <Input type="number" placeholder="50" {...field} />
                 </FormControl>
@@ -122,7 +126,7 @@ export function NewServiceForm({ onFormSubmit }: NewServiceFormProps) {
         </div>
         <div className="flex justify-end pt-4">
             <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "Registering..." : "Register Service"}
+                {form.formState.isSubmitting ? d.registering : d.registerService}
             </Button>
         </div>
       </form>

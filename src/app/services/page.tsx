@@ -1,17 +1,7 @@
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import prisma from "@/lib/prisma";
-import { Search } from "../patients/components/search";
-import { NewServiceSheet } from "./components/new-service-sheet";
-import { ServiceCard } from "./components/service-card";
-import { StatusFilter } from "./components/status-filter";
 import type { ServiceStatus } from "@prisma/client";
+import { ServicesList } from "./components/services-list";
 
 export default async function ServicesPage({
   searchParams,
@@ -44,7 +34,6 @@ export default async function ServicesPage({
     where.status = status as ServiceStatus;
   }
 
-
   const services = await prisma.service.findMany({
     where,
     orderBy: [
@@ -58,37 +47,6 @@ export default async function ServicesPage({
   });
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle>Services</CardTitle>
-            <CardDescription>
-              A list of all registered services.
-            </CardDescription>
-          </div>
-          <NewServiceSheet />
-        </div>
-        <div className="pt-4 flex flex-col md:flex-row items-center gap-4">
-          <div className="w-full md:flex-1">
-            <Search placeholder="Search by service name or description..." />
-          </div>
-          <div className="w-full md:w-auto">
-            <StatusFilter />
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {services.length > 0 ? (
-          services.map((service) => (
-           <ServiceCard key={service.id} service={service} />
-          ))
-        ) : (
-          <div className="text-center text-muted-foreground py-12 col-span-full">
-            No services found.
-          </div>
-        )}
-      </CardContent>
-    </Card>
+    <ServicesList services={services} />
   );
 }
