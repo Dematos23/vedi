@@ -39,6 +39,12 @@ interface TherapistDetailClientProps {
 
 export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
   const { name, lastname, kpis, assignedPatients, recentAppointments } = data;
+  const [formattedAppointments, setFormattedAppointments] = React.useState<SerializableAppointment[]>([]);
+
+  React.useEffect(() => {
+    // Format dates on the client to avoid hydration mismatch
+    setFormattedAppointments(recentAppointments);
+  }, [recentAppointments]);
 
   return (
     <div className="grid gap-6">
@@ -133,15 +139,23 @@ export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {recentAppointments.map((appt) => (
-                            <TableRow key={appt.id}>
-                                <TableCell>{appt.patients.map(getFullName).join(', ')}</TableCell>
-                                <TableCell>
-                                    {appt.service && <Badge variant="outline">{appt.service.name}</Badge>}
+                        {formattedAppointments.length > 0 ? (
+                           formattedAppointments.map((appt) => (
+                                <TableRow key={appt.id}>
+                                    <TableCell>{appt.patients.map(getFullName).join(', ')}</TableCell>
+                                    <TableCell>
+                                        {appt.service && <Badge variant="outline">{appt.service.name}</Badge>}
+                                    </TableCell>
+                                    <TableCell>{format(new Date(appt.date), "PPP")}</TableCell>
+                                </TableRow>
+                            ))
+                        ) : (
+                             <TableRow>
+                                <TableCell colSpan={3} className="h-24 text-center">
+                                    Loading appointments...
                                 </TableCell>
-                                <TableCell>{format(new Date(appt.date), "PPP")}</TableCell>
                             </TableRow>
-                        ))}
+                        )}
                     </TableBody>
                 </Table>
             </CardContent>
