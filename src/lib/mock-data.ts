@@ -50,12 +50,12 @@ export const generateMockPatients = (count: number): Omit<Patient, 'id' | 'creat
 };
 
 
-export const mockServices: Omit<Service, 'id' | 'createdAt' | 'updatedAt' | 'userId' | 'packageId'>[] = [
-    { name: 'Individual Therapy', price: 150.00, duration: 50, description: 'One-on-one therapy session with a licensed therapist.', status: 'ACTIVE', techniques: [] },
-    { name: 'Couples Counseling', price: 200.00, duration: 60, description: 'Therapy session for couples to improve their relationship.', status: 'ACTIVE', techniques: [] },
-    { name: 'Family Therapy', price: 250.00, duration: 90, description: 'Therapy session for families to resolve conflicts.', status: 'ACTIVE', techniques: [] },
-    { name: 'Cognitive Behavioral Therapy (CBT)', price: 160.00, duration: 50, description: 'A talk therapy that helps you manage your problems by changing the way you think and behave.', status: 'ACTIVE', techniques: [] },
-    { name: 'Group Therapy', price: 80.00, duration: 90, description: 'A therapy session with a group of people who share similar experiences.', status: 'INACTIVE', techniques: [] },
+export const mockServices: Omit<Service, 'id' | 'createdAt' | 'updatedAt' | 'userId' | 'packageId' | 'techniques'>[] = [
+    { name: 'Individual Therapy', price: 150.00, duration: 50, description: 'One-on-one therapy session with a licensed therapist.', status: 'ACTIVE' },
+    { name: 'Couples Counseling', price: 200.00, duration: 60, description: 'Therapy session for couples to improve their relationship.', status: 'ACTIVE' },
+    { name: 'Family Therapy', price: 250.00, duration: 90, description: 'Therapy session for families to resolve conflicts.', status: 'ACTIVE' },
+    { name: 'Cognitive Behavioral Therapy (CBT)', price: 160.00, duration: 50, description: 'A talk therapy that helps you manage your problems by changing the way you think and behave.', status: 'ACTIVE' },
+    { name: 'Group Therapy', price: 80.00, duration: 90, description: 'A therapy session with a group of people who share similar experiences.', status: 'INACTIVE' },
 ];
 
 const roundUpToNearest15Minutes = (date: Date): Date => {
@@ -92,7 +92,7 @@ export const generateMockSalesAndBalances = (patients: Patient[], services: Serv
 };
 
 
-export const generateMockAppointments = (patients: Patient[], services: Service[]): Omit<Appointment, 'id' | 'createdAt' | 'updatedAt' | 'packageId'>[] => {
+export const generateMockAppointments = (patients: Patient[], services: Service[]): Omit<Appointment, 'id' | 'createdAt' | 'updatedAt' | 'packageId' | 'patients'>[] => {
     const appointments: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt' | 'packageId' | 'patients'>[] = [];
     if (!patients.length || !services.length) return [];
 
