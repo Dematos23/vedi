@@ -1,7 +1,7 @@
 
 import { faker } from '@faker-js/faker';
-import type { User, Patient, Service, Sale, Appointment } from '@prisma/client';
-import { AppointmentStatus, Concurrency, ServiceStatus, UserType } from '@prisma/client';
+import type { User, Patient, Service, Sale, Appointment, Technique } from '@prisma/client';
+import { AppointmentStatus, Concurrency, ServiceStatus, UserType, UserTechniqueStatus } from '@prisma/client';
 
 // Use a consistent seed for reproducibility
 faker.seed(123);
@@ -32,6 +32,17 @@ export const mockUsers: Omit<User, 'id' | 'createdAt' | 'updatedAt'>[] = [
         phone: faker.phone.number()
     }
 ];
+
+export const mockTechniques: Omit<Technique, 'id' | 'createdAt' | 'updatedAt' | 'services'>[] = [
+    { name: 'Cognitive Restructuring', description: 'Identifying and changing negative thought patterns.' },
+    { name: 'Exposure Therapy', description: 'Confronting fears in a safe environment.' },
+    { name: 'Mindfulness Practice', description: 'Focusing on the present moment without judgment.' },
+    { name: 'Behavioral Activation', description: 'Increasing engagement in rewarding activities.' },
+    { name: 'Emotion Regulation Skills', description: 'Learning to manage and respond to intense emotions.' },
+    { name: 'Systemic Desensitization', description: 'Gradual exposure to anxiety-provoking stimuli while in a relaxed state.' },
+    { name: 'Communication Training', description: 'Improving interpersonal communication skills.' }
+];
+
 
 export const generateMockPatients = (count: number): Omit<Patient, 'id' | 'createdAt' | 'updatedAt' | 'notes' | 'userId'>[] => {
     const patients = [];
@@ -91,32 +102,43 @@ export const generateMockSalesAndBalances = (patients: Patient[], services: Serv
     return sales;
 };
 
-
-export const generateMockAppointments = (patients: Patient[], services: Service[]): Omit<Appointment, 'id' | 'createdAt' | 'updatedAt' | 'packageId' | 'patients'>[] => {
-    const appointments: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt' | 'packageId' | 'patients'>[] = [];
-    if (!patients.length || !services.length) return [];
-
+// This is a more complex appointment generator that respects therapist-technique-service relationships
+export const generateMockAppointments = (
+    patients: Patient[],
+    therapistId: string,
+    servicesForTherapist: { service: Service, techniques: Technique[] }[]
+): { appointmentData: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt' | 'packageId' | 'patients'>, techniquesUsed: Technique[] }[] => {
+    
+    const appointments: { appointmentData: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt' | 'packageId' | 'patients'>, techniquesUsed: Technique[] }[] = [];
+    if (!patients.length || !servicesForTherapist.length) return [];
+    
     patients.forEach(patient => {
-        const activeServices = services.filter(s => s.status === 'ACTIVE');
-        if (activeServices.length === 0) return;
-
-        // Create 2-3 appointments for each patient
+        // Create 2-3 appointments for each patient with this therapist
         for (let i = 0; i < faker.number.int({ min: 2, max: 3 }); i++) {
-            const randomService = activeServices[Math.floor(Math.random() * activeServices.length)];
-            const randomDate = (i % 2 === 0) 
-                ? faker.date.between({ from: new Date(new Date().setDate(new Date().getDate() - 60)), to: new Date(new Date().setDate(new Date().getDate() - 1)) }) // Past
-                : faker.date.between({ from: new Date(), to: new Date(new Date().setDate(new Date().getDate() + 60)) }); // Future
+            const { service, techniques } = servicesForTherapist[Math.floor(Math.random() * servicesForTherapist.length)];
+            
+            const isPastAppointment = i % 2 === 0;
+            const randomDate = isPastAppointment
+                ? faker.date.between({ from: new Date(new Date().setDate(new Date().getDate() - 60)), to: new Date(new Date().setDate(new Date().getDate() - 1)) })
+                : faker.date.between({ from: new Date(), to: new Date(new Date().setDate(new Date().getDate() + 60)) });
+
+            const appointmentStatus = isPastAppointment ? AppointmentStatus.DONE : AppointmentStatus.PROGRAMMED;
 
             const appointmentData: any = {
                 date: roundUpToNearest15Minutes(randomDate),
                 concurrency: Concurrency.SINGLE,
-                status: AppointmentStatus.PROGRAMMED,
-                description: `Scheduled session for ${randomService.name}.`,
-                serviceId: randomService.id,
+                status: appointmentStatus,
+                description: `Scheduled session for ${service.name}.`,
+                serviceId: service.id,
                 patients: { connect: [{ id: patient.id }] }, // Connect patient
             };
-            appointments.push(appointmentData);
+            
+            appointments.push({
+                appointmentData,
+                techniquesUsed: techniques,
+            });
         }
     });
+
     return appointments;
 }
