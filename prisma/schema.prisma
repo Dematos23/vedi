@@ -19,7 +19,7 @@ model User {
   type     UserType @default(THERAPIST)
   phone    String?
 
-  techniques             UserTechnique[]
+  techniques             UserTechniqueStatus[]
   services               Service[]
   patients               Patient[]
   userTechniqueUsageLogs UserTechniqueUsageLog[]
@@ -54,7 +54,7 @@ model Technique {
   name        String
   description String
 
-  users                  UserTechnique[]
+  users                  UserTechniqueStatus[]
   services               Service[]
   userTechniqueUsageLogs UserTechniqueUsageLog[]
 
