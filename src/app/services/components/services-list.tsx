@@ -42,7 +42,7 @@ export function ServicesList({ services }: ServicesListProps) {
             </div>
             </div>
         </CardHeader>
-        <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <CardContent className="grid gap-4">
             {services.length > 0 ? (
             services.map((service) => (
             <ServiceCard key={service.id} service={service} />
