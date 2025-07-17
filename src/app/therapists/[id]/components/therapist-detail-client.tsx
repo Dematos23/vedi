@@ -123,40 +123,7 @@ export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
       </Card>
 
 
-      <div className="grid md:grid-cols-2 gap-6">
-        <Card>
-            <CardHeader>
-                <CardTitle>Assigned Patients</CardTitle>
-                <CardDescription>Patients currently under this therapist's care.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                 <Table>
-                    <TableHeader>
-                        <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead className="hidden sm:table-cell">Email</TableHead>
-                        <TableHead><span className="sr-only">Actions</span></TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {assignedPatients.map((patient) => (
-                            <TableRow key={patient.id}>
-                                <TableCell>{getFullName(patient)}</TableCell>
-                                <TableCell className="hidden sm:table-cell">{patient.email}</TableCell>
-                                <TableCell className="text-right">
-                                    <Button asChild variant="ghost" size="icon">
-                                        <Link href={`/patients/${patient.id}`}>
-                                            <Eye className="h-4 w-4" />
-                                            <span className="sr-only">View Patient</span>
-                                        </Link>
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </CardContent>
-        </Card>
+      <div className="grid grid-cols-1 gap-6">
         <Card>
             <CardHeader>
                 <CardTitle>Recent Appointments</CardTitle>
@@ -186,6 +153,46 @@ export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
                              <TableRow>
                                 <TableCell colSpan={3} className="h-24 text-center">
                                     No recent appointments found.
+                                </TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+            </CardContent>
+        </Card>
+        <Card>
+            <CardHeader>
+                <CardTitle>Assigned Patients</CardTitle>
+                <CardDescription>Patients currently under this therapist's care.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                 <Table>
+                    <TableHeader>
+                        <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead className="hidden sm:table-cell">Email</TableHead>
+                        <TableHead><span className="sr-only">Actions</span></TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {assignedPatients.map((patient) => (
+                            <TableRow key={patient.id}>
+                                <TableCell>{getFullName(patient)}</TableCell>
+                                <TableCell className="hidden sm:table-cell">{patient.email}</TableCell>
+                                <TableCell className="text-right">
+                                    <Button asChild variant="ghost" size="icon">
+                                        <Link href={`/patients/${patient.id}`}>
+                                            <Eye className="h-4 w-4" />
+                                            <span className="sr-only">View Patient</span>
+                                        </Link>
+                                    </Button>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                         {assignedPatients.length === 0 && (
+                            <TableRow>
+                                <TableCell colSpan={3} className="h-24 text-center">
+                                    No patients assigned.
                                 </TableCell>
                             </TableRow>
                         )}
