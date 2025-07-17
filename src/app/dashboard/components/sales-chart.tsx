@@ -15,16 +15,23 @@ import { Skeleton } from "@/components/ui/skeleton";
 type TimeUnit = "day" | "week" | "month" | "year";
 
 export function SalesChart() {
-  const [dateRange, setDateRange] = React.useState<DateRange | undefined>({
-    from: startOfDay(new Date(new Date().getFullYear(), 0, 1)),
-    to: new Date(),
-  });
+  const [dateRange, setDateRange] = React.useState<DateRange | undefined>();
   const [timeUnit, setTimeUnit] = React.useState<TimeUnit>("month");
   const [data, setData] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState(true);
 
+  // Defer setting initial date range to the client to avoid hydration mismatch
+  React.useEffect(() => {
+    const today = new Date();
+    setDateRange({
+      from: startOfDay(new Date(today.getFullYear(), 0, 1)),
+      to: today,
+    });
+  }, []);
+
   React.useEffect(() => {
     const fetchData = async () => {
+      // Ensure dateRange is set before fetching
       if (dateRange?.from && dateRange?.to) {
         setLoading(true);
         const chartData = await getChartData({
@@ -71,7 +78,7 @@ export function SalesChart() {
                 </SelectContent>
             </Select>
           </div>
-           {loading ? (
+           {loading || !dateRange ? (
              <Skeleton className="h-[350px] w-full" />
            ) : (
             <div className="h-[350px]">
