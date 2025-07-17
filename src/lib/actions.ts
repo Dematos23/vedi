@@ -408,7 +408,7 @@ export async function getTherapistPerformance(therapistId: string) {
     }
   });
 
-  const userTechniques = await prisma.userTechnique.findMany({
+  const userTechniqueStatuses = await prisma.userTechniqueStatus.findMany({
     where: { userId: therapistId },
     include: {
         technique: true,
@@ -416,16 +416,16 @@ export async function getTherapistPerformance(therapistId: string) {
   });
 
   const techniquesPerformance = await Promise.all(
-    userTechniques.map(async (userTechnique) => {
+    userTechniqueStatuses.map(async (userTechniqueStatus) => {
         const usageCount = await prisma.userTechniqueUsageLog.count({
             where: {
                 userId: therapistId,
-                techniqueId: userTechnique.techniqueId,
+                techniqueId: userTechniqueStatus.techniqueId,
             },
         });
 
         return {
-            ...userTechnique,
+            ...userTechniqueStatus,
             _count: {
                 userTechniqueUsageLogs: usageCount,
             },

@@ -1,7 +1,7 @@
 
 import { faker } from '@faker-js/faker';
 import type { User, Patient, Service, Sale, Appointment, Technique } from '@prisma/client';
-import { AppointmentStatus, Concurrency, ServiceStatus, UserType, UserTechniqueStatus } from '@prisma/client';
+import { AppointmentStatus, Concurrency, ServiceStatus, UserType, UserTechniqueStatusType } from '@prisma/client';
 
 // Use a consistent seed for reproducibility
 faker.seed(123);

@@ -3,9 +3,9 @@ import * as React from "react";
 import { notFound } from "next/navigation";
 import { getTherapistPerformance } from "@/lib/actions";
 import { TherapistDetailClient } from "./components/therapist-detail-client";
-import type { Technique, UserTechnique } from "@prisma/client";
+import type { Technique, UserTechniqueStatus } from "@prisma/client";
 
-export type TechniquePerformance = (UserTechnique & {
+export type TechniquePerformance = (UserTechniqueStatus & {
     technique: Technique;
     _count: {
         userTechniqueUsageLogs: number;

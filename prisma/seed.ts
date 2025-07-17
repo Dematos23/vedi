@@ -1,5 +1,5 @@
 
-import { PrismaClient, UserType, UserTechniqueStatus } from '@prisma/client';
+import { PrismaClient, UserTechniqueStatusType } from '@prisma/client';
 import { mockUsers, generateMockPatients, mockServices, mockTechniques, generateMockSalesAndBalances, generateMockAppointments } from '../src/lib/mock-data';
 import { faker } from '@faker-js/faker';
 
@@ -25,7 +25,7 @@ async function main() {
   }
   
   await prisma.service.deleteMany();
-  await prisma.userTechnique.deleteMany();
+  await prisma.userTechniqueStatus.deleteMany();
   await prisma.user.deleteMany();
   await prisma.patient.deleteMany();
   await prisma.technique.deleteMany();
@@ -50,11 +50,11 @@ async function main() {
     // Assign 2-4 random techniques to each therapist
     const techniquesToAssign = faker.helpers.arrayElements(createdTechniques, faker.number.int({ min: 2, max: 4 }));
     for (const technique of techniquesToAssign) {
-      await prisma.userTechnique.create({
+      await prisma.userTechniqueStatus.create({
         data: {
           userId: user.id,
           techniqueId: technique.id,
-          status: faker.helpers.arrayElement([UserTechniqueStatus.PRACTITIONER, UserTechniqueStatus.THERAPIST]),
+          status: faker.helpers.arrayElement([UserTechniqueStatusType.PRACTITIONER, UserTechniqueStatusType.THERAPIST]),
         },
       });
     }
@@ -80,7 +80,7 @@ async function main() {
     console.log(`- Seeded ${createdPatients.length} patients.`);
 
     // Get therapist's techniques
-    const therapistTechniques = await prisma.userTechnique.findMany({
+    const therapistTechniques = await prisma.userTechniqueStatus.findMany({
       where: { userId: user.id },
       include: { technique: true },
     });
