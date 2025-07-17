@@ -21,14 +21,8 @@ import { Eye } from "lucide-react";
 import Link from "next/link";
 import { Search } from "@/app/patients/components/search";
 import { NewTechniqueSheet } from "./new-technique-sheet";
-import type { Technique } from "@prisma/client";
 import { useLanguage } from "@/contexts/language-context";
-
-type TechniqueWithTherapistCount = Technique & {
-    _count: {
-        userStatuses: number;
-    }
-}
+import type { TechniqueWithTherapistCount } from "../page";
 
 interface TechniquesListProps {
   techniques: TechniqueWithTherapistCount[];
@@ -74,7 +68,7 @@ export function TechniquesList({ techniques }: TechniquesListProps) {
                                     {technique.description}
                                 </TableCell>
                                 <TableCell className="text-center font-medium">
-                                    {technique._count.userStatuses}
+                                    {technique.userStatuses.length}
                                 </TableCell>
                                 <TableCell className="text-right">
                                     <Button asChild variant="outline" size="sm">

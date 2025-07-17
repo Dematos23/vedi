@@ -1,12 +1,10 @@
 
 import prisma from "@/lib/prisma";
-import type { Prisma, Technique } from "@prisma/client";
+import type { Prisma, Technique, UserTechniqueStatus } from "@prisma/client";
 import { TechniquesList } from "./components/techniques-list";
 
 export type TechniqueWithTherapistCount = Technique & {
-    _count: {
-        userStatuses: number;
-    }
+    userStatuses: UserTechniqueStatus[];
 }
 
 export default async function TechniquesPage({
@@ -38,9 +36,7 @@ export default async function TechniquesPage({
   const techniques: TechniqueWithTherapistCount[] = await prisma.technique.findMany({
     where,
     include: {
-        _count: {
-            select: { userStatuses: true }
-        }
+        userStatuses: true
     },
     orderBy: {
         name: 'asc'
