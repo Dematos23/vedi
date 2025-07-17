@@ -134,6 +134,7 @@ export const dictionaries = {
         date: "Fecha",
         time: "Hora",
         status: "Estado",
+        approvalStatus: "Aprobación",
         actions: "Acciones",
         // Buttons
         view: "Ver",
@@ -181,7 +182,7 @@ export const dictionaries = {
         sessionNotesDescription: "Ver o editar las notas de la sesión a continuación.",
         editNotes: "Editar Notas",
         saveNotes: "Guardar Notas",
-        saving: "Guardando...",
+        savingNotes: "Guardando...",
         cancel: "Cancelar",
         noNotes: "Aún no se han añadido notas para esta sesión.",
         // Agenda View
@@ -274,6 +275,10 @@ export const dictionaries = {
       techniqueStatus: {
         PRACTITIONER: "Practicante",
         THERAPIST: "Terapeuta",
+      },
+      validationStatus: {
+        PENDING: "En evaluación",
+        APPROVED: "Aprobada",
       }
     }
   },
@@ -409,6 +414,7 @@ export const dictionaries = {
         date: "Date",
         time: "Time",
         status: "Status",
+        approvalStatus: "Approval",
         actions: "Actions",
         // Buttons
         view: "View",
@@ -549,11 +555,13 @@ export const dictionaries = {
       techniqueStatus: {
         PRACTITIONER: "Practitioner",
         THERAPIST: "Therapist",
+      },
+      validationStatus: {
+        PENDING: "Under review",
+        APPROVED: "Approved",
       }
     }
   },
 };
 
 export type Dictionary = typeof dictionaries.es;
-
-    

@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Eye, ArrowUpDown, UsersRound } from "lucide-react";
+import { Eye, ArrowUpDown, UsersRound, ShieldCheck, ShieldAlert } from "lucide-react";
 import { NewAppointmentSheet } from "./new-appointment-sheet";
 import { Filters } from "./filters";
 import type { Patient, Service } from "@prisma/client";
@@ -90,8 +90,9 @@ export function AppointmentsList({ appointments, allPatients, allServices, searc
                                     {isClient ? format(new Date(appt.date), "PPP 'at' p") : ""}
                                 </CardDescription>
                             </div>
-                            <Badge variant={appt.status === 'DONE' ? 'secondary' : 'default'}>
-                                {dictionary.enums.appointmentStatus[appt.status]}
+                            <Badge variant={appt.validatedByGuide ? 'default' : 'outline'} className="text-xs bg-blue-100 text-blue-800 border-blue-300">
+                              {appt.validatedByGuide ? <ShieldCheck className="mr-1 h-3 w-3" /> : <ShieldAlert className="mr-1 h-3 w-3" /> }
+                              {dictionary.enums.validationStatus[appt.validatedByGuide ? 'APPROVED' : 'PENDING']}
                             </Badge>
                         </div>
                     </CardHeader>
@@ -101,7 +102,10 @@ export function AppointmentsList({ appointments, allPatients, allServices, searc
                             <span className="font-medium truncate">{appt.patients.map(p => getFullName(p)).join(', ')}</span>
                         </div>
                     </CardContent>
-                    <CardFooter className="pt-0">
+                    <CardFooter className="flex items-center gap-2 pt-2">
+                         <Badge variant={appt.status === 'DONE' ? 'secondary' : 'default'} className="mr-auto">
+                            {dictionary.enums.appointmentStatus[appt.status]}
+                         </Badge>
                         <Button asChild variant="outline" size="sm" className="w-full">
                             <Link href={`/appointments/${appt.id}`}>
                             <Eye className="mr-2 h-4 w-4" />
@@ -132,6 +136,7 @@ export function AppointmentsList({ appointments, allPatients, allServices, searc
               </TableHead>
               <TableHead>{d.time}</TableHead>
                <TableHead>{d.status}</TableHead>
+               <TableHead>{d.approvalStatus}</TableHead>
               <TableHead>
                 <span className="sr-only">{d.actions}</span>
               </TableHead>
@@ -157,6 +162,12 @@ export function AppointmentsList({ appointments, allPatients, allServices, searc
                     {dictionary.enums.appointmentStatus[appt.status]}
                   </Badge>
                 </TableCell>
+                <TableCell>
+                  <Badge variant={appt.validatedByGuide ? 'default' : 'outline'} className="bg-blue-100 text-blue-800 border-blue-300 hover:bg-blue-200">
+                    {appt.validatedByGuide ? <ShieldCheck className="mr-1.5 h-3.5 w-3.5" /> : <ShieldAlert className="mr-1.5 h-3.5 w-3.5" /> }
+                    {dictionary.enums.validationStatus[appt.validatedByGuide ? 'APPROVED' : 'PENDING']}
+                  </Badge>
+                </TableCell>
                 <TableCell className="text-right">
                   <Button asChild variant="outline" size="sm">
                     <Link href={`/appointments/${appt.id}`}>
@@ -169,7 +180,7 @@ export function AppointmentsList({ appointments, allPatients, allServices, searc
             ))}
              {appointments.length === 0 && (
                 <TableRow>
-                    <TableCell colSpan={6} className="h-24 text-center">
+                    <TableCell colSpan={7} className="h-24 text-center">
                     {d.noAppointmentsFound}
                     </TableCell>
                 </TableRow>

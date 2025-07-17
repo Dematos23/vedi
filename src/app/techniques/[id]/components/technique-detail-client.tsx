@@ -20,7 +20,7 @@ import { Progress } from "@/components/ui/progress";
 import { TechniqueStatus } from "@prisma/client";
 
 export function TechniqueDetailClient({ technique }: { technique: TechniqueWithDetails }) {
-  const { name, description, services, users } = technique;
+  const { name, description, services, users, requiredSessionsForTherapist } = technique;
   const { dictionary } = useLanguage();
   const d = dictionary.techniques;
 
@@ -70,8 +70,8 @@ export function TechniqueDetailClient({ technique }: { technique: TechniqueWithD
                                 </TableCell>
                                 <TableCell>
                                     <div className="flex items-center gap-4">
-                                        <Progress value={status._count.userTechniqueUsageLogs} max={100} className="w-full" />
-                                        <span className="text-sm font-mono text-muted-foreground">{status._count.userTechniqueUsageLogs}</span>
+                                        <Progress value={status._count.userTechniqueUsageLogs} max={requiredSessionsForTherapist} className="w-full" />
+                                        <span className="text-sm font-mono text-muted-foreground">{status._count.userTechniqueUsageLogs}/{requiredSessionsForTherapist}</span>
                                     </div>
                                 </TableCell>
                                 <TableCell className="text-right">

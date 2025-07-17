@@ -13,7 +13,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowLeft, User, Clock, DollarSign, BookText, Pencil, Save, CheckCircle } from "lucide-react";
+import { ArrowLeft, User, Clock, DollarSign, BookText, Pencil, Save, CheckCircle, ShieldCheck, ShieldAlert } from "lucide-react";
 import { format } from "date-fns";
 import { formatCurrency, getFullName } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
@@ -105,7 +105,7 @@ export function AppointmentDetailClient({ appointmentData }: { appointmentData: 
     }
   }
   
-  const { patients, service, description, status } = appointment;
+  const { patients, service, description, status, validatedByGuide } = appointment;
 
   if (!service) {
     return <div>Service not found for this appointment.</div>;
@@ -142,9 +142,15 @@ export function AppointmentDetailClient({ appointmentData }: { appointmentData: 
                 {formattedDate ? `${d.scheduledOn} ${formattedDate}` : d.loadingDate}
               </CardDescription>
             </div>
-            <Badge variant={status === 'DONE' ? 'secondary' : 'default'} className="text-sm">
-                {dictionary.enums.appointmentStatus[status]}
-            </Badge>
+            <div className="flex flex-col items-end gap-2">
+              <Badge variant={status === 'DONE' ? 'secondary' : 'default'} className="text-sm">
+                  {dictionary.enums.appointmentStatus[status]}
+              </Badge>
+              <Badge variant={validatedByGuide ? 'default' : 'outline'} className="text-sm bg-blue-100 text-blue-800 border-blue-300">
+                {validatedByGuide ? <ShieldCheck className="mr-1.5 h-3.5 w-3.5" /> : <ShieldAlert className="mr-1.5 h-3.5 w-3.5" /> }
+                {dictionary.enums.validationStatus[validatedByGuide ? 'APPROVED' : 'PENDING']}
+              </Badge>
+            </div>
           </div>
         </CardHeader>
         <CardContent className="grid gap-6">
