@@ -136,6 +136,9 @@ export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
                         <TableHead>Patient(s)</TableHead>
                         <TableHead>Service</TableHead>
                         <TableHead>Date</TableHead>
+                        <TableHead>
+                            <span className="sr-only">Actions</span>
+                        </TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -147,11 +150,19 @@ export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
                                         {appt.service && <Badge variant="outline">{appt.service.name}</Badge>}
                                     </TableCell>
                                     <TableCell>{format(new Date(appt.date), "PPP")}</TableCell>
+                                    <TableCell className="text-right">
+                                        <Button asChild variant="outline" size="sm">
+                                            <Link href={`/appointments/${appt.id}`}>
+                                                <Eye className="mr-2 h-4 w-4" />
+                                                View
+                                            </Link>
+                                        </Button>
+                                    </TableCell>
                                 </TableRow>
                             ))
                         ) : (
                              <TableRow>
-                                <TableCell colSpan={3} className="h-24 text-center">
+                                <TableCell colSpan={4} className="h-24 text-center">
                                     No recent appointments found.
                                 </TableCell>
                             </TableRow>
