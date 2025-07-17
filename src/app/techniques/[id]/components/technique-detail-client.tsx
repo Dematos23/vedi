@@ -19,7 +19,7 @@ import { useLanguage } from "@/contexts/language-context";
 import type { TechniqueWithDetails } from "../page";
 
 export function TechniqueDetailClient({ technique }: { technique: TechniqueWithDetails }) {
-  const { name, description, services, userStatuses } = technique;
+  const { name, description, services, users } = technique;
   const { dictionary } = useLanguage();
   const d = dictionary.techniques;
 
@@ -78,8 +78,8 @@ export function TechniqueDetailClient({ technique }: { technique: TechniqueWithD
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                    {userStatuses.length > 0 ? (
-                        userStatuses.map(status => (
+                    {users.length > 0 ? (
+                        users.map(status => (
                             <TableRow key={status.userId}>
                                 <TableCell>
                                     <Link href={`/therapists/${status.userId}`} className="hover:underline">

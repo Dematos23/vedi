@@ -7,7 +7,7 @@ import { TechniqueDetailClient } from "./components/technique-detail-client";
 
 export type TechniqueWithDetails = Technique & {
   services: Service[];
-  userStatuses: (UserTechniqueStatus & {
+  users: (UserTechniqueStatus & {
     user: User;
   })[];
 };
@@ -17,7 +17,7 @@ export default async function TechniqueDetailPage({ params }: { params: { id:str
     where: { id: params.id },
     include: {
       services: true,
-      userStatuses: {
+      users: {
         include: {
           user: true
         }

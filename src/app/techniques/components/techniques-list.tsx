@@ -68,7 +68,7 @@ export function TechniquesList({ techniques }: TechniquesListProps) {
                                     {technique.description}
                                 </TableCell>
                                 <TableCell className="text-center font-medium">
-                                    {technique.userStatuses.length}
+                                    {technique.users.length}
                                 </TableCell>
                                 <TableCell className="text-right">
                                     <Button asChild variant="outline" size="sm">
