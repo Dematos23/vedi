@@ -1,5 +1,5 @@
 
-import { PrismaClient, UserTechniqueStatusType } from '@prisma/client';
+import { PrismaClient, TechniqueStatus } from '@prisma/client';
 import { mockUsers, generateMockPatients, mockServices, mockTechniques, generateMockSalesAndBalances, generateMockAppointments } from '../src/lib/mock-data';
 import { faker } from '@faker-js/faker';
 
@@ -54,7 +54,7 @@ async function main() {
         data: {
           userId: user.id,
           techniqueId: technique.id,
-          status: faker.helpers.arrayElement([UserTechniqueStatusType.PRACTITIONER, UserTechniqueStatusType.THERAPIST]),
+          status: faker.helpers.arrayElement([TechniqueStatus.PRACTITIONER, TechniqueStatus.THERAPIST]),
         },
       });
     }
