@@ -15,14 +15,16 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Eye } from "lucide-react";
+import { Eye, BrainCircuit } from "lucide-react";
 import Link from "next/link";
 import { Search } from "@/app/patients/components/search";
 import { NewTechniqueSheet } from "./new-technique-sheet";
 import { useLanguage } from "@/contexts/language-context";
 import type { TechniqueWithTherapistCount } from "../page";
+import { Badge } from "@/components/ui/badge";
 
 interface TechniquesListProps {
   techniques: TechniqueWithTherapistCount[];
@@ -49,7 +51,39 @@ export function TechniquesList({ techniques }: TechniquesListProps) {
                 </div>
             </CardHeader>
             <CardContent>
-                <Table>
+                {/* Mobile Card View */}
+                <div className="grid gap-4 md:hidden">
+                    {techniques.map((technique) => (
+                        <Card key={technique.id}>
+                            <CardHeader>
+                                <div className="flex justify-between items-start">
+                                    <div className="flex-1">
+                                         <CardTitle className="text-base line-clamp-2">{technique.name}</CardTitle>
+                                         <CardDescription className="text-xs pt-1">{technique.description}</CardDescription>
+                                    </div>
+                                    <Badge variant="secondary">{technique.users.length} {d.therapists}</Badge>
+                                </div>
+                            </CardHeader>
+                            <CardFooter>
+                                <Button asChild variant="outline" size="sm" className="w-full">
+                                    <Link href={`/techniques/${technique.id}`}>
+                                        <Eye className="mr-2 h-4 w-4" />
+                                        {d.view}
+                                    </Link>
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    ))}
+                    {techniques.length === 0 && (
+                        <div className="h-24 text-center flex items-center justify-center">
+                             <p>{d.noTechniquesFound}</p>
+                        </div>
+                    )}
+                </div>
+
+
+                {/* Desktop Table View */}
+                <Table className="hidden md:table">
                     <TableHeader>
                         <TableRow>
                             <TableHead>{d.techniqueName}</TableHead>
