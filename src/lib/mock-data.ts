@@ -108,7 +108,7 @@ export const generateMockSalesAndBalances = (patients: Patient[], services: Serv
 // This is a more complex appointment generator that respects therapist-technique-service relationships
 export const generateMockAppointments = (
     patient: Patient,
-    servicesForTherapist: { service: Service, techniques: Technique[] }[]
+    servicesForTherapist: (Service & { techniques: Technique[] })[]
 ): { appointmentData: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt' | 'packageId' | 'patients'>, techniquesUsed: Technique[], service: Service }[] => {
     
     const appointments: { appointmentData: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt' | 'packageId' | 'patients'>, techniquesUsed: Technique[], service: Service }[] = [];
@@ -120,7 +120,7 @@ export const generateMockAppointments = (
 
     // Create past appointments
     for (let i = 0; i < pastAppointmentsCount; i++) {
-        const { service, techniques } = faker.helpers.arrayElement(servicesForTherapist);
+        const service = faker.helpers.arrayElement(servicesForTherapist);
         const randomDate = faker.date.between({ from: new Date(new Date().setDate(new Date().getDate() - 90)), to: new Date(new Date().setDate(new Date().getDate() - 1)) });
         
         const appointmentData: any = {
@@ -134,14 +134,14 @@ export const generateMockAppointments = (
         
         appointments.push({
             appointmentData,
-            techniquesUsed: techniques,
+            techniquesUsed: service.techniques,
             service,
         });
     }
 
     // Create future appointments
     for (let i = 0; i < futureAppointmentsCount; i++) {
-        const { service, techniques } = faker.helpers.arrayElement(servicesForTherapist);
+        const service = faker.helpers.arrayElement(servicesForTherapist);
         const randomDate = faker.date.between({ from: new Date(new Date().setDate(new Date().getDate() + 1)), to: new Date(new Date().setDate(new Date().getDate() + 90)) });
 
         const appointmentData: any = {
@@ -155,7 +155,7 @@ export const generateMockAppointments = (
 
         appointments.push({
             appointmentData,
-            techniquesUsed: techniques,
+            techniquesUsed: service.techniques,
             service,
         });
     }
