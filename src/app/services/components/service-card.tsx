@@ -6,6 +6,7 @@ import type { Service } from "@prisma/client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import Link from "next/link";
 import {
   Card,
   CardContent,
@@ -37,7 +38,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { formatCurrency, cn } from "@/lib/utils";
-import { Pencil, Trash2, Save, Power, PowerOff } from "lucide-react";
+import { Pencil, Trash2, Save, Power, PowerOff, Eye } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { updateService, deleteService, toggleServiceStatus } from "@/lib/actions";
 import { Badge } from "@/components/ui/badge";
@@ -137,9 +138,9 @@ export function ServiceCard({ service }: ServiceCardProps) {
   }
 
   return (
-    <Card className={cn(isInactive && "bg-muted/50 border-dashed")}>
+    <Card className={cn("flex flex-col", isInactive && "bg-muted/50 border-dashed")}>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col h-full">
           <CardHeader className="flex-row items-start justify-between">
             <div className="grid gap-2">
               {isEditing ? (
@@ -172,7 +173,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
               </div>
             )}
           </CardHeader>
-          <CardContent className="grid gap-4">
+          <CardContent className="grid gap-4 flex-grow">
             {isEditing ? (
               <>
                 <FormField
@@ -220,7 +221,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
             ) : (
               <div className="flex justify-between items-start">
                  <div>
-                    <p className="text-sm text-muted-foreground mt-1">
+                    <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
                     {service.description}
                     </p>
                     <p className="text-xs text-muted-foreground mt-2">
@@ -233,48 +234,57 @@ export function ServiceCard({ service }: ServiceCardProps) {
               </div>
             )}
           </CardContent>
-          {isEditing && (
-            <CardFooter className="justify-end gap-2">
-                <div className="flex-grow flex justify-start gap-2">
-                    <AlertDialog open={showDeleteAlert} onOpenChange={setShowDeleteAlert}>
-                        <AlertDialogTrigger asChild>
-                            <Button variant="destructive-outline" size="icon" type="button">
-                                <Trash2 className="h-4 w-4" />
-                                <span className="sr-only">Delete Service</span>
-                            </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                            <AlertDialogHeader>
-                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                                This action cannot be undone. This will permanently delete the service.
-                            </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction
-                                onClick={handleDeleteAttempt}
-                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                            >
-                                Delete
-                            </AlertDialogAction>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialog>
-                    <Button variant="ghost" size="icon" type="button" onClick={handleToggleStatus}>
-                        {isInactive ? <Power className="h-5 w-5" /> : <PowerOff className="h-5 w-5" />}
-                        <span className="sr-only">{isInactive ? 'Activate' : 'Deactivate'} Service</span>
-                    </Button>
-                </div>
-              <Button variant="ghost" type="button" onClick={handleCancel} disabled={form.formState.isSubmitting}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={form.formState.isSubmitting}>
-                <Save className="mr-2 h-4 w-4" />
-                {form.formState.isSubmitting ? "Saving..." : "Save"}
-              </Button>
+          <CardFooter className={cn("justify-end gap-2", isEditing && "border-t pt-6 mt-auto")}>
+             {isEditing ? (
+                <>
+                    <div className="flex-grow flex justify-start gap-2">
+                        <AlertDialog open={showDeleteAlert} onOpenChange={setShowDeleteAlert}>
+                            <AlertDialogTrigger asChild>
+                                <Button variant="destructive-outline" size="icon" type="button">
+                                    <Trash2 className="h-4 w-4" />
+                                    <span className="sr-only">Delete Service</span>
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    This action cannot be undone. This will permanently delete the service.
+                                </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                    onClick={handleDeleteAttempt}
+                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                >
+                                    Delete
+                                </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                        <Button variant="ghost" size="icon" type="button" onClick={handleToggleStatus}>
+                            {isInactive ? <Power className="h-5 w-5" /> : <PowerOff className="h-5 w-5" />}
+                            <span className="sr-only">{isInactive ? 'Activate' : 'Deactivate'} Service</span>
+                        </Button>
+                    </div>
+                  <Button variant="ghost" type="button" onClick={handleCancel} disabled={form.formState.isSubmitting}>
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={form.formState.isSubmitting}>
+                    <Save className="mr-2 h-4 w-4" />
+                    {form.formState.isSubmitting ? "Saving..." : "Save"}
+                  </Button>
+                </>
+             ) : (
+                <Button asChild variant="secondary" className="w-full">
+                    <Link href={`/services/${service.id}`}>
+                        <Eye className="mr-2 h-4 w-4" />
+                        View Details
+                    </Link>
+                </Button>
+             )}
             </CardFooter>
-          )}
         </form>
       </Form>
       

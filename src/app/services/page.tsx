@@ -78,13 +78,13 @@ export default async function ServicesPage({
           </div>
         </div>
       </CardHeader>
-      <CardContent className="grid gap-4">
+      <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {services.length > 0 ? (
           services.map((service) => (
            <ServiceCard key={service.id} service={service} />
           ))
         ) : (
-          <div className="text-center text-muted-foreground py-12">
+          <div className="text-center text-muted-foreground py-12 col-span-full">
             No services found.
           </div>
         )}
