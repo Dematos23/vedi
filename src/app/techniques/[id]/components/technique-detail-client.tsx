@@ -46,26 +46,6 @@ export function TechniqueDetailClient({ technique }: { technique: TechniqueWithD
       <div className="grid md:grid-cols-2 gap-6">
         <Card>
             <CardHeader>
-                <CardTitle>{d.servicesUsingTechnique}</CardTitle>
-            </CardHeader>
-            <CardContent>
-                {services.length > 0 ? (
-                    <div className="space-y-2">
-                        {services.map(service => (
-                            <Link key={service.id} href={`/services/${service.id}`} className="flex items-center gap-3 rounded-lg border p-3 hover:bg-accent transition-colors">
-                                <BriefcaseMedical className="h-5 w-5 text-muted-foreground" />
-                                <span className="font-medium">{service.name}</span>
-                                <Badge variant={service.status === 'ACTIVE' ? 'secondary' : 'destructive'} className="ml-auto">{dictionary.enums.serviceStatus[service.status]}</Badge>
-                            </Link>
-                        ))}
-                    </div>
-                ) : (
-                    <p className="text-sm text-muted-foreground text-center py-4">{d.noServicesFound}</p>
-                )}
-            </CardContent>
-        </Card>
-        <Card>
-            <CardHeader>
                 <CardTitle>{d.therapistsAssigned}</CardTitle>
             </CardHeader>
             <CardContent>
@@ -99,6 +79,26 @@ export function TechniqueDetailClient({ technique }: { technique: TechniqueWithD
                     )}
                     </TableBody>
                 </Table>
+            </CardContent>
+        </Card>
+        <Card>
+            <CardHeader>
+                <CardTitle>{d.servicesUsingTechnique}</CardTitle>
+            </CardHeader>
+            <CardContent>
+                {services.length > 0 ? (
+                    <div className="space-y-2">
+                        {services.map(service => (
+                            <Link key={service.id} href={`/services/${service.id}`} className="flex items-center gap-3 rounded-lg border p-3 hover:bg-accent transition-colors">
+                                <BriefcaseMedical className="h-5 w-5 text-muted-foreground" />
+                                <span className="font-medium">{service.name}</span>
+                                <Badge variant={service.status === 'ACTIVE' ? 'secondary' : 'destructive'} className="ml-auto">{dictionary.enums.serviceStatus[service.status]}</Badge>
+                            </Link>
+                        ))}
+                    </div>
+                ) : (
+                    <p className="text-sm text-muted-foreground text-center py-4">{d.noServicesFound}</p>
+                )}
             </CardContent>
         </Card>
       </div>
