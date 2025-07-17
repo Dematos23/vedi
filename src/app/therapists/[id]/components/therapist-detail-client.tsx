@@ -25,6 +25,7 @@ import Link from "next/link";
 import { formatCurrency, getFullName, cn } from "@/lib/utils";
 import type { getTherapistPerformance } from "@/lib/actions";
 import { Progress } from "@/components/ui/progress";
+import { useLanguage } from "@/contexts/language-context";
 
 type Unpacked<T> = T extends (infer U)[] ? U : T;
 type PerformanceData = Awaited<ReturnType<typeof getTherapistPerformance>>;
@@ -55,6 +56,8 @@ interface TherapistDetailClientProps {
 }
 
 export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
+  const { dictionary } = useLanguage();
+  const d = dictionary.therapists;
   const { name, lastname, kpis, assignedPatients, techniquesPerformance } = data;
   const [formattedAppointments, setFormattedAppointments] = React.useState<SerializableAppointment[]>([]);
 
@@ -69,16 +72,16 @@ export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
         <Button asChild variant="outline" size="icon">
           <Link href="/therapists">
             <ArrowLeft className="h-4 w-4" />
-            <span className="sr-only">Back to Therapists</span>
+            <span className="sr-only">{d.backToTherapists}</span>
           </Link>
         </Button>
-        <h1 className="text-2xl font-bold">{`Dr. ${name} ${lastname}'s Performance`}</h1>
+        <h1 className="text-2xl font-bold">{d.performanceTitle(name, lastname)}</h1>
       </div>
 
        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Assigned Patients</CardTitle>
+            <CardTitle className="text-sm font-medium">{d.assignedPatients}</CardTitle>
             <UsersRound className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -88,7 +91,7 @@ export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Appointments (This Month)
+              {d.appointmentsThisMonth}
             </CardTitle>
             <CalendarDays className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
@@ -98,7 +101,7 @@ export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
         </Card>
          <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Sales Generated</CardTitle>
+            <CardTitle className="text-sm font-medium">{d.totalSalesGenerated}</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -109,25 +112,30 @@ export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
 
        <Card>
           <CardHeader>
-              <CardTitle>Technique Performance</CardTitle>
-              <CardDescription>Usage and proficiency for each assigned technique.</CardDescription>
+              <CardTitle>{d.techniquePerformance}</CardTitle>
+              <CardDescription>{d.techniquePerformanceDescription}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-              {techniquesPerformance.map(tech => (
-                  <div key={tech.id} className="grid grid-cols-[200px_1fr_80px_120px] items-center gap-4">
+              <div className="grid grid-cols-[200px_1fr_80px_120px] items-center gap-4">
+                {techniquesPerformance.map(tech => (
+                  <React.Fragment key={tech.id}>
                       <span className="font-medium truncate">{tech.technique.name}</span>
                       <Progress value={tech._count.userTechniqueUsageLogs} max={100} />
-                      <span className="text-sm font-mono text-muted-foreground text-center">{tech._count.userTechniqueUsageLogs} uses</span>
+                      <span className="text-sm font-mono text-muted-foreground text-center">{tech._count.userTechniqueUsageLogs} {d.uses}</span>
                       <Badge 
                         variant={tech.status === 'PRACTITIONER' ? 'secondary' : 'default'}
-                        className="justify-center"
+                        className={cn("justify-center", {
+                            "bg-primary hover:bg-primary/90 text-primary-foreground": tech.status === 'THERAPIST',
+                            "bg-secondary hover:bg-secondary/80 text-secondary-foreground": tech.status === 'PRACTITIONER'
+                        })}
                       >
-                        {tech.status}
+                        {tech.status === 'THERAPIST' ? d.therapist : d.practitioner}
                       </Badge>
-                  </div>
-              ))}
+                  </React.Fragment>
+                ))}
+              </div>
                {techniquesPerformance.length === 0 && (
-                  <p className="text-sm text-muted-foreground text-center py-4">No techniques assigned to this therapist.</p>
+                  <p className="text-sm text-muted-foreground text-center py-4">{d.noTechniquesAssigned}</p>
               )}
           </CardContent>
       </Card>
@@ -136,18 +144,18 @@ export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
       <div className="grid grid-cols-1 gap-6">
         <Card>
             <CardHeader>
-                <CardTitle>Recent Appointments</CardTitle>
-                <CardDescription>Last 10 appointments involving their patients.</CardDescription>
+                <CardTitle>{d.recentAppointments}</CardTitle>
+                <CardDescription>{d.recentAppointmentsDescription}</CardDescription>
             </CardHeader>
             <CardContent>
                  <Table>
                     <TableHeader>
                         <TableRow>
-                        <TableHead>Patient(s)</TableHead>
-                        <TableHead>Service</TableHead>
-                        <TableHead>Date</TableHead>
+                        <TableHead>{d.patient}</TableHead>
+                        <TableHead>{d.service}</TableHead>
+                        <TableHead>{d.date}</TableHead>
                         <TableHead>
-                            <span className="sr-only">Actions</span>
+                            <span className="sr-only">{d.actions}</span>
                         </TableHead>
                         </TableRow>
                     </TableHeader>
@@ -164,7 +172,7 @@ export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
                                         <Button asChild variant="outline" size="sm">
                                             <Link href={`/appointments/${appt.id}`}>
                                                 <Eye className="mr-2 h-4 w-4" />
-                                                View
+                                                {d.view}
                                             </Link>
                                         </Button>
                                     </TableCell>
@@ -173,7 +181,7 @@ export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
                         ) : (
                              <TableRow>
                                 <TableCell colSpan={4} className="h-24 text-center">
-                                    No recent appointments found.
+                                    {d.noRecentAppointments}
                                 </TableCell>
                             </TableRow>
                         )}
@@ -183,16 +191,16 @@ export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
         </Card>
         <Card>
             <CardHeader>
-                <CardTitle>Assigned Patients</CardTitle>
-                <CardDescription>Patients currently under this therapist's care.</CardDescription>
+                <CardTitle>{d.assignedPatients}</CardTitle>
+                <CardDescription>{d.assignedPatientsDescription}</CardDescription>
             </CardHeader>
             <CardContent>
                  <Table>
                     <TableHeader>
                         <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead className="hidden sm:table-cell">Email</TableHead>
-                        <TableHead><span className="sr-only">Actions</span></TableHead>
+                        <TableHead>{d.name}</TableHead>
+                        <TableHead className="hidden sm:table-cell">{d.email}</TableHead>
+                        <TableHead><span className="sr-only">{d.actions}</span></TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -204,7 +212,7 @@ export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
                                     <Button asChild variant="ghost" size="icon">
                                         <Link href={`/patients/${patient.id}`}>
                                             <Eye className="h-4 w-4" />
-                                            <span className="sr-only">View Patient</span>
+                                            <span className="sr-only">{d.viewPatient}</span>
                                         </Link>
                                     </Button>
                                 </TableCell>
@@ -213,7 +221,7 @@ export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
                          {assignedPatients.length === 0 && (
                             <TableRow>
                                 <TableCell colSpan={3} className="h-24 text-center">
-                                    No patients assigned.
+                                    {d.noPatientsAssigned}
                                 </TableCell>
                             </TableRow>
                         )}
