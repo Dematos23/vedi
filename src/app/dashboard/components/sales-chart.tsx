@@ -11,6 +11,7 @@ import { DatePickerWithRange } from "@/components/date-picker-with-range";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getChartData } from "@/lib/actions";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useLanguage } from "@/contexts/language-context";
 
 type TimeUnit = "day" | "week" | "month" | "year";
 
@@ -19,6 +20,8 @@ export function SalesChart() {
   const [timeUnit, setTimeUnit] = React.useState<TimeUnit>("month");
   const [data, setData] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const { dictionary } = useLanguage();
+  const d = dictionary.dashboard;
 
   // Defer setting initial date range to the client to avoid hydration mismatch
   React.useEffect(() => {
@@ -58,9 +61,9 @@ export function SalesChart() {
   return (
       <Card>
         <CardHeader>
-          <CardTitle>Sales Overview</CardTitle>
+          <CardTitle>{d.salesOverview}</CardTitle>
           <CardDescription>
-            Track revenue over a selected period.
+            {d.trackRevenue}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

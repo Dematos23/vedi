@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { getChartData } from "@/lib/actions";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MultiSelect } from "@/components/ui/multi-select";
+import { useLanguage } from "@/contexts/language-context";
 
 type TimeUnit = "day" | "week" | "month" | "year";
 
@@ -26,6 +27,8 @@ export function AppointmentsChart({ services }: AppointmentsChartProps) {
   const [selectedServices, setSelectedServices] = React.useState<string[]>([]);
   const [data, setData] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const { dictionary } = useLanguage();
+  const d = dictionary.dashboard;
   
   // Defer setting initial date range to the client to avoid hydration mismatch
   React.useEffect(() => {
@@ -69,9 +72,9 @@ export function AppointmentsChart({ services }: AppointmentsChartProps) {
   return (
       <Card>
         <CardHeader>
-          <CardTitle>Sales Count Overview</CardTitle>
+          <CardTitle>{d.salesCountOverview}</CardTitle>
           <CardDescription>
-            Track number of sales over a selected period.
+            {d.trackSalesCount}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
