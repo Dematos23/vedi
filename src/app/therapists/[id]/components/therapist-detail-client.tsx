@@ -22,9 +22,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, UsersRound, CalendarDays, DollarSign, Eye } from "lucide-react";
 import Link from "next/link";
-import { formatCurrency, getFullName } from "@/lib/utils";
+import { formatCurrency, getFullName, cn } from "@/lib/utils";
 import type { getTherapistPerformance } from "@/lib/actions";
 import { Progress } from "@/components/ui/progress";
+import { UserTechniqueStatusType } from "@prisma/client";
 
 type Unpacked<T> = T extends (infer U)[] ? U : T;
 type PerformanceData = Awaited<ReturnType<typeof getTherapistPerformance>>;
@@ -118,7 +119,15 @@ export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
                       <span className="font-medium truncate">{tech.technique.name}</span>
                       <Progress value={tech._count.userTechniqueUsageLogs} max={100} />
                       <span className="text-sm font-mono text-muted-foreground text-center">{tech._count.userTechniqueUsageLogs} uses</span>
-                      <Badge variant="secondary" className="justify-center">{tech.status}</Badge>
+                      <Badge 
+                        variant="secondary" 
+                        className={cn("justify-center text-white", {
+                          "bg-sky-500 hover:bg-sky-500/80": tech.status === UserTechniqueStatusType.PRACTITIONER,
+                          "bg-green-600 hover:bg-green-600/80": tech.status === UserTechniqueStatusType.THERAPIST,
+                        })}
+                      >
+                        {tech.status}
+                      </Badge>
                   </div>
               ))}
                {techniquesPerformance.length === 0 && (
