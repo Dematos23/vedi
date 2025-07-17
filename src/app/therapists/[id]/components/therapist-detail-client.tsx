@@ -29,7 +29,12 @@ import { Progress } from "@/components/ui/progress";
 type Unpacked<T> = T extends (infer U)[] ? U : T;
 type PerformanceData = Awaited<ReturnType<typeof getTherapistPerformance>>;
 
-type SerializableAppointment = Omit<Unpacked<PerformanceData['recentAppointments']>, 'date'> & { date: string };
+type SerializableAppointment = Omit<Unpacked<PerformanceData['recentAppointments']>, 'date'> & { 
+    date: string;
+    patients: any[]; 
+    service: any;
+};
+
 type SerializableTechniquePerformance = Omit<Unpacked<PerformanceData['techniquesPerformance']>, 'createdAt' | 'updatedAt' | 'technique'> & { 
     createdAt: string, 
     updatedAt: string,
@@ -50,13 +55,13 @@ interface TherapistDetailClientProps {
 }
 
 export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
-  const { name, lastname, kpis, assignedPatients, recentAppointments, techniquesPerformance } = data;
+  const { name, lastname, kpis, assignedPatients, techniquesPerformance } = data;
   const [formattedAppointments, setFormattedAppointments] = React.useState<SerializableAppointment[]>([]);
 
   React.useEffect(() => {
     // Format dates on the client to avoid hydration mismatch
-    setFormattedAppointments(recentAppointments);
-  }, [recentAppointments]);
+    setFormattedAppointments(data.recentAppointments);
+  }, [data.recentAppointments]);
 
   return (
     <div className="grid gap-6">
@@ -109,7 +114,7 @@ export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
           </CardHeader>
           <CardContent className="space-y-6">
               {techniquesPerformance.map(tech => (
-                  <div key={tech.id} className="grid grid-cols-[1fr_2fr_auto_auto] items-center gap-4">
+                  <div key={tech.id} className="grid grid-cols-[200px_1fr_auto_auto] items-center gap-4">
                       <span className="font-medium truncate">{tech.technique.name}</span>
                       <Progress value={tech._count.userTechniqueUsageLogs} max={100} />
                       <span className="text-sm font-mono text-muted-foreground">{tech._count.userTechniqueUsageLogs} uses</span>
