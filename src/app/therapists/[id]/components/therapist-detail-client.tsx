@@ -24,13 +24,26 @@ import { ArrowLeft, UsersRound, CalendarDays, DollarSign, Eye } from "lucide-rea
 import Link from "next/link";
 import { formatCurrency, getFullName } from "@/lib/utils";
 import type { getTherapistPerformance } from "@/lib/actions";
+import type { TechniquePerformance } from "../page";
+import { Progress } from "@/components/ui/progress";
 
 type Unpacked<T> = T extends (infer U)[] ? U : T;
 type PerformanceData = Awaited<ReturnType<typeof getTherapistPerformance>>;
+
 type SerializableAppointment = Omit<Unpacked<PerformanceData['recentAppointments']>, 'date'> & { date: string };
-type SerializablePerformanceData = Omit<PerformanceData, 'kpis' | 'recentAppointments'> & {
+type SerializableTechniquePerformance = Omit<Unpacked<PerformanceData['techniquesPerformance']>, 'createdAt' | 'updatedAt' | 'technique'> & { 
+    createdAt: string, 
+    updatedAt: string,
+    technique: Omit<Unpacked<PerformanceData['techniquesPerformance']>['technique'], 'createdAt' | 'updatedAt'> & {
+        createdAt: string,
+        updatedAt: string
+    }
+};
+
+type SerializablePerformanceData = Omit<PerformanceData, 'kpis' | 'recentAppointments' | 'techniquesPerformance'> & {
     kpis: Omit<PerformanceData['kpis'], 'totalSales'> & { totalSales: number };
     recentAppointments: SerializableAppointment[];
+    techniquesPerformance: SerializableTechniquePerformance[];
 }
 
 interface TherapistDetailClientProps {
@@ -38,7 +51,7 @@ interface TherapistDetailClientProps {
 }
 
 export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
-  const { name, lastname, kpis, assignedPatients, recentAppointments } = data;
+  const { name, lastname, kpis, assignedPatients, recentAppointments, techniquesPerformance } = data;
   const [formattedAppointments, setFormattedAppointments] = React.useState<SerializableAppointment[]>([]);
 
   React.useEffect(() => {
@@ -89,6 +102,27 @@ export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
           </CardContent>
         </Card>
       </div>
+
+       <Card>
+          <CardHeader>
+              <CardTitle>Technique Performance</CardTitle>
+              <CardDescription>Usage and proficiency for each assigned technique.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+              {techniquesPerformance.map(tech => (
+                  <div key={tech.id} className="grid grid-cols-[1fr_2fr_auto_auto] items-center gap-4">
+                      <span className="font-medium truncate">{tech.technique.name}</span>
+                      <Progress value={tech._count.userTechniqueUsageLogs} max={100} />
+                      <span className="text-sm font-mono text-muted-foreground">{tech._count.userTechniqueUsageLogs} uses</span>
+                      <Badge variant="secondary">{tech.status}</Badge>
+                  </div>
+              ))}
+               {techniquesPerformance.length === 0 && (
+                  <p className="text-sm text-muted-foreground text-center py-4">No techniques assigned to this therapist.</p>
+              )}
+          </CardContent>
+      </Card>
+
 
       <div className="grid md:grid-cols-2 gap-6">
         <Card>
@@ -142,7 +176,7 @@ export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
                         {formattedAppointments.length > 0 ? (
                            formattedAppointments.map((appt) => (
                                 <TableRow key={appt.id}>
-                                    <TableCell>{appt.patients.map(getFullName).join(', ')}</TableCell>
+                                    <TableCell>{appt.patients.map(p => getFullName(p)).join(', ')}</TableCell>
                                     <TableCell>
                                         {appt.service && <Badge variant="outline">{appt.service.name}</Badge>}
                                     </TableCell>
@@ -152,7 +186,7 @@ export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
                         ) : (
                              <TableRow>
                                 <TableCell colSpan={3} className="h-24 text-center">
-                                    Loading appointments...
+                                    No recent appointments found.
                                 </TableCell>
                             </TableRow>
                         )}

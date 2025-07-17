@@ -352,11 +352,11 @@ export async function getTherapistPerformance(therapistId: string) {
       email: true,
       phone: true,
       type: true,
-    }
+    },
   });
 
   if (!therapist || therapist.type !== UserType.THERAPIST) {
-    throw new Error('Therapist not found.');
+    throw new Error("Therapist not found.");
   }
   
   const assignedPatients = await prisma.patient.findMany({
@@ -395,7 +395,7 @@ export async function getTherapistPerformance(therapistId: string) {
           date: 'desc'
       },
       take: 10
-  })
+  });
 
   const totalSales = await prisma.sale.aggregate({
     where: {
@@ -406,11 +406,23 @@ export async function getTherapistPerformance(therapistId: string) {
     }
   });
 
+  const techniquesPerformance = await prisma.userTechnique.findMany({
+      where: { userId: therapistId },
+      include: {
+          technique: true,
+          _count: {
+              select: {
+                  userTechniqueUsageLogs: true
+              }
+          }
+      }
+  });
 
   return {
     ...therapist,
     assignedPatients,
     recentAppointments,
+    techniquesPerformance,
     kpis: {
       totalPatients: assignedPatients.length,
       appointmentsThisMonth,
@@ -418,5 +430,3 @@ export async function getTherapistPerformance(therapistId: string) {
     }
   };
 }
-
-    
