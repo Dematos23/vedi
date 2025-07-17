@@ -53,6 +53,7 @@ export async function updateService(data: z.infer<typeof serviceSchema>) {
     });
 
     revalidatePath("/services");
+    revalidatePath(`/services/${id}`);
 }
 
 export async function deleteService(serviceId: string) {
@@ -89,6 +90,7 @@ export async function toggleServiceStatus(serviceId: string, status: ServiceStat
     
     revalidatePath("/services");
     revalidatePath("/appointments");
+    revalidatePath(`/services/${serviceId}`);
 }
 
 
@@ -178,7 +180,7 @@ export async function completeAppointment(appointmentId: string, patientId: stri
         patientId: patientId,
         serviceId: appointment.serviceId,
         used: {
-          lt: prisma.patientServiceBalance.fields.total, // Ensure there are remaining sessions
+          lt: tx.patientServiceBalance.fields.total, // Ensure there are remaining sessions
         },
       },
       orderBy: {
@@ -241,8 +243,16 @@ export async function createPatient(data: z.infer<typeof patientSchema>) {
         throw new Error("Invalid patient data.");
     }
 
+    // This assumes a logged-in user context would provide the userId.
+    // For this demo, we'll hardcode it or leave it null if the schema allows.
+    // To make this work with the current logic, let's find the first therapist.
+    const therapist = await prisma.user.findFirst({ where: { type: UserType.THERAPIST }});
+
     await prisma.patient.create({
-        data: validatedFields.data,
+        data: {
+            ...validatedFields.data,
+            userId: therapist?.id, // Assign patient to the first therapist found.
+        },
     });
 
     revalidatePath("/patients");
@@ -293,19 +303,27 @@ export async function getChartData(input: z.infer<typeof chartDataSchema>) {
       ? `SUM(s.amount)` // Sum of sale amount
       : `COUNT(s.id)`; // Count of sales
     
+    let queryParams: (Date | string)[] = [startDate, endDate];
+    let serviceIdFilter = '';
+
+    if (serviceIds && serviceIds.length > 0) {
+        serviceIdFilter = `AND s."serviceId" IN (${serviceIds.map((_, i) => `$${i + 3}`).join(',')})`;
+        queryParams.push(...serviceIds);
+    }
+    
     const rawQuery = `
       SELECT
         ${dateTrunc} AS "date",
         ${aggregationField} AS "total"
       FROM "Sale" AS s
       WHERE s.date >= $1 AND s.date <= $2
-      ${serviceIds && serviceIds.length > 0 ? `AND s."serviceId" IN (${serviceIds.map(id => `'${id}'`).join(',')})` : ''}
+      ${serviceIdFilter}
       GROUP BY 1
       ORDER BY 1 ASC;
     `;
 
     try {
-        const result: { date: Date, total: number | bigint | object }[] = await prisma.$queryRawUnsafe(rawQuery, startDate, endDate);
+        const result: { date: Date, total: number | bigint | object }[] = await prisma.$queryRawUnsafe(rawQuery, ...queryParams);
         
         return result.map(item => ({
             ...item,
@@ -333,6 +351,7 @@ export async function getTherapistPerformance(therapistId: string) {
       lastname: true,
       email: true,
       phone: true,
+      type: true,
     }
   });
 
@@ -399,3 +418,5 @@ export async function getTherapistPerformance(therapistId: string) {
     }
   };
 }
+
+    
