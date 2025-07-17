@@ -198,7 +198,7 @@ export const dictionaries = {
         phone: "Teléfono",
         assignedPatients: "Pacientes Asignados",
         actions: "Acciones",
-        viewPerformance: "Ver Desempeño",
+        viewPerformance: "Ver",
         noTherapistsFound: "No se encontraron terapeutas.",
         backToTherapists: "Volver a Terapeutas",
         performanceTitle: (name: string, lastname: string) => `Desempeño de Dr. ${name} ${lastname}`,
@@ -418,7 +418,7 @@ export const dictionaries = {
         phone: "Phone",
         assignedPatients: "Assigned Patients",
         actions: "Actions",
-        viewPerformance: "View Performance",
+        viewPerformance: "View",
         noTherapistsFound: "No therapists found.",
         backToTherapists: "Back to Therapists",
         performanceTitle: (name: string, lastname: string) => `Dr. ${name} ${lastname}'s Performance`,
@@ -445,3 +445,5 @@ export const dictionaries = {
 };
 
 export type Dictionary = typeof dictionaries.es;
+
+    
