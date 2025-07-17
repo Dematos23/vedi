@@ -1,6 +1,7 @@
 
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
 import { format } from "date-fns";
 import {
@@ -45,6 +46,11 @@ export function AppointmentsList({ appointments, allPatients, allServices, searc
   const { dictionary } = useLanguage();
   const d = dictionary.appointments;
   const { query, service: serviceId, dateRange, sort = "desc", status } = searchParams;
+  const [isClient, setIsClient] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const currentParams = new URLSearchParams();
   if (query) currentParams.set('query', query);
@@ -100,7 +106,7 @@ export function AppointmentsList({ appointments, allPatients, allServices, searc
                   {format(new Date(appt.date), "PPP")}
                 </TableCell>
                 <TableCell className="hidden md:table-cell">
-                  {format(new Date(appt.date), "p")}
+                  {isClient ? format(new Date(appt.date), "p") : ""}
                 </TableCell>
                 <TableCell>
                   <Badge variant={appt.status === 'DONE' ? 'secondary' : 'default'}>
