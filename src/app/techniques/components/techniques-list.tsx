@@ -24,8 +24,14 @@ import { NewTechniqueSheet } from "./new-technique-sheet";
 import type { Technique } from "@prisma/client";
 import { useLanguage } from "@/contexts/language-context";
 
+type TechniqueWithTherapistCount = Technique & {
+    _count: {
+        userStatuses: number;
+    }
+}
+
 interface TechniquesListProps {
-  techniques: Technique[];
+  techniques: TechniqueWithTherapistCount[];
 }
 
 export function TechniquesList({ techniques }: TechniquesListProps) {
@@ -54,6 +60,7 @@ export function TechniquesList({ techniques }: TechniquesListProps) {
                         <TableRow>
                             <TableHead>{d.techniqueName}</TableHead>
                             <TableHead className="hidden md:table-cell">{d.descriptionLabel}</TableHead>
+                            <TableHead className="text-center">{d.therapists}</TableHead>
                             <TableHead>
                                 <span className="sr-only">{d.actions}</span>
                             </TableHead>
@@ -65,6 +72,9 @@ export function TechniquesList({ techniques }: TechniquesListProps) {
                                 <TableCell className="font-medium">{technique.name}</TableCell>
                                 <TableCell className="hidden md:table-cell text-muted-foreground line-clamp-2">
                                     {technique.description}
+                                </TableCell>
+                                <TableCell className="text-center font-medium">
+                                    {technique._count.userStatuses}
                                 </TableCell>
                                 <TableCell className="text-right">
                                     <Button asChild variant="outline" size="sm">
@@ -78,7 +88,7 @@ export function TechniquesList({ techniques }: TechniquesListProps) {
                         ))}
                         {techniques.length === 0 && (
                             <TableRow>
-                                <TableCell colSpan={3} className="h-24 text-center">
+                                <TableCell colSpan={4} className="h-24 text-center">
                                     {d.noTechniquesFound}
                                 </TableCell>
                             </TableRow>

@@ -230,6 +230,7 @@ export const dictionaries = {
       noTechniquesFound: "No se encontraron técnicas.",
       techniqueName: "Nombre de la Técnica",
       descriptionLabel: "Descripción",
+      therapists: "Terapeutas",
       actions: "Acciones",
       view: "Ver",
       // Technique Card
@@ -488,6 +489,7 @@ export const dictionaries = {
       noTechniquesFound: "No techniques found.",
       techniqueName: "Technique Name",
       descriptionLabel: "Description",
+      therapists: "Therapists",
       actions: "Actions",
       view: "View",
       // Technique Card
