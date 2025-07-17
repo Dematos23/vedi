@@ -10,6 +10,7 @@ import {
   UsersRound,
   HeartPulse,
   Globe,
+  BrainCircuit,
 } from "lucide-react";
 import {
   SidebarProvider,
@@ -33,9 +34,9 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { usePathname } from "next/navigation";
@@ -80,6 +81,7 @@ function MainSidebar() {
     { href: "/services", icon: BriefcaseMedical, label: dictionary.sidebar.services },
     { href: "/appointments", icon: CalendarDays, label: dictionary.sidebar.appointments },
     { href: "/therapists", icon: HeartPulse, label: dictionary.sidebar.therapists },
+    { href: "/techniques", icon: BrainCircuit, label: dictionary.sidebar.techniques },
   ];
 
   const handleLinkClick = () => {

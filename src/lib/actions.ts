@@ -446,3 +446,68 @@ export async function getTherapistPerformance(therapistId: string) {
     }
   };
 }
+
+
+// Technique Actions
+const techniqueSchema = z.object({
+  id: z.string().optional(),
+  name: z.string().min(3, "Technique name must be at least 3 characters."),
+  description: z.string().min(10, "Description must be at least 10 characters."),
+});
+
+export async function createTechnique(data: z.infer<typeof techniqueSchema>) {
+  const validatedFields = techniqueSchema.safeParse(data);
+
+  if (!validatedFields.success) {
+    throw new Error("Invalid technique data.");
+  }
+
+  await prisma.technique.create({
+    data: validatedFields.data,
+  });
+
+  revalidatePath("/techniques");
+}
+
+export async function updateTechnique(data: z.infer<typeof techniqueSchema>) {
+    const validatedFields = techniqueSchema.safeParse(data);
+
+    if (!validatedFields.success || !validatedFields.data.id) {
+        throw new Error("Invalid technique data.");
+    }
+
+    const { id, ...techniqueData } = validatedFields.data;
+
+    await prisma.technique.update({
+        where: { id },
+        data: techniqueData,
+    });
+
+    revalidatePath("/techniques");
+}
+
+export async function deleteTechnique(techniqueId: string) {
+    if (!techniqueId) {
+        throw new Error("Technique ID is required.");
+    }
+
+    const serviceCount = await prisma.service.count({
+        where: { techniques: { some: { id: techniqueId } } },
+    });
+
+    if (serviceCount > 0) {
+        throw new Error("This technique is associated with services and cannot be deleted.");
+    }
+
+    // Also need to check for user technique statuses
+    const statusCount = await prisma.userTechniqueStatus.count({ where: { techniqueId } });
+    if (statusCount > 0) {
+        throw new Error("This technique is assigned to therapists and cannot be deleted.");
+    }
+
+    await prisma.technique.delete({
+        where: { id: techniqueId },
+    });
+
+    revalidatePath("/techniques");
+}

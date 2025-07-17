@@ -9,6 +9,7 @@ export const dictionaries = {
       services: 'Servicios',
       appointments: 'Citas',
       therapists: 'Terapeutas',
+      techniques: 'Técnicas',
     },
     language: "Idioma",
     dashboard: {
@@ -220,7 +221,33 @@ export const dictionaries = {
         assignedPatientsDescription: "Pacientes actualmente bajo el cuidado de este terapeuta.",
         viewPatient: "Ver Paciente",
         noPatientsAssigned: "No hay pacientes asignados."
-    }
+    },
+    techniques: {
+      title: "Técnicas",
+      description: "Una lista de todas las técnicas terapéuticas registradas.",
+      newTechnique: "Nueva Técnica",
+      searchPlaceholder: "Buscar por nombre o descripción...",
+      noTechniquesFound: "No se encontraron técnicas.",
+      // Technique Card
+      edit: "Editar",
+      delete: "Eliminar",
+      save: "Guardar",
+      saving: "Guardando...",
+      cancel: "Cancelar",
+      areYouSure: "¿Estás seguro?",
+      deleteWarning: "Esta acción no se puede deshacer. Esto eliminará permanentemente la técnica.",
+      cannotDelete: "No se puede eliminar la técnica",
+      deactivationWarning: "Esta técnica está asociada con servicios o terapeutas y no puede ser eliminada.",
+      // New Technique Sheet
+      registerNewTechnique: "Registrar Nueva Técnica",
+      addNewTechnique: "Añade una nueva técnica terapéutica al registro.",
+      techniqueName: "Nombre de la Técnica",
+      techniqueNameExample: "p. ej., Terapia Cognitiva",
+      descriptionLabel: "Descripción",
+      descriptionPlaceholder: "Describe la técnica...",
+      registering: "Registrando...",
+      registerTechnique: "Registrar Técnica",
+    },
   },
   en: {
     sidebar: {
@@ -229,6 +256,7 @@ export const dictionaries = {
       services: 'Services',
       appointments: 'Appointments',
       therapists: 'Therapists',
+      techniques: 'Techniques',
     },
     language: "Language",
     dashboard: {
@@ -440,10 +468,34 @@ export const dictionaries = {
         assignedPatientsDescription: "Patients currently under this therapist's care.",
         viewPatient: "View Patient",
         noPatientsAssigned: "No patients assigned."
-    }
+    },
+    techniques: {
+      title: "Techniques",
+      description: "A list of all registered therapeutic techniques.",
+      newTechnique: "New Technique",
+      searchPlaceholder: "Search by name or description...",
+      noTechniquesFound: "No techniques found.",
+      // Technique Card
+      edit: "Edit",
+      delete: "Delete",
+      save: "Save",
+      saving: "Saving...",
+      cancel: "Cancel",
+      areYouSure: "Are you sure?",
+      deleteWarning: "This action cannot be undone. This will permanently delete the technique.",
+      cannotDelete: "Cannot Delete Technique",
+      deactivationWarning: "This technique is associated with services or therapists and cannot be deleted.",
+      // New Technique Sheet
+      registerNewTechnique: "Register New Technique",
+      addNewTechnique: "Add a new therapeutic technique to the registry.",
+      techniqueName: "Technique Name",
+      techniqueNameExample: "e.g., Cognitive Restructuring",
+      descriptionLabel: "Description",
+      descriptionPlaceholder: "Describe the technique...",
+      registering: "Registering...",
+      registerTechnique: "Register Technique",
+    },
   },
 };
 
 export type Dictionary = typeof dictionaries.es;
-
-    
