@@ -12,15 +12,19 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft, BriefcaseMedical } from "lucide-react";
-import { getFullName } from "@/lib/utils";
+import { getFullName, cn } from "@/lib/utils";
 import { Table, TableBody, TableCell, TableHeader, TableHead, TableRow } from "@/components/ui/table";
 import { useLanguage } from "@/contexts/language-context";
 import type { TechniqueWithDetails } from "../page";
+import { Progress } from "@/components/ui/progress";
+import { TechniqueStatus } from "@prisma/client";
 
 export function TechniqueDetailClient({ technique }: { technique: TechniqueWithDetails }) {
   const { name, description, services, users } = technique;
   const { dictionary } = useLanguage();
   const d = dictionary.techniques;
+
+  const maxPerformance = Math.max(...users.map(u => u._count.userTechniqueUsageLogs), 0) || 1;
 
   return (
     <div className="grid gap-6">
@@ -52,8 +56,9 @@ export function TechniqueDetailClient({ technique }: { technique: TechniqueWithD
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>{d.therapist}</TableHead>
-                            <TableHead className="text-right">{d.status}</TableHead>
+                            <TableHead className="w-[200px]">{d.therapist}</TableHead>
+                            <TableHead>{d.performance}</TableHead>
+                            <TableHead className="text-right w-[120px]">{d.status}</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -61,18 +66,29 @@ export function TechniqueDetailClient({ technique }: { technique: TechniqueWithD
                         users.map(status => (
                             <TableRow key={status.userId}>
                                 <TableCell>
-                                    <Link href={`/therapists/${status.userId}`} className="hover:underline">
+                                    <Link href={`/therapists/${status.userId}`} className="hover:underline font-medium">
                                         {getFullName(status.user)}
                                     </Link>
                                 </TableCell>
+                                <TableCell>
+                                    <div className="flex items-center gap-4">
+                                        <Progress value={(status._count.userTechniqueUsageLogs / maxPerformance) * 100} className="w-full" />
+                                        <span className="text-sm font-mono text-muted-foreground">{status._count.userTechniqueUsageLogs}</span>
+                                    </div>
+                                </TableCell>
                                 <TableCell className="text-right">
-                                    <Badge variant={status.status === 'THERAPIST' ? 'default' : 'secondary'}>{dictionary.enums.techniqueStatus[status.status]}</Badge>
+                                    <Badge 
+                                      variant={status.status === TechniqueStatus.THERAPIST ? 'default' : 'secondary'}
+                                      className="justify-center min-w-[100px]"
+                                    >
+                                        {dictionary.enums.techniqueStatus[status.status]}
+                                    </Badge>
                                 </TableCell>
                             </TableRow>
                         ))
                     ) : (
                         <TableRow>
-                           <TableCell colSpan={2} className="h-24 text-center">
+                           <TableCell colSpan={3} className="h-24 text-center">
                             {d.noTherapistsFound}
                            </TableCell>
                         </TableRow>

@@ -251,7 +251,8 @@ export const dictionaries = {
       therapistsAssigned: "Terapeutas Asignados a esta Técnica",
       noTherapistsFound: "No se han encontrado terapeutas asignados a esta técnica.",
       therapist: "Terapeuta",
-      status: "Estado"
+      status: "Estado",
+      performance: "Desempeño"
     },
     enums: {
       appointmentStatus: {
@@ -521,7 +522,8 @@ export const dictionaries = {
       therapistsAssigned: "Therapists Assigned to This Technique",
       noTherapistsFound: "No therapists found assigned to this technique.",
       therapist: "Therapist",
-      status: "Status"
+      status: "Status",
+      performance: "Performance"
     },
     enums: {
       appointmentStatus: {
