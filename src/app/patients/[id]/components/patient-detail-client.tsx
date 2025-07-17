@@ -142,7 +142,7 @@ export function PatientDetailClient({ patient }: { patient: PatientWithDetails }
                         <TableCell>{format(appt.date, "PPP")}</TableCell>
                         <TableCell>
                              <Badge variant={appt.status === 'DONE' ? 'secondary' : 'default'}>
-                                {appt.status}
+                                {dictionary.enums.appointmentStatus[appt.status]}
                              </Badge>
                         </TableCell>
                         <TableCell className="text-right print:hidden">

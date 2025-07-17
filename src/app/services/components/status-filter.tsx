@@ -39,8 +39,8 @@ export function StatusFilter() {
       </SelectTrigger>
       <SelectContent>
         <SelectItem value="ALL">{d.allStatuses}</SelectItem>
-        <SelectItem value="ACTIVE">{d.active}</SelectItem>
-        <SelectItem value="INACTIVE">{d.inactive}</SelectItem>
+        <SelectItem value="ACTIVE">{dictionary.enums.serviceStatus.ACTIVE}</SelectItem>
+        <SelectItem value="INACTIVE">{dictionary.enums.serviceStatus.INACTIVE}</SelectItem>
       </SelectContent>
     </Select>
   );

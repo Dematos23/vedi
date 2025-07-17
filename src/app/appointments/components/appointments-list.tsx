@@ -110,7 +110,7 @@ export function AppointmentsList({ appointments, allPatients, allServices, searc
                 </TableCell>
                 <TableCell>
                   <Badge variant={appt.status === 'DONE' ? 'secondary' : 'default'}>
-                    {appt.status}
+                    {dictionary.enums.appointmentStatus[appt.status]}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-right">

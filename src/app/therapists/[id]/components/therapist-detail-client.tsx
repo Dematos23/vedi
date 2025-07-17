@@ -26,6 +26,7 @@ import { formatCurrency, getFullName, cn } from "@/lib/utils";
 import type { getTherapistPerformance } from "@/lib/actions";
 import { Progress } from "@/components/ui/progress";
 import { useLanguage } from "@/contexts/language-context";
+import { TechniqueStatus } from "@prisma/client";
 
 type Unpacked<T> = T extends (infer U)[] ? U : T;
 type PerformanceData = Awaited<ReturnType<typeof getTherapistPerformance>>;
@@ -123,13 +124,13 @@ export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
                       <Progress value={tech._count.userTechniqueUsageLogs} max={100} />
                       <span className="text-sm font-mono text-muted-foreground text-center">{tech._count.userTechniqueUsageLogs} {d.uses}</span>
                       <Badge 
-                        variant={tech.status === 'PRACTITIONER' ? 'secondary' : 'default'}
+                        variant={tech.status === TechniqueStatus.PRACTITIONER ? 'secondary' : 'default'}
                         className={cn("justify-center", {
-                            "bg-primary hover:bg-primary/90 text-primary-foreground": tech.status === 'THERAPIST',
-                            "bg-secondary hover:bg-secondary/80 text-secondary-foreground": tech.status === 'PRACTITIONER'
+                            "bg-primary hover:bg-primary/90 text-primary-foreground": tech.status === TechniqueStatus.THERAPIST,
+                            "bg-secondary hover:bg-secondary/80 text-secondary-foreground": tech.status === TechniqueStatus.PRACTITIONER
                         })}
                       >
-                        {tech.status === 'THERAPIST' ? d.therapist : d.practitioner}
+                        {dictionary.enums.techniqueStatus[tech.status]}
                       </Badge>
                   </React.Fragment>
                 ))}

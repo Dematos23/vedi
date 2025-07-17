@@ -189,7 +189,7 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
                           <RadioGroupItem value={Concurrency.SINGLE} />
                         </FormControl>
                         <FormLabel className="font-normal">
-                          {d.single}
+                          {dictionary.enums.concurrency.SINGLE}
                         </FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-2 space-y-0">
@@ -197,7 +197,7 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
                           <RadioGroupItem value={Concurrency.MULTIPLE} />
                         </FormControl>
                         <FormLabel className="font-normal">
-                          {d.multiple}
+                           {dictionary.enums.concurrency.MULTIPLE}
                         </FormLabel>
                       </FormItem>
                     </RadioGroup>

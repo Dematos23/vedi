@@ -83,8 +83,6 @@ export const dictionaries = {
         searchPlaceholder: "Buscar por nombre o descripción...",
         noServicesFound: "No se encontraron servicios.",
         allStatuses: "Todos los Estados",
-        active: "Activo",
-        inactive: "Inactivo",
         filterByStatus: "Filtrar por estado",
         // Service Card
         price: "Precio",
@@ -140,10 +138,8 @@ export const dictionaries = {
         // Buttons
         view: "Ver",
         // Filters
-        filterByStatus: "Filtrar por estado",
+        filterByStatus: "Filtrar por Estado",
         allStatuses: "Todos los Estados",
-        programmed: "Programada",
-        done: "Realizada",
         filterByService: "Filtrar por servicio...",
         filterByDate: "Filtrar por fecha",
         all: "Todo",
@@ -162,8 +158,6 @@ export const dictionaries = {
         selectServicePlaceholder: "Selecciona un servicio",
         dateLabel: "Fecha y Hora",
         concurrencyLabel: "Concurrencia",
-        single: "Único",
-        multiple: "Múltiple",
         descriptionLabel: "Descripción",
         descriptionPlaceholder: "Detalles de la sesión...",
         scheduleButton: "Programar",
@@ -208,8 +202,6 @@ export const dictionaries = {
         techniquePerformance: "Desempeño de Técnicas",
         techniquePerformanceDescription: "Uso y competencia para cada técnica asignada.",
         uses: "usos",
-        therapist: "TERAPEUTA",
-        practitioner: "PRACTICANTE",
         noTechniquesAssigned: "No hay técnicas asignadas a este terapeuta.",
         recentAppointments: "Citas Recientes",
         recentAppointmentsDescription: "Últimas 10 citas que involucran a sus pacientes.",
@@ -260,6 +252,24 @@ export const dictionaries = {
       therapist: "Terapeuta",
       status: "Estado"
     },
+    enums: {
+      appointmentStatus: {
+        PROGRAMMED: "Programada",
+        DONE: "Realizada",
+      },
+      concurrency: {
+        SINGLE: "Única",
+        MULTIPLE: "Múltiple",
+      },
+      serviceStatus: {
+        ACTIVE: "Activo",
+        INACTIVE: "Inactivo",
+      },
+      techniqueStatus: {
+        PRACTITIONER: "Practicante",
+        THERAPIST: "Terapeuta",
+      }
+    }
   },
   en: {
     sidebar: {
@@ -342,8 +352,6 @@ export const dictionaries = {
         searchPlaceholder: "Search by service name or description...",
         noServicesFound: "No services found.",
         allStatuses: "All Statuses",
-        active: "Active",
-        inactive: "Inactive",
         filterByStatus: "Filter by status",
         // Service Card
         price: "Price",
@@ -401,8 +409,6 @@ export const dictionaries = {
         // Filters
         filterByStatus: "Filter by Status",
         allStatuses: "All Statuses",
-        programmed: "Programmed",
-        done: "Done",
         filterByService: "Filter by service...",
         filterByDate: "Filter by date",
         all: "All",
@@ -421,8 +427,6 @@ export const dictionaries = {
         selectServicePlaceholder: "Select a service",
         dateLabel: "Date & Time",
         concurrencyLabel: "Concurrency",
-        single: "Single",
-        multiple: "Multiple",
         descriptionLabel: "Description",
         descriptionPlaceholder: "Session details...",
         scheduleButton: "Schedule",
@@ -467,8 +471,6 @@ export const dictionaries = {
         techniquePerformance: "Technique Performance",
         techniquePerformanceDescription: "Usage and proficiency for each assigned technique.",
         uses: "uses",
-        therapist: "THERAPIST",
-        practitioner: "PRACTITIONER",
         noTechniquesAssigned: "No techniques assigned to this therapist.",
         recentAppointments: "Recent Appointments",
         recentAppointmentsDescription: "Last 10 appointments involving their patients.",
@@ -519,6 +521,24 @@ export const dictionaries = {
       therapist: "Therapist",
       status: "Status"
     },
+    enums: {
+      appointmentStatus: {
+        PROGRAMMED: "Programmed",
+        DONE: "Done",
+      },
+      concurrency: {
+        SINGLE: "Single",
+        MULTIPLE: "Multiple",
+      },
+      serviceStatus: {
+        ACTIVE: "Active",
+        INACTIVE: "Inactive",
+      },
+      techniqueStatus: {
+        PRACTITIONER: "Practitioner",
+        THERAPIST: "Therapist",
+      }
+    }
   },
 };
 

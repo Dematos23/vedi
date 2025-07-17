@@ -162,7 +162,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
               ) : (
                 <div className="flex items-center gap-2">
                   <CardTitle>{service.name}</CardTitle>
-                  {isInactive && <Badge variant="destructive">{d.inactive}</Badge>}
+                  {isInactive && <Badge variant="destructive">{dictionary.enums.serviceStatus.INACTIVE}</Badge>}
                 </div>
               )}
             </div>

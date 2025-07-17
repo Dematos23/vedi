@@ -104,8 +104,8 @@ export function Filters({ allServices }: FiltersProps) {
               </SelectTrigger>
               <SelectContent>
                   <SelectItem value="ALL">{d.allStatuses}</SelectItem>
-                  <SelectItem value="PROGRAMMED">{d.programmed}</SelectItem>
-                  <SelectItem value="DONE">{d.done}</SelectItem>
+                  <SelectItem value="PROGRAMMED">{dictionary.enums.appointmentStatus.PROGRAMMED}</SelectItem>
+                  <SelectItem value="DONE">{dictionary.enums.appointmentStatus.DONE}</SelectItem>
               </SelectContent>
           </Select>
           <Combobox
@@ -154,8 +154,8 @@ export function Filters({ allServices }: FiltersProps) {
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="ALL">{d.allStatuses}</SelectItem>
-                            <SelectItem value="PROGRAMMED">{d.programmed}</SelectItem>
-                            <SelectItem value="DONE">{d.done}</SelectItem>
+                            <SelectItem value="PROGRAMMED">{dictionary.enums.appointmentStatus.PROGRAMMED}</SelectItem>
+                            <SelectItem value="DONE">{dictionary.enums.appointmentStatus.DONE}</SelectItem>
                         </SelectContent>
                     </Select>
                  </div>

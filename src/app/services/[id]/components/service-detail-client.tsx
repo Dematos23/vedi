@@ -39,7 +39,7 @@ export function ServiceDetailClient({ serviceData }: { serviceData: Serializable
             <div className="flex items-center gap-4">
                  <h1 className="text-2xl font-bold">{name}</h1>
                  <Badge variant={isInactive ? 'destructive' : 'secondary'} className="text-sm">
-                    {status}
+                    {dictionary.enums.serviceStatus[status]}
                 </Badge>
             </div>
         </div>
@@ -94,7 +94,7 @@ export function ServiceDetailClient({ serviceData }: { serviceData: Serializable
                             <TableCell>{format(new Date(appt.date), "PPP")}</TableCell>
                             <TableCell>
                                 <Badge variant={appt.status === 'DONE' ? 'secondary' : 'default'}>
-                                    {appt.status}
+                                    {dictionary.enums.appointmentStatus[appt.status]}
                                 </Badge>
                             </TableCell>
                             <TableCell className="text-right">

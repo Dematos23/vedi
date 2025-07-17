@@ -143,7 +143,7 @@ export function AppointmentDetailClient({ appointmentData }: { appointmentData: 
               </CardDescription>
             </div>
             <Badge variant={status === 'DONE' ? 'secondary' : 'default'} className="text-sm">
-                {status}
+                {dictionary.enums.appointmentStatus[status]}
             </Badge>
           </div>
         </CardHeader>

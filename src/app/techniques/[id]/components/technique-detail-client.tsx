@@ -7,7 +7,6 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -56,7 +55,7 @@ export function TechniqueDetailClient({ technique }: { technique: TechniqueWithD
                             <Link key={service.id} href={`/services/${service.id}`} className="flex items-center gap-3 rounded-lg border p-3 hover:bg-accent transition-colors">
                                 <BriefcaseMedical className="h-5 w-5 text-muted-foreground" />
                                 <span className="font-medium">{service.name}</span>
-                                <Badge variant={service.status === 'ACTIVE' ? 'secondary' : 'destructive'} className="ml-auto">{service.status}</Badge>
+                                <Badge variant={service.status === 'ACTIVE' ? 'secondary' : 'destructive'} className="ml-auto">{dictionary.enums.serviceStatus[service.status]}</Badge>
                             </Link>
                         ))}
                     </div>
@@ -87,7 +86,7 @@ export function TechniqueDetailClient({ technique }: { technique: TechniqueWithD
                                     </Link>
                                 </TableCell>
                                 <TableCell className="text-right">
-                                    <Badge variant={status.status === 'THERAPIST' ? 'default' : 'secondary'}>{status.status}</Badge>
+                                    <Badge variant={status.status === 'THERAPIST' ? 'default' : 'secondary'}>{dictionary.enums.techniqueStatus[status.status]}</Badge>
                                 </TableCell>
                             </TableRow>
                         ))
