@@ -13,6 +13,7 @@ export type TherapistWithPerformance = User & {
             userTechniqueUsageLogs: number;
         };
     })[];
+    performance: number; // Add performance to the type
 };
 
 export default async function TherapistsPage() {
@@ -40,13 +41,14 @@ export default async function TherapistsPage() {
         }
     });
 
-    // Since we can't do a nested aggregate, we sum it here.
+    // Since we can't do a nested aggregate directly in the way we want for the top-level user,
+    // we calculate the performance score here.
     const therapists: TherapistWithPerformance[] = therapistsRaw.map(therapist => {
         const totalUsage = therapist.techniques.reduce((sum, tech) => sum + tech._count.userTechniqueUsageLogs, 0);
         return {
             ...therapist,
             performance: totalUsage,
-        } as any; 
+        }; 
     });
 
 
