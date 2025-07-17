@@ -27,6 +27,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { createPatient } from "@/lib/actions";
+import { useLanguage } from "@/contexts/language-context";
 
 const patientSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
@@ -43,6 +44,9 @@ type PatientFormValues = z.infer<typeof patientSchema>;
 export function NewPatientSheet() {
   const [open, setOpen] = React.useState(false);
   const { toast } = useToast();
+  const { dictionary } = useLanguage();
+  const d = dictionary.patients;
+
   const form = useForm<PatientFormValues>({
     resolver: zodResolver(patientSchema),
     defaultValues: {
@@ -79,14 +83,14 @@ export function NewPatientSheet() {
       <SheetTrigger asChild>
         <Button size="sm" className="gap-1">
           <PlusCircle className="h-4 w-4" />
-          New Patient
+          {d.newPatient}
         </Button>
       </SheetTrigger>
       <SheetContent>
         <SheetHeader>
-          <SheetTitle>Create New Patient</SheetTitle>
+          <SheetTitle>{d.createNewPatient}</SheetTitle>
           <SheetDescription>
-            Fill in the details for the new patient.
+            {d.fillInDetails}
           </SheetDescription>
         </SheetHeader>
         <Form {...form}>
@@ -97,7 +101,7 @@ export function NewPatientSheet() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>First Name</FormLabel>
+                    <FormLabel>{d.firstName}</FormLabel>
                     <FormControl>
                       <Input placeholder="John" {...field} />
                     </FormControl>
@@ -110,7 +114,7 @@ export function NewPatientSheet() {
                 name="secondname"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Middle Name</FormLabel>
+                    <FormLabel>{d.middleName}</FormLabel>
                     <FormControl>
                       <Input placeholder="Michael" {...field} />
                     </FormControl>
@@ -125,7 +129,7 @@ export function NewPatientSheet() {
                 name="lastname"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Last Name</FormLabel>
+                    <FormLabel>{d.lastName}</FormLabel>
                     <FormControl>
                       <Input placeholder="Doe" {...field} />
                     </FormControl>
@@ -138,7 +142,7 @@ export function NewPatientSheet() {
                 name="secondlastname"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Second Last Name</FormLabel>
+                    <FormLabel>{d.secondLastName}</FormLabel>
                     <FormControl>
                       <Input placeholder="Smith" {...field} />
                     </FormControl>
@@ -152,7 +156,7 @@ export function NewPatientSheet() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>{d.email}</FormLabel>
                   <FormControl>
                     <Input placeholder="john.doe@example.com" {...field} />
                   </FormControl>
@@ -165,7 +169,7 @@ export function NewPatientSheet() {
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Phone Number</FormLabel>
+                  <FormLabel>{d.phoneNumber}</FormLabel>
                   <FormControl>
                     <Input placeholder="(123) 456-7890" {...field} />
                   </FormControl>
@@ -178,7 +182,7 @@ export function NewPatientSheet() {
               name="address"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Address</FormLabel>
+                  <FormLabel>{d.address}</FormLabel>
                   <FormControl>
                     <Input placeholder="123 Main St, Anytown, USA" {...field} />
                   </FormControl>
@@ -187,9 +191,9 @@ export function NewPatientSheet() {
               )}
             />
             <SheetFooter>
-                <Button variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>
+                <Button variant="ghost" onClick={() => setOpen(false)}>{d.cancel}</Button>
                 <Button type="submit" disabled={form.formState.isSubmitting}>
-                    {form.formState.isSubmitting ? "Creating..." : "Create Patient"}
+                    {form.formState.isSubmitting ? d.creating : d.createPatient}
                 </Button>
             </SheetFooter>
           </form>

@@ -31,21 +31,23 @@ import { useToast } from "@/hooks/use-toast";
 import { ExportPdfButton } from "./export-pdf-button";
 import { formatCurrency, getFullName } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
+import { useLanguage } from "@/contexts/language-context";
 
-// All the interactive logic is in this client component
 export function PatientDetailClient({ patient }: { patient: PatientWithDetails }) {
   const [notes, setNotes] = React.useState(patient.notes || "");
   const [summary, setSummary] = React.useState<string | null>(null);
   const [isSummarizing, setIsSummarizing] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const { toast } = useToast();
+  const { dictionary } = useLanguage();
+  const d = dictionary.patients;
 
   const handleSummarize = async () => {
     if (!notes) {
         toast({
             variant: "destructive",
-            title: "Error",
-            description: "Cannot summarize empty notes.",
+            title: d.error,
+            description: d.emptyNotesError,
         });
         return;
     }
@@ -56,7 +58,7 @@ export function PatientDetailClient({ patient }: { patient: PatientWithDetails }
       const result = await summarizeSessionNotes({ sessionNotes: notes });
       setSummary(result.summary);
     } catch (e) {
-      setError("Failed to generate summary. Please try again.");
+      setError(d.summaryError);
       console.error(e);
     } finally {
       setIsSummarizing(false);
@@ -73,7 +75,7 @@ export function PatientDetailClient({ patient }: { patient: PatientWithDetails }
         <Button asChild variant="outline" size="icon" className="print:hidden">
           <Link href="/patients">
             <ArrowLeft className="h-4 w-4" />
-            <span className="sr-only">Back to Patients</span>
+            <span className="sr-only">{d.backToPatients}</span>
           </Link>
         </Button>
         <h1 className="text-2xl font-bold">{getFullName(patient)}</h1>
@@ -82,8 +84,8 @@ export function PatientDetailClient({ patient }: { patient: PatientWithDetails }
         <div className="md:col-span-2 grid gap-6">
            <Card>
             <CardHeader>
-                <CardTitle>Service Balances</CardTitle>
-                <CardDescription>Purchased service sessions and their usage.</CardDescription>
+                <CardTitle>{d.serviceBalances}</CardTitle>
+                <CardDescription>{d.serviceBalancesDescription}</CardDescription>
             </CardHeader>
             <CardContent>
                 {patient.patientServiceBalances.length > 0 ? (
@@ -92,25 +94,25 @@ export function PatientDetailClient({ patient }: { patient: PatientWithDetails }
                             <div key={balance.id}>
                                 <div className="flex justify-between items-center mb-1">
                                     <p className="font-medium">{balance.service.name}</p>
-                                    <p className="text-sm text-muted-foreground">{balance.used} / {balance.total} used</p>
+                                    <p className="text-sm text-muted-foreground">{balance.used} / {balance.total} {d.used}</p>
                                 </div>
                                 <Progress value={(balance.used / balance.total) * 100} />
                             </div>
                         ))}
                     </div>
                 ): (
-                     <p className="text-sm text-muted-foreground text-center py-4">No active service balances.</p>
+                     <p className="text-sm text-muted-foreground text-center py-4">{d.noActiveBalances}</p>
                 )}
             </CardContent>
            </Card>
           <Card id="appointment-history">
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>Appointment History</CardTitle>
+              <CardTitle>{d.appointmentHistory}</CardTitle>
                <div className="flex gap-2 print:hidden">
-                  <ExportPdfButton patientName={getFullName(patient)} />
+                  <ExportPdfButton patientName={getFullName(patient)} buttonText={d.exportPdf} />
                   <Button onClick={handleSummarize} disabled={isSummarizing || !notes}>
                   <Wand2 className="mr-2 h-4 w-4" />
-                  {isSummarizing ? "Summarizing..." : "Summarize with AI"}
+                  {isSummarizing ? d.summarizing : d.summarizeWithAi}
                   </Button>
               </div>
             </CardHeader>
@@ -118,11 +120,11 @@ export function PatientDetailClient({ patient }: { patient: PatientWithDetails }
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Service</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Status</TableHead>
+                    <TableHead>{d.service}</TableHead>
+                    <TableHead>{d.date}</TableHead>
+                    <TableHead>{d.status}</TableHead>
                     <TableHead>
-                      <span className="sr-only">Actions</span>
+                      <span className="sr-only">{d.actions}</span>
                     </TableHead>
                   </TableRow>
                 </TableHeader>
@@ -147,7 +149,7 @@ export function PatientDetailClient({ patient }: { patient: PatientWithDetails }
                             <Button asChild variant="outline" size="sm">
                                 <Link href={`/appointments/${appt.id}`}>
                                 <Eye className="mr-2 h-4 w-4" />
-                                View
+                                {d.view}
                                 </Link>
                             </Button>
                         </TableCell>
@@ -156,7 +158,7 @@ export function PatientDetailClient({ patient }: { patient: PatientWithDetails }
                   ) : (
                      <TableRow>
                         <TableCell colSpan={4} className="h-24 text-center">
-                          No appointments found.
+                          {d.noAppointmentsFound}
                         </TableCell>
                     </TableRow>
                   )}
@@ -168,19 +170,19 @@ export function PatientDetailClient({ patient }: { patient: PatientWithDetails }
         <div className="grid gap-6 content-start">
           <Card id="patient-details">
             <CardHeader>
-              <CardTitle>Patient Details</CardTitle>
+              <CardTitle>{d.patientDetails}</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-2 text-sm">
               <div className="flex justify-between">
-                <span className="font-medium text-muted-foreground">Email</span>
+                <span className="font-medium text-muted-foreground">{d.email}</span>
                 <span>{patient.email || 'N/A'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="font-medium text-muted-foreground">Phone</span>
+                <span className="font-medium text-muted-foreground">{d.phone}</span>
                 <span>{patient.phone || 'N/A'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="font-medium text-muted-foreground">Address</span>
+                <span className="font-medium text-muted-foreground">{d.address}</span>
                 <span className="text-right">{patient.address || 'N/A'}</span>
               </div>
             </CardContent>

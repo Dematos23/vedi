@@ -9,9 +9,10 @@ import html2canvas from 'html2canvas';
 
 interface ExportPdfButtonProps {
   patientName: string;
+  buttonText: string;
 }
 
-export function ExportPdfButton({ patientName }: ExportPdfButtonProps) {
+export function ExportPdfButton({ patientName, buttonText }: ExportPdfButtonProps) {
   const [isExporting, setIsExporting] = React.useState(false);
 
   const handleExport = async () => {
@@ -66,7 +67,7 @@ export function ExportPdfButton({ patientName }: ExportPdfButtonProps) {
   return (
     <Button onClick={handleExport} disabled={isExporting}>
       <Download className="mr-2 h-4 w-4" />
-      {isExporting ? 'Exporting...' : 'Export PDF'}
+      {isExporting ? 'Exporting...' : buttonText}
     </Button>
   );
 }
