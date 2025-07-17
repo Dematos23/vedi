@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { useLanguage } from '@/contexts/language-context';
 
 interface ExportAppointmentPdfButtonProps {
   appointmentId: string;
@@ -14,6 +15,8 @@ interface ExportAppointmentPdfButtonProps {
 
 export function ExportAppointmentPdfButton({ appointmentId, serviceName }: ExportAppointmentPdfButtonProps) {
   const [isExporting, setIsExporting] = React.useState(false);
+  const { dictionary } = useLanguage();
+  const d = dictionary.appointments;
 
   const handleExport = async () => {
     setIsExporting(true);
@@ -52,7 +55,7 @@ export function ExportAppointmentPdfButton({ appointmentId, serviceName }: Expor
   return (
     <Button onClick={handleExport} disabled={isExporting} variant="outline" size="sm">
       <Download className="mr-2 h-4 w-4" />
-      {isExporting ? 'Exporting...' : 'Export PDF'}
+      {isExporting ? d.exporting : d.exportPdf}
     </Button>
   );
 }

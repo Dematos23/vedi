@@ -4,7 +4,7 @@
 import * as React from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useDebouncedCallback } from "use-debounce";
-import type { Service, AppointmentStatus } from "@prisma/client";
+import type { Service } from "@prisma/client";
 import { Search as SearchIcon, ListFilter } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { useLanguage } from "@/contexts/language-context";
 
 interface FiltersProps {
   allServices: Service[];
@@ -32,6 +33,8 @@ export function Filters({ allServices }: FiltersProps) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
+  const { dictionary } = useLanguage();
+  const d = dictionary.appointments;
 
   const serviceOptions = allServices.map(s => ({ value: s.id, label: s.name }));
   const [open, setOpen] = React.useState(false);
@@ -83,7 +86,7 @@ export function Filters({ allServices }: FiltersProps) {
         <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
         <Input
           type="search"
-          placeholder="Search by patient or service..."
+          placeholder={d.searchPlaceholder}
           onChange={(e) => handleSearch(e.target.value)}
           defaultValue={searchParams.get("query")?.toString()}
           className="pl-10"
@@ -97,19 +100,19 @@ export function Filters({ allServices }: FiltersProps) {
             onValueChange={handleStatusChange}
           >
               <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Filter by status" />
+                  <SelectValue placeholder={d.filterByStatus} />
               </SelectTrigger>
               <SelectContent>
-                  <SelectItem value="ALL">All Statuses</SelectItem>
-                  <SelectItem value="PROGRAMMED">Programmed</SelectItem>
-                  <SelectItem value="DONE">Done</SelectItem>
+                  <SelectItem value="ALL">{d.allStatuses}</SelectItem>
+                  <SelectItem value="PROGRAMMED">{d.programmed}</SelectItem>
+                  <SelectItem value="DONE">{d.done}</SelectItem>
               </SelectContent>
           </Select>
           <Combobox
               options={serviceOptions}
               value={searchParams.get("service") || ""}
               onChange={handleServiceChange}
-              placeholder="Filter by service..."
+              placeholder={d.filterByService}
               className="min-w-[200px]"
           />
           <Select 
@@ -117,15 +120,15 @@ export function Filters({ allServices }: FiltersProps) {
             onValueChange={handleDateRangeChange}
           >
               <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Filter by date" />
+                  <SelectValue placeholder={d.filterByDate} />
               </SelectTrigger>
               <SelectContent>
-                  <SelectItem value="all">All</SelectItem>
-                  <SelectItem value="today">Today</SelectItem>
-                  <SelectItem value="this_week">This Week</SelectItem>
-                  <SelectItem value="this_month">This Month</SelectItem>
-                  <SelectItem value="this_year">This Year</SelectItem>
-                  <SelectItem value="next_month">Next Month</SelectItem>
+                  <SelectItem value="all">{d.all}</SelectItem>
+                  <SelectItem value="today">{d.today}</SelectItem>
+                  <SelectItem value="this_week">{d.thisWeek}</SelectItem>
+                  <SelectItem value="this_month">{d.thisMonth}</SelectItem>
+                  <SelectItem value="this_year">{d.thisYear}</SelectItem>
+                  <SelectItem value="next_month">{d.nextMonth}</SelectItem>
               </SelectContent>
           </Select>
       </div>
@@ -136,28 +139,28 @@ export function Filters({ allServices }: FiltersProps) {
             <PopoverTrigger asChild>
                 <Button variant="outline" className="w-full justify-start">
                     <ListFilter className="mr-2 h-4 w-4" />
-                    Filters
+                    {d.filters}
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="w-[--radix-popover-trigger-width] space-y-4">
                  <div>
-                    <Label>Filter by Status</Label>
+                    <Label>{d.filterByStatus}</Label>
                     <Select
                       defaultValue={searchParams.get("status") || "PROGRAMMED"}
                       onValueChange={handleStatusChange}
                     >
                         <SelectTrigger>
-                            <SelectValue placeholder="Filter by status" />
+                            <SelectValue placeholder={d.filterByStatus} />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="ALL">All Statuses</SelectItem>
-                            <SelectItem value="PROGRAMMED">Programmed</SelectItem>
-                            <SelectItem value="DONE">Done</SelectItem>
+                            <SelectItem value="ALL">{d.allStatuses}</SelectItem>
+                            <SelectItem value="PROGRAMMED">{d.programmed}</SelectItem>
+                            <SelectItem value="DONE">{d.done}</SelectItem>
                         </SelectContent>
                     </Select>
                  </div>
                 <div>
-                  <Label>Filter by Service</Label>
+                  <Label>{d.filterByService}</Label>
                    <Combobox
                       options={serviceOptions}
                       value={searchParams.get("service") || ""}
@@ -169,21 +172,21 @@ export function Filters({ allServices }: FiltersProps) {
                   />
                 </div>
                  <div>
-                    <Label>Filter by Date</Label>
+                    <Label>{d.filterByDate}</Label>
                     <Select 
                         defaultValue={searchParams.get("dateRange") || "all"}
                         onValueChange={handleDateRangeChange}
                     >
                         <SelectTrigger>
-                            <SelectValue placeholder="Filter by date" />
+                            <SelectValue placeholder={d.filterByDate} />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="all">All</SelectItem>
-                            <SelectItem value="today">Today</SelectItem>
-                            <SelectItem value="this_week">This Week</SelectItem>
-                            <SelectItem value="this_month">This Month</SelectItem>
-                            <SelectItem value="this_year">This Year</SelectItem>
-                            <SelectItem value="next_month">Next Month</SelectItem>
+                            <SelectItem value="all">{d.all}</SelectItem>
+                            <SelectItem value="today">{d.today}</SelectItem>
+                            <SelectItem value="this_week">{d.thisWeek}</SelectItem>
+                            <SelectItem value="this_month">{d.thisMonth}</SelectItem>
+                            <SelectItem value="this_year">{d.thisYear}</SelectItem>
+                            <SelectItem value="next_month">{d.nextMonth}</SelectItem>
                         </SelectContent>
                     </Select>
                  </div>

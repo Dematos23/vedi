@@ -1,29 +1,13 @@
 
 import prisma from "@/lib/prisma";
 import { format, startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, addMonths } from "date-fns";
-import Link from "next/link";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Eye, ArrowUpDown } from "lucide-react";
-import { NewAppointmentSheet } from "./components/new-appointment-sheet";
-import { Filters } from "./components/filters";
-import type { Prisma, AppointmentStatus } from "@prisma/client";
-import { cn, getFullName } from "@/lib/utils";
+import type { Prisma, AppointmentStatus, Appointment, Patient, Service } from "@prisma/client";
+import { AppointmentsList } from "./components/appointments-list";
+
+export type AppointmentWithDetails = Appointment & {
+  patients: Patient[];
+  service: Service | null;
+};
 
 const getDateRange = (rangeKey: string) => {
     const now = new Date();
@@ -79,7 +63,7 @@ export default async function AppointmentsPage({
     where.status = status as AppointmentStatus;
   }
 
-  const appointments = await prisma.appointment.findMany({
+  const appointments: AppointmentWithDetails[] = await prisma.appointment.findMany({
     where,
     include: {
       patients: true,
@@ -93,89 +77,12 @@ export default async function AppointmentsPage({
   const allPatients = await prisma.patient.findMany();
   const allServices = await prisma.service.findMany();
 
-  const currentParams = new URLSearchParams();
-  if (query) currentParams.set('query', query);
-  if (serviceId) currentParams.set('service', serviceId);
-  if (dateRange) currentParams.set('dateRange', dateRange);
-  if (status) currentParams.set('status', status);
-
-  const newSortOrder = sort === 'asc' ? 'desc' : 'asc';
-  currentParams.set('sort', newSortOrder);
-  const sortLink = `/appointments?${currentParams.toString()}`;
-
   return (
-    <Card>
-      <CardHeader>
-         <div className="flex items-start justify-between gap-4">
-            <div>
-              <CardTitle>Appointments</CardTitle>
-              <CardDescription>
-                Manage and schedule your appointments.
-              </CardDescription>
-            </div>
-            <NewAppointmentSheet patients={allPatients} services={allServices} />
-         </div>
-         <Filters allServices={allServices} />
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Patient(s)</TableHead>
-              <TableHead>Service</TableHead>
-              <TableHead className="hidden md:table-cell">
-                <Link href={sortLink} className="flex items-center gap-2 hover:underline">
-                  Date
-                  <ArrowUpDown className="h-4 w-4" />
-                </Link>
-              </TableHead>
-              <TableHead className="hidden md:table-cell">Time</TableHead>
-               <TableHead>Status</TableHead>
-              <TableHead>
-                <span className="sr-only">Actions</span>
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {appointments.map((appt) => (
-              <TableRow key={appt.id}>
-                <TableCell className="font-medium">
-                  {appt.patients.map(p => getFullName(p)).join(', ')}
-                </TableCell>
-                <TableCell>
-                  {appt.service && <Badge variant="outline">{appt.service.name}</Badge>}
-                </TableCell>
-                <TableCell className="hidden md:table-cell">
-                  {format(new Date(appt.date), "PPP")}
-                </TableCell>
-                <TableCell className="hidden md:table-cell">
-                  {format(new Date(appt.date), "p")}
-                </TableCell>
-                <TableCell>
-                  <Badge variant={appt.status === 'DONE' ? 'secondary' : 'default'}>
-                    {appt.status}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-right">
-                  <Button asChild variant="outline" size="sm">
-                    <Link href={`/appointments/${appt.id}`}>
-                      <Eye className="mr-2 h-4 w-4" />
-                      View
-                    </Link>
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-             {appointments.length === 0 && (
-                <TableRow>
-                    <TableCell colSpan={6} className="h-24 text-center">
-                    No appointments found.
-                    </TableCell>
-                </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+    <AppointmentsList
+      appointments={appointments}
+      allPatients={allPatients}
+      allServices={allServices}
+      searchParams={searchParams}
+    />
   );
 }

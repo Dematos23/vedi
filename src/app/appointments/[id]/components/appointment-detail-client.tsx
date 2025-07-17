@@ -22,6 +22,7 @@ import { updateAppointmentDescription, completeAppointment } from "@/lib/actions
 import { ExportAppointmentPdfButton } from "./export-appointment-pdf";
 import type { SerializableAppointmentWithDetails } from "../page";
 import { AppointmentStatus } from "@prisma/client";
+import { useLanguage } from "@/contexts/language-context";
 
 export function AppointmentDetailClient({ appointmentData }: { appointmentData: SerializableAppointmentWithDetails }) {
   const [appointment, setAppointment] = React.useState(appointmentData);
@@ -29,6 +30,8 @@ export function AppointmentDetailClient({ appointmentData }: { appointmentData: 
   const [isSaving, setIsSaving] = React.useState(false);
   const [isCompleting, setIsCompleting] = React.useState(false);
   const { toast } = useToast();
+  const { dictionary } = useLanguage();
+  const d = dictionary.appointments;
   
   const [formattedDate, setFormattedDate] = React.useState("");
 
@@ -114,17 +117,17 @@ export function AppointmentDetailClient({ appointmentData }: { appointmentData: 
         <Button asChild variant="outline" size="icon">
           <Link href="/appointments">
             <ArrowLeft className="h-4 w-4" />
-            <span className="sr-only">Back to Appointments</span>
+            <span className="sr-only">{d.backToAppointments}</span>
           </Link>
         </Button>
         <div className="flex-1">
-            <h1 className="text-2xl font-bold">Appointment Details</h1>
+            <h1 className="text-2xl font-bold">{d.appointmentDetails}</h1>
         </div>
         <div className="flex items-center gap-2">
           {status === AppointmentStatus.PROGRAMMED && (
               <Button onClick={handleComplete} disabled={isCompleting}>
                   <CheckCircle className="mr-2 h-4 w-4" />
-                  {isCompleting ? "Completing..." : "Mark as Done"}
+                  {isCompleting ? d.completing : d.markAsDone}
               </Button>
           )}
           <ExportAppointmentPdfButton appointmentId={appointment.id} serviceName={service.name} />
@@ -136,7 +139,7 @@ export function AppointmentDetailClient({ appointmentData }: { appointmentData: 
             <div>
               <CardTitle>{service.name}</CardTitle>
               <CardDescription>
-                {formattedDate ? `Scheduled on ${formattedDate}` : "Loading date..."}
+                {formattedDate ? `${d.scheduledOn} ${formattedDate}` : d.loadingDate}
               </CardDescription>
             </div>
             <Badge variant={status === 'DONE' ? 'secondary' : 'default'} className="text-sm">
@@ -147,7 +150,7 @@ export function AppointmentDetailClient({ appointmentData }: { appointmentData: 
         <CardContent className="grid gap-6">
           <div className="grid md:grid-cols-2 gap-6">
             <div className="grid gap-4">
-                <h3 className="font-semibold text-lg">Patient Information</h3>
+                <h3 className="font-semibold text-lg">{d.patientInformation}</h3>
                 {patients.map(patient => (
                   <div key={patient.id}>
                     <div className="flex items-center gap-4">
@@ -155,18 +158,18 @@ export function AppointmentDetailClient({ appointmentData }: { appointmentData: 
                         <span className="font-medium">{getFullName(patient)}</span>
                     </div>
                     {patient.email && <div className="flex items-center gap-4">
-                        <span className="font-medium text-muted-foreground pl-9">Email</span>
+                        <span className="font-medium text-muted-foreground pl-9">{d.email}</span>
                         <span>{patient.email}</span>
                     </div>}
                      {patient.phone && <div className="flex items-center gap-4">
-                        <span className="font-medium text-muted-foreground pl-9">Phone</span>
+                        <span className="font-medium text-muted-foreground pl-9">{d.phone}</span>
                         <span>{patient.phone}</span>
                     </div>}
                   </div>  
                 ))}
             </div>
              <div className="grid gap-4">
-                <h3 className="font-semibold text-lg">Service Details</h3>
+                <h3 className="font-semibold text-lg">{d.serviceDetails}</h3>
                 <div className="flex items-center gap-4">
                     <DollarSign className="h-5 w-5 text-muted-foreground" />
                     <span className="font-medium">{formatCurrency(Number(service.price))}</span>
@@ -183,13 +186,13 @@ export function AppointmentDetailClient({ appointmentData }: { appointmentData: 
        <Card>
         <CardHeader className="flex flex-row items-center justify-between">
            <div className="grid gap-2">
-            <CardTitle>Session Notes</CardTitle>
-            <CardDescription>View or edit session notes below.</CardDescription>
+            <CardTitle>{d.sessionNotes}</CardTitle>
+            <CardDescription>{d.sessionNotesDescription}</CardDescription>
           </div>
           {!isEditing && status === 'PROGRAMMED' && (
             <Button variant="outline" size="sm" onClick={() => setIsEditing(true)} className="print:hidden">
               <Pencil className="mr-2 h-4 w-4" />
-              Edit Notes
+              {d.editNotes}
             </Button>
           )}
         </CardHeader>
@@ -207,7 +210,7 @@ export function AppointmentDetailClient({ appointmentData }: { appointmentData: 
                 <div className="flex items-start gap-4 text-sm">
                     <BookText className="h-5 w-5 flex-shrink-0 text-muted-foreground mt-0.5" />
                     <p className="text-muted-foreground">
-                        {description || "No notes have been added for this session yet."}
+                        {description || d.noNotes}
                     </p>
                 </div>
             )}
@@ -217,10 +220,10 @@ export function AppointmentDetailClient({ appointmentData }: { appointmentData: 
             <Button variant="ghost" onClick={() => {
                 setIsEditing(false);
                 setAppointment(appointmentData); // Reset to original data on cancel
-            }} disabled={isSaving}>Cancel</Button>
+            }} disabled={isSaving}>{d.cancel}</Button>
             <Button onClick={handleSave} disabled={isSaving}>
               <Save className="mr-2 h-4 w-4" />
-              {isSaving ? "Saving..." : "Save Notes"}
+              {isSaving ? d.savingNotes : d.saveNotes}
             </Button>
           </CardFooter>
         )}

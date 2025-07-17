@@ -40,6 +40,7 @@ import { Concurrency } from "@prisma/client";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { getFullName } from "@/lib/utils";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useLanguage } from "@/contexts/language-context";
 
 const appointmentSchema = z.object({
   patientIds: z.array(z.string()).min(1, "Please select at least one patient."),
@@ -59,6 +60,9 @@ interface NewAppointmentSheetProps {
 export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetProps) {
   const [open, setOpen] = React.useState(false);
   const { toast } = useToast();
+  const { dictionary } = useLanguage();
+  const d = dictionary.appointments;
+
   const form = useForm<AppointmentFormValues>({
     resolver: zodResolver(appointmentSchema),
     defaultValues: {
@@ -106,15 +110,13 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
       <SheetTrigger asChild>
         <Button size="sm" className="gap-1">
           <PlusCircle className="h-4 w-4" />
-          New Appointment
+          {d.newAppointment}
         </Button>
       </SheetTrigger>
       <SheetContent className="sm:max-w-lg">
         <SheetHeader>
-          <SheetTitle>Schedule Appointment</SheetTitle>
-          <SheetDescription>
-            Fill in the details to create a new appointment.
-          </SheetDescription>
+          <SheetTitle>{d.scheduleAppointment}</SheetTitle>
+          <SheetDescription>{d.scheduleAppointmentDescription}</SheetDescription>
         </SheetHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 py-4">
@@ -123,12 +125,12 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
               name="patientIds"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Patients</FormLabel>
+                  <FormLabel>{d.patientsLabel}</FormLabel>
                    <MultiSelect
                       options={patientOptions}
                       selected={field.value}
                       onChange={field.onChange}
-                      placeholder="Select patient(s)..."
+                      placeholder={d.selectPatientsPlaceholder}
                       className="w-full"
                     />
                   <FormMessage />
@@ -140,11 +142,11 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
               name="serviceId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Service</FormLabel>
+                  <FormLabel>{d.serviceLabel}</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a service" />
+                        <SelectValue placeholder={d.selectServicePlaceholder} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -164,7 +166,7 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
               name="date"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Date & Time</FormLabel>
+                  <FormLabel>{d.dateLabel}</FormLabel>
                   <DatePicker date={field.value} setDate={field.onChange} />
                   <FormMessage />
                 </FormItem>
@@ -175,7 +177,7 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
               name="concurrency"
               render={({ field }) => (
                 <FormItem className="space-y-3">
-                  <FormLabel>Concurrency</FormLabel>
+                  <FormLabel>{d.concurrencyLabel}</FormLabel>
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
@@ -187,7 +189,7 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
                           <RadioGroupItem value={Concurrency.SINGLE} />
                         </FormControl>
                         <FormLabel className="font-normal">
-                          Single
+                          {d.single}
                         </FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-2 space-y-0">
@@ -195,7 +197,7 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
                           <RadioGroupItem value={Concurrency.MULTIPLE} />
                         </FormControl>
                         <FormLabel className="font-normal">
-                          Multiple
+                          {d.multiple}
                         </FormLabel>
                       </FormItem>
                     </RadioGroup>
@@ -209,10 +211,10 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>{d.descriptionLabel}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Session details..."
+                      placeholder={d.descriptionPlaceholder}
                       {...field}
                     />
                   </FormControl>
@@ -222,7 +224,7 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
             />
             <SheetFooter>
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "Scheduling..." : "Schedule"}
+                {form.formState.isSubmitting ? d.schedulingButton : d.scheduleButton}
               </Button>
             </SheetFooter>
           </form>
