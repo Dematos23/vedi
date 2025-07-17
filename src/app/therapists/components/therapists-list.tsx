@@ -19,22 +19,20 @@ import {
 import { Button } from "@/components/ui/button";
 import { Eye } from "lucide-react";
 import Link from "next/link";
-import type { User } from "@prisma/client";
 import { useLanguage } from "@/contexts/language-context";
+import { Progress } from "@/components/ui/progress";
+import type { TherapistWithPerformance } from "../page";
 
-type TherapistWithCount = User & {
-    _count: {
-        patients: number;
-    }
-}
 
 interface TherapistsListProps {
-  therapists: TherapistWithCount[];
+  therapists: TherapistWithPerformance[];
 }
 
 export function TherapistsList({ therapists }: TherapistsListProps) {
     const { dictionary } = useLanguage();
     const d = dictionary.therapists;
+
+    const maxPerformance = Math.max(...therapists.map(t => (t as any).performance), 0) || 100;
 
     return (
         <Card>
@@ -52,8 +50,8 @@ export function TherapistsList({ therapists }: TherapistsListProps) {
                 <TableRow>
                 <TableHead>{d.name}</TableHead>
                 <TableHead className="hidden md:table-cell">{d.email}</TableHead>
-                <TableHead className="hidden md:table-cell">{d.phone}</TableHead>
                 <TableHead className="hidden sm:table-cell">{d.assignedPatients}</TableHead>
+                <TableHead>{d.performance}</TableHead>
                 <TableHead>
                     <span className="sr-only">{d.actions}</span>
                 </TableHead>
@@ -66,11 +64,11 @@ export function TherapistsList({ therapists }: TherapistsListProps) {
                     <TableCell className="hidden md:table-cell">
                     {therapist.email}
                     </TableCell>
-                    <TableCell className="hidden md:table-cell">
-                    {therapist.phone || 'N/A'}
-                    </TableCell>
                     <TableCell className="hidden sm:table-cell text-center">
                     {therapist._count.patients}
+                    </TableCell>
+                    <TableCell>
+                        <Progress value={((therapist as any).performance / maxPerformance) * 100} className="w-full" />
                     </TableCell>
                     <TableCell className="text-right">
                     <Button asChild variant="outline" size="sm">
