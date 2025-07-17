@@ -43,7 +43,7 @@ export function TechniqueDetailClient({ technique }: { technique: TechniqueWithD
         </CardContent>
       </Card>
 
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6">
         <Card>
             <CardHeader>
                 <CardTitle>{d.therapistsAssigned}</CardTitle>
