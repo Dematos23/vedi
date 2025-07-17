@@ -18,10 +18,11 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Eye, ArrowUpDown } from "lucide-react";
+import { Eye, ArrowUpDown, UsersRound } from "lucide-react";
 import { NewAppointmentSheet } from "./new-appointment-sheet";
 import { Filters } from "./filters";
 import type { Patient, Service } from "@prisma/client";
@@ -75,18 +76,61 @@ export function AppointmentsList({ appointments, allPatients, allServices, searc
          <Filters allServices={allServices} />
       </CardHeader>
       <CardContent>
-        <Table>
+         {/* Mobile Card View */}
+        <div className="grid gap-4 md:hidden">
+            {appointments.map((appt) => (
+                <Card key={appt.id}>
+                    <CardHeader>
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <CardTitle className="text-base line-clamp-1">
+                                    {appt.service ? appt.service.name : 'No Service'}
+                                </CardTitle>
+                                <CardDescription className="text-xs">
+                                    {isClient ? format(new Date(appt.date), "PPP 'at' p") : ""}
+                                </CardDescription>
+                            </div>
+                            <Badge variant={appt.status === 'DONE' ? 'secondary' : 'default'}>
+                                {dictionary.enums.appointmentStatus[appt.status]}
+                            </Badge>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="grid gap-2 text-sm pt-0">
+                         <div className="flex items-center gap-2">
+                            <UsersRound className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                            <span className="font-medium truncate">{appt.patients.map(p => getFullName(p)).join(', ')}</span>
+                        </div>
+                    </CardContent>
+                    <CardFooter className="pt-0">
+                        <Button asChild variant="outline" size="sm" className="w-full">
+                            <Link href={`/appointments/${appt.id}`}>
+                            <Eye className="mr-2 h-4 w-4" />
+                            {d.view}
+                            </Link>
+                        </Button>
+                    </CardFooter>
+                </Card>
+            ))}
+            {appointments.length === 0 && (
+                <div className="h-24 text-center flex items-center justify-center">
+                    <p>{d.noAppointmentsFound}</p>
+                </div>
+            )}
+        </div>
+
+        {/* Desktop Table View */}
+        <Table className="hidden md:table">
           <TableHeader>
             <TableRow>
               <TableHead>{d.patients}</TableHead>
               <TableHead>{d.service}</TableHead>
-              <TableHead className="hidden md:table-cell">
+              <TableHead>
                 <Link href={sortLink} className="flex items-center gap-2 hover:underline">
                   {d.date}
                   <ArrowUpDown className="h-4 w-4" />
                 </Link>
               </TableHead>
-              <TableHead className="hidden md:table-cell">{d.time}</TableHead>
+              <TableHead>{d.time}</TableHead>
                <TableHead>{d.status}</TableHead>
               <TableHead>
                 <span className="sr-only">{d.actions}</span>
@@ -102,10 +146,10 @@ export function AppointmentsList({ appointments, allPatients, allServices, searc
                 <TableCell>
                   {appt.service && <Badge variant="outline">{appt.service.name}</Badge>}
                 </TableCell>
-                <TableCell className="hidden md:table-cell">
+                <TableCell>
                   {isClient ? format(new Date(appt.date), "PPP") : ""}
                 </TableCell>
-                <TableCell className="hidden md:table-cell">
+                <TableCell>
                   {isClient ? format(new Date(appt.date), "p") : ""}
                 </TableCell>
                 <TableCell>
