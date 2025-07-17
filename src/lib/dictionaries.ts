@@ -228,6 +228,10 @@ export const dictionaries = {
       newTechnique: "Nueva Técnica",
       searchPlaceholder: "Buscar por nombre o descripción...",
       noTechniquesFound: "No se encontraron técnicas.",
+      techniqueName: "Nombre de la Técnica",
+      descriptionLabel: "Descripción",
+      actions: "Acciones",
+      view: "Ver",
       // Technique Card
       edit: "Editar",
       delete: "Eliminar",
@@ -241,12 +245,19 @@ export const dictionaries = {
       // New Technique Sheet
       registerNewTechnique: "Registrar Nueva Técnica",
       addNewTechnique: "Añade una nueva técnica terapéutica al registro.",
-      techniqueName: "Nombre de la Técnica",
       techniqueNameExample: "p. ej., Terapia Cognitiva",
-      descriptionLabel: "Descripción",
       descriptionPlaceholder: "Describe la técnica...",
       registering: "Registrando...",
       registerTechnique: "Registrar Técnica",
+      // Detail Page
+      backToTechniques: "Volver a Técnicas",
+      techniqueDetails: "Detalles de la Técnica",
+      servicesUsingTechnique: "Servicios que Utilizan esta Técnica",
+      noServicesFound: "No se han encontrado servicios que utilicen esta técnica.",
+      therapistsAssigned: "Terapeutas Asignados a esta Técnica",
+      noTherapistsFound: "No se han encontrado terapeutas asignados a esta técnica.",
+      therapist: "Terapeuta",
+      status: "Estado"
     },
   },
   en: {
@@ -475,6 +486,10 @@ export const dictionaries = {
       newTechnique: "New Technique",
       searchPlaceholder: "Search by name or description...",
       noTechniquesFound: "No techniques found.",
+      techniqueName: "Technique Name",
+      descriptionLabel: "Description",
+      actions: "Actions",
+      view: "View",
       // Technique Card
       edit: "Edit",
       delete: "Delete",
@@ -488,12 +503,19 @@ export const dictionaries = {
       // New Technique Sheet
       registerNewTechnique: "Register New Technique",
       addNewTechnique: "Add a new therapeutic technique to the registry.",
-      techniqueName: "Technique Name",
       techniqueNameExample: "e.g., Cognitive Restructuring",
-      descriptionLabel: "Description",
       descriptionPlaceholder: "Describe the technique...",
       registering: "Registering...",
       registerTechnique: "Register Technique",
+      // Detail Page
+      backToTechniques: "Back to Techniques",
+      techniqueDetails: "Technique Details",
+      servicesUsingTechnique: "Services Using This Technique",
+      noServicesFound: "No services found using this technique.",
+      therapistsAssigned: "Therapists Assigned to This Technique",
+      noTherapistsFound: "No therapists found assigned to this technique.",
+      therapist: "Therapist",
+      status: "Status"
     },
   },
 };

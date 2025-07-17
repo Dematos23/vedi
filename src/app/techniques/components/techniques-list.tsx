@@ -2,15 +2,25 @@
 "use client";
 
 import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Search } from "@/app/patients/components/search"; // Re-using search component
+import { Button } from "@/components/ui/button";
+import { Eye } from "lucide-react";
+import Link from "next/link";
+import { Search } from "@/app/patients/components/search";
 import { NewTechniqueSheet } from "./new-technique-sheet";
-import { TechniqueCard } from "./technique-card";
 import type { Technique } from "@prisma/client";
 import { useLanguage } from "@/contexts/language-context";
 
@@ -38,16 +48,43 @@ export function TechniquesList({ techniques }: TechniquesListProps) {
                 </div>
                 </div>
             </CardHeader>
-            <CardContent className="grid gap-4">
-                {techniques.length > 0 ? (
-                techniques.map((technique) => (
-                <TechniqueCard key={technique.id} technique={technique} />
-                ))
-                ) : (
-                <div className="text-center text-muted-foreground py-12 col-span-full">
-                    {d.noTechniquesFound}
-                </div>
-                )}
+            <CardContent>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>{d.techniqueName}</TableHead>
+                            <TableHead className="hidden md:table-cell">{d.descriptionLabel}</TableHead>
+                            <TableHead>
+                                <span className="sr-only">{d.actions}</span>
+                            </TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {techniques.map((technique) => (
+                            <TableRow key={technique.id}>
+                                <TableCell className="font-medium">{technique.name}</TableCell>
+                                <TableCell className="hidden md:table-cell text-muted-foreground line-clamp-2">
+                                    {technique.description}
+                                </TableCell>
+                                <TableCell className="text-right">
+                                    <Button asChild variant="outline" size="sm">
+                                        <Link href={`/techniques/${technique.id}`}>
+                                            <Eye className="mr-2 h-4 w-4" />
+                                            {d.view}
+                                        </Link>
+                                    </Button>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                        {techniques.length === 0 && (
+                            <TableRow>
+                                <TableCell colSpan={3} className="h-24 text-center">
+                                    {d.noTechniquesFound}
+                                </TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
             </CardContent>
         </Card>
     );
