@@ -24,7 +24,6 @@ import { ArrowLeft, UsersRound, CalendarDays, DollarSign, Eye } from "lucide-rea
 import Link from "next/link";
 import { formatCurrency, getFullName } from "@/lib/utils";
 import type { getTherapistPerformance } from "@/lib/actions";
-import type { TechniquePerformance } from "../page";
 import { Progress } from "@/components/ui/progress";
 
 type Unpacked<T> = T extends (infer U)[] ? U : T;
