@@ -126,14 +126,18 @@ export function MainLayout({
     <SidebarProvider>
       <MainSidebar />
       <SidebarInset className="flex flex-col">
-        {/* Mobile Header - Render only on the client to prevent hydration mismatch */}
-        {isClient && (
-            <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-4 sm:hidden">
-            <SidebarTrigger />
-            <div className="flex-1" />
-            {/* You can add mobile-specific header items here */}
-            </header>
-        )}
+        {/* Mobile Header - Render placeholder on server, content on client */}
+        <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-4 sm:hidden">
+          {isClient ? (
+            <>
+              <SidebarTrigger />
+              <div className="flex-1" />
+              {/* You can add mobile-specific header items here */}
+            </>
+          ) : (
+             <div className="h-full w-full" /> // Placeholder to match structure
+          )}
+        </header>
 
         {/* Main Content */}
         <main className="flex-1 p-4 sm:px-6 sm:py-0">{children}</main>
