@@ -1,6 +1,6 @@
 
 import { PrismaClient } from '@prisma/client';
-import { mockUsers, mockPatients, mockServices, generateMockSalesAndBalances, generateMockAppointments } from '../src/lib/mock-data';
+import { mockUsers, generateMockPatients, mockServices, generateMockSalesAndBalances, generateMockAppointments } from '../src/lib/mock-data';
 
 const prisma = new PrismaClient();
 
@@ -14,83 +14,84 @@ async function main() {
   await prisma.appointment.deleteMany();
   await prisma.sale.deleteMany();
   await prisma.service.deleteMany();
+  await prisma.userTechnique.deleteMany();
   await prisma.user.deleteMany();
   await prisma.patient.deleteMany();
   await prisma.technique.deleteMany();
   await prisma.package.deleteMany();
   console.log('Cleared previous data.');
 
-  // Seed Users
+  // Seed Therapists
   const createdUsers = [];
   for (const userData of mockUsers) {
     const user = await prisma.user.create({ data: userData });
     createdUsers.push(user);
+    console.log(`Created therapist: ${user.name} ${user.lastname}`);
   }
-  console.log(`Seeded ${createdUsers.length} users.`);
-  const defaultUser = createdUsers[0];
 
-  // Seed Patients
-  const createdPatients = [];
-  for (const patientData of mockPatients) {
-    const patient = await prisma.patient.create({
-      data: {
-        ...patientData,
-        userId: defaultUser.id,
-      },
-    });
-    createdPatients.push(patient);
-  }
-  console.log(`Seeded ${createdPatients.length} patients.`);
+  // Loop through each therapist to create their own data
+  for (const user of createdUsers) {
+    console.log(`\nSeeding data for ${user.name} ${user.lastname}...`);
 
-  // Seed Services
-  const createdServices = [];
-  for (const serviceData of mockServices) {
-    const service = await prisma.service.create({
-      data: {
-        ...serviceData,
-        userId: defaultUser.id,
-      },
-    });
-    createdServices.push(service);
-  }
-  console.log(`Seeded ${createdServices.length} services.`);
-
-  // Generate and Seed Sales and PatientServiceBalances
-  const mockSales = generateMockSalesAndBalances(createdPatients, createdServices);
-  for (const saleData of mockSales) {
-    const sale = await prisma.sale.create({
-      data: saleData,
-    });
-    // Create a corresponding service balance for the sale
-    if (sale.serviceId) {
-      await prisma.patientServiceBalance.create({
+    // Seed 10 Patients for the current therapist
+    const mockPatients = generateMockPatients(10);
+    const createdPatients = [];
+    for (const patientData of mockPatients) {
+      const patient = await prisma.patient.create({
         data: {
-          patientId: sale.patientId,
-          serviceId: sale.serviceId,
-          saleId: sale.id,
-          total: 5, // All mock sales are for 5 sessions
-          used: 0,
+          ...patientData,
+          userId: user.id,
         },
       });
+      createdPatients.push(patient);
     }
-  }
-  console.log(`Seeded ${mockSales.length} sales and created corresponding service balances.`);
-  
-  // Generate and Seed Appointments
-  const mockAppointments = generateMockAppointments(createdPatients, createdServices);
-  for (const apptData of mockAppointments as any) {
-    const { patientId, serviceId, ...rest } = apptData;
-    await prisma.appointment.create({
-      data: {
-        ...rest,
-        service: { connect: { id: serviceId } },
-        patients: { connect: { id: patientId } },
-      },
-    });
-  }
-  console.log(`Seeded ${mockAppointments.length} appointments.`);
+    console.log(`- Seeded ${createdPatients.length} patients.`);
 
-  console.log(`Seeding finished.`);
+    // Seed Services for the current therapist
+    const createdServices = [];
+    for (const serviceData of mockServices) {
+      const service = await prisma.service.create({
+        data: {
+          ...serviceData,
+          userId: user.id,
+        },
+      });
+      createdServices.push(service);
+    }
+    console.log(`- Seeded ${createdServices.length} services.`);
+
+    // Generate and Seed Sales and PatientServiceBalances for this therapist's patients
+    const mockSales = generateMockSalesAndBalances(createdPatients, createdServices);
+    for (const saleData of mockSales) {
+      const sale = await prisma.sale.create({
+        data: saleData,
+      });
+      // Create a corresponding service balance for the sale
+      if (sale.serviceId) {
+        await prisma.patientServiceBalance.create({
+          data: {
+            patientId: sale.patientId,
+            serviceId: sale.serviceId,
+            saleId: sale.id,
+            total: 5, // All mock sales are for 5 sessions
+            used: 0,
+          },
+        });
+      }
+    }
+    console.log(`- Seeded ${mockSales.length} sales and created corresponding service balances.`);
+    
+    // Generate and Seed Appointments for this therapist's patients
+    const mockAppointments = generateMockAppointments(createdPatients, createdServices);
+    for (const apptData of mockAppointments) {
+      await prisma.appointment.create({
+        data: apptData,
+      });
+    }
+    console.log(`- Seeded ${mockAppointments.length} appointments.`);
+  }
+
+  console.log(`\nSeeding finished.`);
 }
 
 main()

@@ -1,6 +1,6 @@
 
 import { faker } from '@faker-js/faker';
-import type { User, Patient, Service, Sale, Appointment, PatientServiceBalance } from '@prisma/client';
+import type { User, Patient, Service, Sale, Appointment } from '@prisma/client';
 import { AppointmentStatus, Concurrency, ServiceStatus, UserType } from '@prisma/client';
 
 // Use a consistent seed for reproducibility
@@ -14,28 +14,48 @@ export const mockUsers: Omit<User, 'id' | 'createdAt' | 'updatedAt'>[] = [
         password: 'password123', // In a real app, this would be hashed
         type: UserType.THERAPIST,
         phone: faker.phone.number()
+    },
+    {
+        name: 'Dr. Bob',
+        lastname: 'Johnson',
+        email: 'bob.johnson@vedi.com',
+        password: 'password123',
+        type: UserType.THERAPIST,
+        phone: faker.phone.number()
+    },
+    {
+        name: 'Dr. Carol',
+        lastname: 'Williams',
+        email: 'carol.williams@vedi.com',
+        password: 'password123',
+        type: UserType.THERAPIST,
+        phone: faker.phone.number()
     }
 ];
 
-export const mockPatients: Omit<Patient, 'id' | 'createdAt' | 'updatedAt' | 'notes' | 'userId'>[] = [];
-for (let i = 0; i < 15; i++) {
-  mockPatients.push({
-    name: faker.person.firstName(),
-    secondname: i % 3 === 0 ? faker.person.middleName() : null,
-    lastname: faker.person.lastName(),
-    secondlastname: i % 4 === 0 ? faker.person.lastName() : null,
-    email: faker.internet.email(),
-    phone: faker.phone.number(),
-    address: faker.location.streetAddress(true),
-  });
-}
+export const generateMockPatients = (count: number): Omit<Patient, 'id' | 'createdAt' | 'updatedAt' | 'notes' | 'userId'>[] => {
+    const patients = [];
+    for (let i = 0; i < count; i++) {
+        patients.push({
+            name: faker.person.firstName(),
+            secondname: i % 3 === 0 ? faker.person.middleName() : null,
+            lastname: faker.person.lastName(),
+            secondlastname: i % 4 === 0 ? faker.person.lastName() : null,
+            email: faker.internet.email(),
+            phone: faker.phone.number(),
+            address: faker.location.streetAddress(true),
+        });
+    }
+    return patients;
+};
+
 
 export const mockServices: Omit<Service, 'id' | 'createdAt' | 'updatedAt' | 'userId' | 'packageId'>[] = [
-    { name: 'Individual Therapy', price: 150.00, duration: 50, description: 'One-on-one therapy session with a licensed therapist.', status: 'ACTIVE' },
-    { name: 'Couples Counseling', price: 200.00, duration: 60, description: 'Therapy session for couples to improve their relationship.', status: 'ACTIVE' },
-    { name: 'Family Therapy', price: 250.00, duration: 90, description: 'Therapy session for families to resolve conflicts.', status: 'ACTIVE' },
-    { name: 'Cognitive Behavioral Therapy (CBT)', price: 160.00, duration: 50, description: 'A talk therapy that helps you manage your problems by changing the way you think and behave.', status: 'ACTIVE' },
-    { name: 'Group Therapy', price: 80.00, duration: 90, description: 'A therapy session with a group of people who share similar experiences.', status: 'INACTIVE' },
+    { name: 'Individual Therapy', price: 150.00, duration: 50, description: 'One-on-one therapy session with a licensed therapist.', status: 'ACTIVE', techniques: [] },
+    { name: 'Couples Counseling', price: 200.00, duration: 60, description: 'Therapy session for couples to improve their relationship.', status: 'ACTIVE', techniques: [] },
+    { name: 'Family Therapy', price: 250.00, duration: 90, description: 'Therapy session for families to resolve conflicts.', status: 'ACTIVE', techniques: [] },
+    { name: 'Cognitive Behavioral Therapy (CBT)', price: 160.00, duration: 50, description: 'A talk therapy that helps you manage your problems by changing the way you think and behave.', status: 'ACTIVE', techniques: [] },
+    { name: 'Group Therapy', price: 80.00, duration: 90, description: 'A therapy session with a group of people who share similar experiences.', status: 'INACTIVE', techniques: [] },
 ];
 
 const roundUpToNearest15Minutes = (date: Date): Date => {
@@ -72,8 +92,8 @@ export const generateMockSalesAndBalances = (patients: Patient[], services: Serv
 };
 
 
-export const generateMockAppointments = (patients: Patient[], services: Service[]) => {
-    const appointments: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt' | 'packageId' | 'serviceId'>[] = [];
+export const generateMockAppointments = (patients: Patient[], services: Service[]): Omit<Appointment, 'id' | 'createdAt' | 'updatedAt' | 'packageId'>[] => {
+    const appointments: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt' | 'packageId' | 'patients'>[] = [];
     if (!patients.length || !services.length) return [];
 
     patients.forEach(patient => {
@@ -87,14 +107,15 @@ export const generateMockAppointments = (patients: Patient[], services: Service[
                 ? faker.date.between({ from: new Date(new Date().setDate(new Date().getDate() - 60)), to: new Date(new Date().setDate(new Date().getDate() - 1)) }) // Past
                 : faker.date.between({ from: new Date(), to: new Date(new Date().setDate(new Date().getDate() + 60)) }); // Future
 
-            appointments.push({
+            const appointmentData: any = {
                 date: roundUpToNearest15Minutes(randomDate),
                 concurrency: Concurrency.SINGLE,
                 status: AppointmentStatus.PROGRAMMED,
                 description: `Scheduled session for ${randomService.name}.`,
                 serviceId: randomService.id,
-                patientId: patient.id, // Temp property for linking
-            });
+                patients: { connect: [{ id: patient.id }] }, // Connect patient
+            };
+            appointments.push(appointmentData);
         }
     });
     return appointments;
