@@ -14,8 +14,16 @@ async function main() {
   await prisma.patientServiceBalance.deleteMany();
   await prisma.appointment.deleteMany();
   await prisma.sale.deleteMany();
+
   // We need to disconnect services from techniques before deleting them
-  await prisma.service.updateMany({ data: { techniques: { set: [] } } });
+  const services = await prisma.service.findMany();
+  for (const service of services) {
+    await prisma.service.update({
+        where: { id: service.id },
+        data: { techniques: { set: [] } }
+    });
+  }
+  
   await prisma.service.deleteMany();
   await prisma.userTechnique.deleteMany();
   await prisma.user.deleteMany();
