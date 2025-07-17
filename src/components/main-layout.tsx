@@ -116,27 +116,16 @@ export function MainLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [isClient, setIsClient] = React.useState(false);
-
-  React.useEffect(() => {
-    setIsClient(true);
-  }, []);
 
   return (
     <SidebarProvider>
       <MainSidebar />
       <SidebarInset className="flex flex-col">
-        {/* Mobile Header - Render placeholder on server, content on client */}
+        {/* Mobile Header - Always rendered, but hidden on larger screens */}
         <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-4 sm:hidden">
-          {isClient ? (
-            <>
-              <SidebarTrigger />
-              <div className="flex-1" />
-              {/* You can add mobile-specific header items here */}
-            </>
-          ) : (
-             <div className="h-full w-full" /> // Placeholder to match structure
-          )}
+          <SidebarTrigger />
+          <div className="flex-1" />
+          {/* You can add mobile-specific header items here */}
         </header>
 
         {/* Main Content */}
