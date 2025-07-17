@@ -8,6 +8,7 @@ import {
   CalendarDays,
   LayoutDashboard,
   UsersRound,
+  HeartPulse,
 } from "lucide-react";
 import {
   SidebarProvider,
@@ -34,12 +35,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { usePathname } from "next/navigation";
+import { useIsMobile } from "@/hooks/use-mobile";
+
 
 const navItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/patients", icon: UsersRound, label: "Patients" },
   { href: "/services", icon: BriefcaseMedical, label: "Services" },
   { href: "/appointments", icon: CalendarDays, label: "Appointments" },
+  { href: "/therapists", icon: HeartPulse, label: "Therapists" },
 ];
 
 function MainSidebar() {

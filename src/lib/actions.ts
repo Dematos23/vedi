@@ -4,7 +4,8 @@
 import { revalidatePath } from "next/cache";
 import prisma from "./prisma";
 import * as z from "zod";
-import { AppointmentStatus, Concurrency, type ServiceStatus } from "@prisma/client";
+import { AppointmentStatus, Concurrency, type ServiceStatus, UserType } from "@prisma/client";
+import { startOfMonth, endOfMonth } from "date-fns";
 
 // Service Actions
 const serviceSchema = z.object({
@@ -315,4 +316,86 @@ export async function getChartData(input: z.infer<typeof chartDataSchema>) {
         console.error("Failed to fetch chart data:", error);
         throw new Error("Could not fetch chart data.");
     }
+}
+
+
+// Therapist Actions
+export async function getTherapistPerformance(therapistId: string) {
+  const now = new Date();
+  const startOfCurrentMonth = startOfMonth(now);
+  const endOfCurrentMonth = endOfMonth(now);
+
+  const therapist = await prisma.user.findUnique({
+    where: { id: therapistId },
+    select: {
+      id: true,
+      name: true,
+      lastname: true,
+      email: true,
+      phone: true,
+    }
+  });
+
+  if (!therapist || therapist.type !== UserType.THERAPIST) {
+    throw new Error('Therapist not found.');
+  }
+  
+  const assignedPatients = await prisma.patient.findMany({
+    where: { userId: therapistId },
+    select: { id: true, name: true, lastname: true, secondname: true, secondlastname: true, email: true },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  const appointmentsThisMonth = await prisma.appointment.count({
+    where: {
+      patients: {
+        some: {
+          id: { in: assignedPatients.map(p => p.id) }
+        }
+      },
+      date: {
+        gte: startOfCurrentMonth,
+        lte: endOfCurrentMonth,
+      },
+    }
+  });
+  
+  const recentAppointments = await prisma.appointment.findMany({
+      where: {
+          patients: {
+            some: {
+                id: { in: assignedPatients.map(p => p.id) }
+            }
+          }
+      },
+      include: {
+          patients: true,
+          service: true,
+      },
+      orderBy: {
+          date: 'desc'
+      },
+      take: 10
+  })
+
+  const totalSales = await prisma.sale.aggregate({
+    where: {
+      patientId: { in: assignedPatients.map(p => p.id) }
+    },
+    _sum: {
+      amount: true,
+    }
+  });
+
+
+  return {
+    ...therapist,
+    assignedPatients,
+    recentAppointments,
+    kpis: {
+      totalPatients: assignedPatients.length,
+      appointmentsThisMonth,
+      totalSales: totalSales._sum.amount || 0,
+    }
+  };
 }
