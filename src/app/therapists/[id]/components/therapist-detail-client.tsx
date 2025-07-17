@@ -114,11 +114,11 @@ export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
           </CardHeader>
           <CardContent className="space-y-6">
               {techniquesPerformance.map(tech => (
-                  <div key={tech.id} className="grid grid-cols-[200px_1fr_auto_auto] items-center gap-4">
+                  <div key={tech.id} className="grid grid-cols-[200px_1fr_80px_120px] items-center gap-4">
                       <span className="font-medium truncate">{tech.technique.name}</span>
                       <Progress value={tech._count.userTechniqueUsageLogs} max={100} />
-                      <span className="text-sm font-mono text-muted-foreground">{tech._count.userTechniqueUsageLogs} uses</span>
-                      <Badge variant="secondary">{tech.status}</Badge>
+                      <span className="text-sm font-mono text-muted-foreground text-center">{tech._count.userTechniqueUsageLogs} uses</span>
+                      <Badge variant="secondary" className="justify-center">{tech.status}</Badge>
                   </div>
               ))}
                {techniquesPerformance.length === 0 && (
