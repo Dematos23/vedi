@@ -1,6 +1,6 @@
 
 import { faker } from '@faker-js/faker';
-import type { User, Patient, Service, Sale, Appointment, Technique } from '@prisma/client';
+import type { User, Patient, Service, Sale, Appointment, Technique, Package } from '@prisma/client';
 import { AppointmentStatus, Concurrency, ServiceStatus, UserType, AppointmentEvaluation, TechniqueStatus } from '@prisma/client';
 
 // Use a consistent seed for reproducibility
@@ -92,13 +92,17 @@ export const generateMockPatients = (count: number): Omit<Patient, 'id' | 'creat
     return patients;
 };
 
-
 export const mockServices: Omit<Service, 'id' | 'createdAt' | 'updatedAt' | 'userId' | 'packageId' | 'techniques' | 'appointments' | 'patientServiceBalances' | 'sales'>[] = [
     { name: 'Terapia Individual', price: 150.00, duration: 50, description: 'Sesión de terapia uno a uno con un terapeuta licenciado.', status: 'ACTIVE' },
     { name: 'Consejería de Parejas', price: 200.00, duration: 60, description: 'Sesión de terapia para parejas para mejorar su relación.', status: 'ACTIVE' },
     { name: 'Terapia Familiar', price: 250.00, duration: 90, description: 'Sesión de terapia para familias para resolver conflictos.', status: 'ACTIVE' },
     { name: 'Terapia Cognitivo-Conductual (TCC)', price: 160.00, duration: 50, description: 'Una terapia de conversación que te ayuda a manejar tus problemas cambiando tu forma de pensar y comportarte.', status: 'ACTIVE' },
     { name: 'Terapia de Grupo', price: 80.00, duration: 90, description: 'Una sesión de terapia con un grupo de personas que comparten experiencias similares.', status: 'INACTIVE' },
+];
+
+export const mockPackages: Omit<Package, 'id' | 'createdAt' | 'updatedAt' | 'services' | 'sales'>[] = [
+    { name: 'Paquete de 5 Sesiones de Terapia Individual', description: 'Ahorra comprando 5 sesiones de Terapia Individual por adelantado.', price: 700.00 },
+    { name: 'Paquete Relajación Total', description: 'Combina Aromaterapia y Meditación Guiada para una relajación completa.', price: 250.00 },
 ];
 
 const roundUpToNearest15Minutes = (date: Date): Date => {
@@ -140,9 +144,9 @@ export const generateMockSalesAndBalances = (patients: Patient[], services: Serv
 export const generateMockAppointments = (
     patient: Patient,
     servicesForTherapist: (Service & { techniques: Technique[] })[]
-): { appointmentData: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt' | 'packageId' | 'patients' | 'service' | 'patientServiceUsages' | 'userTechniqueUsageLogs'>, techniquesUsed: Technique[], service: Service }[] => {
+): { appointmentData: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt' | 'patients' | 'service' | 'patientServiceUsages' | 'userTechniqueUsageLogs'>, techniquesUsed: Technique[], service: Service }[] => {
     
-    const appointments: { appointmentData: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt' | 'packageId' | 'patients' | 'service' | 'patientServiceUsages' | 'userTechniqueUsageLogs'>, techniquesUsed: Technique[], service: Service }[] = [];
+    const appointments: { appointmentData: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt' | 'patients' | 'service' | 'patientServiceUsages' | 'userTechniqueUsageLogs'>, techniquesUsed: Technique[], service: Service }[] = [];
     if (!servicesForTherapist.length) return [];
     
     // Determine the number of past and future appointments
@@ -161,7 +165,6 @@ export const generateMockAppointments = (
             evaluation: faker.helpers.arrayElement([AppointmentEvaluation.APPROVED, AppointmentEvaluation.REJECTED, AppointmentEvaluation.UNDER_EVALUATION]),
             description: `Sesión completada para ${service.name}. El paciente discutió el progreso en sus objetivos.`,
             serviceId: service.id,
-            patients: { connect: [{ id: patient.id }] },
         };
         
         appointments.push({
@@ -180,9 +183,9 @@ export const generateMockAppointments = (
             date: roundUpToNearest15Minutes(randomDate),
             concurrency: Concurrency.SINGLE,
             status: AppointmentStatus.PROGRAMMED,
+            evaluation: null,
             description: `Sesión programada para ${service.name}.`,
             serviceId: service.id,
-            patients: { connect: [{ id: patient.id }] },
         };
 
         appointments.push({
