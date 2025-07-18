@@ -1,7 +1,7 @@
 
 import { faker } from '@faker-js/faker';
 import type { User, Patient, Service, Sale, Appointment, Technique } from '@prisma/client';
-import { AppointmentStatus, Concurrency, ServiceStatus, UserType, AppointmentEvaluation } from '@prisma/client';
+import { AppointmentStatus, Concurrency, ServiceStatus, UserType, AppointmentEvaluation, TechniqueStatus } from '@prisma/client';
 
 // Use a consistent seed for reproducibility
 faker.seed(123);
@@ -33,7 +33,7 @@ export const mockUsers: Omit<User, 'id' | 'createdAt' | 'updatedAt'>[] = [
     }
 ];
 
-export const mockTechniques: Omit<Technique, 'id' | 'createdAt' | 'updatedAt' | 'services'>[] = [
+export const mockTechniques: Omit<Technique, 'id' | 'createdAt' | 'updatedAt' | 'requiredSessionsForTherapist' | 'services' | 'users' | 'userTechniqueUsageLogs'>[] = [
     { name: 'Aromaterapia', description: 'Uso de aceites esenciales para mejorar el bienestar físico y emocional.' },
     { name: 'Reiki', description: 'Técnica de sanación energética mediante la imposición de manos.' },
     { name: 'Acupuntura', description: 'Estimulación de puntos específicos del cuerpo con agujas finas para aliviar el dolor.' },
@@ -58,7 +58,7 @@ const peruvianStreetNames = ['Arequipa', 'Larco', 'Pardo', 'Javier Prado', 'Bena
 const peruvianDistricts = ['Miraflores', 'San Isidro', 'Barranco', 'Santiago de Surco', 'La Molina', 'Lince', 'Jesús María', 'Pueblo Libre'];
 const peruvianCities = ['Lima', 'Arequipa', 'Cusco', 'Trujillo'];
 
-export const generateMockPatients = (count: number): Omit<Patient, 'id' | 'createdAt' | 'updatedAt' | 'notes' | 'userId'>[] => {
+export const generateMockPatients = (count: number): Omit<Patient, 'id' | 'createdAt' | 'updatedAt' | 'userId' | 'appointments' | 'patientServiceBalances' | 'sales'>[] => {
     const patients = [];
     const emailProviders = ['gmail.com', 'hotmail.com', 'yahoo.com'];
 
@@ -93,7 +93,7 @@ export const generateMockPatients = (count: number): Omit<Patient, 'id' | 'creat
 };
 
 
-export const mockServices: Omit<Service, 'id' | 'createdAt' | 'updatedAt' | 'userId' | 'packageId' | 'techniques'>[] = [
+export const mockServices: Omit<Service, 'id' | 'createdAt' | 'updatedAt' | 'userId' | 'packageId' | 'techniques' | 'appointments' | 'patientServiceBalances' | 'sales'>[] = [
     { name: 'Terapia Individual', price: 150.00, duration: 50, description: 'Sesión de terapia uno a uno con un terapeuta licenciado.', status: 'ACTIVE' },
     { name: 'Consejería de Parejas', price: 200.00, duration: 60, description: 'Sesión de terapia para parejas para mejorar su relación.', status: 'ACTIVE' },
     { name: 'Terapia Familiar', price: 250.00, duration: 90, description: 'Sesión de terapia para familias para resolver conflictos.', status: 'ACTIVE' },
@@ -115,8 +115,8 @@ const roundUpToNearest15Minutes = (date: Date): Date => {
 };
 
 // This will be called by the seed script after creating users, patients, and services.
-export const generateMockSalesAndBalances = (patients: Patient[], services: Service[]): Omit<Sale, 'id' | 'createdAt' | 'updatedAt' | 'packageId'>[] => {
-    const sales: Omit<Sale, 'id' | 'createdAt' | 'updatedAt' | 'packageId'>[] = [];
+export const generateMockSalesAndBalances = (patients: Patient[], services: Service[]): Omit<Sale, 'id' | 'createdAt' | 'updatedAt' | 'packageId' | 'patient' | 'patientServiceBalances'>[] => {
+    const sales: Omit<Sale, 'id' | 'createdAt' | 'updatedAt' | 'packageId' | 'patient' | 'patientServiceBalances'>[] = [];
     if (!patients.length || !services.length) return [];
     
     patients.forEach(patient => {
@@ -140,9 +140,9 @@ export const generateMockSalesAndBalances = (patients: Patient[], services: Serv
 export const generateMockAppointments = (
     patient: Patient,
     servicesForTherapist: (Service & { techniques: Technique[] })[]
-): { appointmentData: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt' | 'packageId' | 'patients'>, techniquesUsed: Technique[], service: Service }[] => {
+): { appointmentData: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt' | 'packageId' | 'patients' | 'service' | 'patientServiceUsages' | 'userTechniqueUsageLogs'>, techniquesUsed: Technique[], service: Service }[] => {
     
-    const appointments: { appointmentData: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt' | 'packageId' | 'patients'>, techniquesUsed: Technique[], service: Service }[] = [];
+    const appointments: { appointmentData: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt' | 'packageId' | 'patients' | 'service' | 'patientServiceUsages' | 'userTechniqueUsageLogs'>, techniquesUsed: Technique[], service: Service }[] = [];
     if (!servicesForTherapist.length) return [];
     
     // Determine the number of past and future appointments
@@ -158,7 +158,7 @@ export const generateMockAppointments = (
             date: roundUpToNearest15Minutes(randomDate),
             concurrency: Concurrency.SINGLE,
             status: AppointmentStatus.DONE,
-            evaluation: faker.helpers.arrayElement([AppointmentEvaluation.APPROVED, AppointmentEvaluation.REJECTED]),
+            evaluation: faker.helpers.arrayElement([AppointmentEvaluation.APPROVED, AppointmentEvaluation.REJECTED, AppointmentEvaluation.UNDER_EVALUATION]),
             description: `Completed session for ${service.name}. Patient discussed progress on goals.`,
             serviceId: service.id,
             patients: { connect: [{ id: patient.id }] },
