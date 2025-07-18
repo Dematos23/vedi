@@ -74,7 +74,12 @@ export const dictionaries = {
       aiSummary: "Resumen de IA",
       error: "Error",
       summaryError: "No se pudo generar el resumen. Por favor, inténtalo de nuevo.",
-      emptyNotesError: "No se pueden resumir notas vacías."
+      emptyNotesError: "No se pueden resumir notas vacías.",
+      patientInformation: "Información del Paciente",
+      patientInformationDescription: "Ver o editar los detalles y notas del paciente.",
+      editPatient: "Editar Paciente",
+      contactDetails: "Detalles de Contacto",
+      noNotesAdded: "Aún no se han añadido notas para este paciente."
     },
     services: {
         title: "Servicios",
@@ -354,7 +359,12 @@ export const dictionaries = {
       aiSummary: "AI Summary",
       error: "Error",
       summaryError: "Failed to generate summary. Please try again.",
-      emptyNotesError: "Cannot summarize empty notes."
+      emptyNotesError: "Cannot summarize empty notes.",
+      patientInformation: "Patient Information",
+      patientInformationDescription: "View or edit the patient's details and notes.",
+      editPatient: "Edit Patient",
+      contactDetails: "Contact Details",
+      noNotesAdded: "No notes have been added for this patient yet."
     },
     services: {
         title: "Services",
@@ -565,3 +575,5 @@ export const dictionaries = {
 };
 
 export type Dictionary = typeof dictionaries.es;
+
+    

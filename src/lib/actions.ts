@@ -232,7 +232,7 @@ export async function completeAppointment(appointmentId: string, patientId: stri
 
 
 // Patient Actions
-const patientSchema = z.object({
+const createPatientSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters."),
     secondname: z.string().optional(),
     lastname: z.string().min(2, "Last name must be at least 2 characters."),
@@ -242,8 +242,8 @@ const patientSchema = z.object({
     address: z.string().optional(),
 });
 
-export async function createPatient(data: z.infer<typeof patientSchema>) {
-    const validatedFields = patientSchema.safeParse(data);
+export async function createPatient(data: z.infer<typeof createPatientSchema>) {
+    const validatedFields = createPatientSchema.safeParse(data);
 
     if (!validatedFields.success) {
         throw new Error("Invalid patient data.");
@@ -261,19 +261,37 @@ export async function createPatient(data: z.infer<typeof patientSchema>) {
     revalidatePath("/patients");
 }
 
+const updatePatientSchema = z.object({
+  id: z.string(),
+  name: z.string().min(2, "Name must be at least 2 characters."),
+  secondname: z.string().optional(),
+  lastname: z.string().min(2, "Last name must be at least 2 characters."),
+  secondlastname: z.string().optional(),
+  email: z.string().email("Please enter a valid email address.").optional().or(z.literal('')),
+  phone: z.string().optional(),
+  address: z.string().optional(),
+  notes: z.string().optional(),
+});
 
-export async function updatePatientNotes(patientId: string, notes: string) {
-    if (!patientId) {
-        throw new Error("Patient ID is required.");
+
+export async function updatePatient(data: z.infer<typeof updatePatientSchema>) {
+    const validatedFields = updatePatientSchema.safeParse(data);
+
+    if (!validatedFields.success) {
+        throw new Error("Invalid patient data.");
     }
+    
+    const { id, ...patientData } = validatedFields.data;
 
     await prisma.patient.update({
-        where: { id: patientId },
-        data: { notes },
+        where: { id },
+        data: patientData,
     });
 
-    revalidatePath(`/patients/${patientId}`);
+    revalidatePath(`/patients/${id}`);
+    revalidatePath('/patients');
 }
+
 
 // Chart Actions
 const chartDataSchema = z.object({
@@ -511,3 +529,5 @@ export async function deleteTechnique(techniqueId: string) {
 
     revalidatePath("/techniques");
 }
+
+    
