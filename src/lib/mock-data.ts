@@ -94,11 +94,11 @@ export const generateMockPatients = (count: number): Omit<Patient, 'id' | 'creat
 
 
 export const mockServices: Omit<Service, 'id' | 'createdAt' | 'updatedAt' | 'userId' | 'packageId' | 'techniques'>[] = [
-    { name: 'Individual Therapy', price: 150.00, duration: 50, description: 'One-on-one therapy session with a licensed therapist.', status: 'ACTIVE' },
-    { name: 'Couples Counseling', price: 200.00, duration: 60, description: 'Therapy session for couples to improve their relationship.', status: 'ACTIVE' },
-    { name: 'Family Therapy', price: 250.00, duration: 90, description: 'Therapy session for families to resolve conflicts.', status: 'ACTIVE' },
-    { name: 'Cognitive Behavioral Therapy (CBT)', price: 160.00, duration: 50, description: 'A talk therapy that helps you manage your problems by changing the way you think and behave.', status: 'ACTIVE' },
-    { name: 'Group Therapy', price: 80.00, duration: 90, description: 'A therapy session with a group of people who share similar experiences.', status: 'INACTIVE' },
+    { name: 'Terapia Individual', price: 150.00, duration: 50, description: 'Sesión de terapia uno a uno con un terapeuta licenciado.', status: 'ACTIVE' },
+    { name: 'Consejería de Parejas', price: 200.00, duration: 60, description: 'Sesión de terapia para parejas para mejorar su relación.', status: 'ACTIVE' },
+    { name: 'Terapia Familiar', price: 250.00, duration: 90, description: 'Sesión de terapia para familias para resolver conflictos.', status: 'ACTIVE' },
+    { name: 'Terapia Cognitivo-Conductual (TCC)', price: 160.00, duration: 50, description: 'Una terapia de conversación que te ayuda a manejar tus problemas cambiando tu forma de pensar y comportarte.', status: 'ACTIVE' },
+    { name: 'Terapia de Grupo', price: 80.00, duration: 90, description: 'Una sesión de terapia con un grupo de personas que comparten experiencias similares.', status: 'INACTIVE' },
 ];
 
 const roundUpToNearest15Minutes = (date: Date): Date => {
