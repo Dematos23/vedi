@@ -1,6 +1,6 @@
 
-import { PrismaClient, TechniqueStatus, AppointmentEvaluation } from '@prisma/client';
-import { mockUsers, generateMockPatients, mockServices, mockTechniques, generateMockSalesAndBalances, generateMockAppointments, mockPackages } from '../src/lib/mock-data';
+import { PrismaClient, TechniqueStatus } from '@prisma/client';
+import { mockUsers, generateMockPatients, mockServices, mockTechniques, generateMockSalesAndBalances, generateMockAppointments } from '../src/lib/mock-data';
 import { faker } from '@faker-js/faker';
 
 const prisma = new PrismaClient();
@@ -8,21 +8,22 @@ const prisma = new PrismaClient();
 async function main() {
   console.log(`Start seeding ...`);
 
-  // 1. Clear existing data in the correct order
+  // Clear existing data in the correct order to avoid foreign key constraint errors
   await prisma.userTechniqueUsageLog.deleteMany();
   await prisma.patientServiceUsage.deleteMany();
   await prisma.patientServiceBalance.deleteMany();
   await prisma.appointment.deleteMany();
   await prisma.sale.deleteMany();
-  const servicesToDisconnect = await prisma.service.findMany({ include: { techniques: true } });
-  for (const service of servicesToDisconnect) {
-    if (service.techniques.length > 0) {
-      await prisma.service.update({
+
+  // We need to disconnect services from techniques before deleting them
+  const services = await prisma.service.findMany();
+  for (const service of services) {
+    await prisma.service.update({
         where: { id: service.id },
         data: { techniques: { set: [] } }
-      });
-    }
+    });
   }
+  
   await prisma.service.deleteMany();
   await prisma.userTechniqueStatus.deleteMany();
   await prisma.user.deleteMany();
@@ -31,26 +32,36 @@ async function main() {
   await prisma.package.deleteMany();
   console.log('Cleared previous data.');
 
-  // 2. Seed core data
+  // Seed Techniques
   const createdTechniques = [];
   for (const techData of mockTechniques) {
     const technique = await prisma.technique.create({ data: techData });
     createdTechniques.push(technique);
+    console.log(`Created technique: ${technique.name}`);
   }
-  console.log(`Seeded ${createdTechniques.length} techniques.`);
 
-  for (const pkgData of mockPackages) {
-    await prisma.package.create({ data: pkgData });
-  }
-  console.log(`Seeded ${mockPackages.length} packages.`);
-
+  // Seed Therapists and associate them with techniques
   const createdUsers = [];
   for (const userData of mockUsers) {
     const user = await prisma.user.create({ data: userData });
     createdUsers.push(user);
-  }
-  console.log(`Seeded ${createdUsers.length} users (therapists).`);
+    console.log(`Created therapist: ${user.name} ${user.lastname}`);
 
+    // Assign 2-4 random techniques to each therapist
+    const techniquesToAssign = faker.helpers.arrayElements(createdTechniques, faker.number.int({ min: 2, max: 4 }));
+    for (const technique of techniquesToAssign) {
+      await prisma.userTechniqueStatus.create({
+        data: {
+          userId: user.id,
+          techniqueId: technique.id,
+          status: faker.helpers.arrayElement([TechniqueStatus.PRACTITIONER, TechniqueStatus.THERAPIST]),
+        },
+      });
+    }
+    console.log(`- Assigned ${techniquesToAssign.length} techniques to ${user.name}`);
+  }
+
+  // Seed Services globally (not tied to a therapist initially)
   const allCreatedServices = [];
   for (const serviceData of mockServices) {
       const requiredTechniques = faker.helpers.arrayElements(createdTechniques, faker.number.int({ min: 1, max: 2 }));
@@ -61,70 +72,74 @@ async function main() {
                   connect: requiredTechniques.map(t => ({ id: t.id }))
               }
           },
-          include: { techniques: true }
       });
       allCreatedServices.push(service);
   }
-  console.log(`Seeded ${allCreatedServices.length} global services and linked techniques.`);
+  console.log(`\nSeeded ${allCreatedServices.length} global services and linked techniques.`);
 
-  // 3. Assign all techniques to all therapists initially as PRACTITIONER
-  for (const user of createdUsers) {
-      for (const technique of createdTechniques) {
-          await prisma.userTechniqueStatus.create({
-              data: {
-                  userId: user.id,
-                  techniqueId: technique.id,
-                  status: TechniqueStatus.PRACTITIONER,
-              },
-          });
-      }
-  }
-  console.log(`Assigned all techniques to all therapists as PRACTITIONER.`);
 
-  // 4. Generate patient-specific data and appointments
+  // Loop through each therapist to create their own patient-related data
   for (const user of createdUsers) {
     console.log(`\nSeeding data for ${user.name} ${user.lastname}...`);
 
+    // Seed 10 Patients for the current therapist
     const mockPatients = generateMockPatients(10);
     const createdPatients = [];
     for (const patientData of mockPatients) {
       const patient = await prisma.patient.create({
-        data: { ...patientData, userId: user.id },
+        data: {
+          ...patientData,
+          userId: user.id,
+        },
       });
       createdPatients.push(patient);
     }
     console.log(`- Seeded ${createdPatients.length} patients.`);
 
+    // Generate and Seed Sales and PatientServiceBalances for this therapist's patients
     const mockSales = generateMockSalesAndBalances(createdPatients, allCreatedServices);
     for (const saleData of mockSales) {
-      if (!saleData.serviceId) continue;
-      const sale = await prisma.sale.create({ data: saleData });
-      await prisma.patientServiceBalance.create({
-        data: {
-          patientId: sale.patientId,
-          serviceId: sale.serviceId,
-          saleId: sale.id,
-          total: 5,
-          used: 0,
-        },
+      const sale = await prisma.sale.create({
+        data: saleData,
       });
+      if (sale.serviceId) {
+        await prisma.patientServiceBalance.create({
+          data: {
+            patientId: sale.patientId,
+            serviceId: sale.serviceId,
+            saleId: sale.id,
+            total: 5,
+            used: 0,
+          },
+        });
+      }
     }
     console.log(`- Seeded ${mockSales.length} sales and created corresponding service balances.`);
     
+    // Get therapist's techniques to determine which services they can offer
+    const therapistTechniqueIds = (await prisma.userTechniqueStatus.findMany({
+      where: { userId: user.id },
+    })).map(ut => ut.techniqueId);
+
+    const servicesForTherapist = await prisma.service.findMany({
+        where: { techniques: { some: { id: { in: therapistTechniqueIds } } } },
+        include: { techniques: true }
+    });
+
     let totalAppointments = 0;
+    // Generate and Seed Appointments, respecting therapist skills
     for(const patient of createdPatients) {
-        const mockAppointments = generateMockAppointments(patient, allCreatedServices);
+        const mockAppointments = generateMockAppointments(patient, servicesForTherapist);
         totalAppointments += mockAppointments.length;
 
         for (const { appointmentData, techniquesUsed, service } of mockAppointments) {
             const appt = await prisma.appointment.create({
-                data: {
-                    ...appointmentData,
-                    patients: { connect: [{ id: patient.id }] }
-                },
+                data: appointmentData,
             });
 
+            // If the appointment is done, log the technique usage and update balance
             if (appt.status === 'DONE') {
+                // Log technique usage
                 if (techniquesUsed.length > 0) {
                     const techniqueToLog = faker.helpers.arrayElement(techniquesUsed);
                     await prisma.userTechniqueUsageLog.create({
@@ -136,6 +151,7 @@ async function main() {
                     });
                 }
                 
+                // Update service balance
                 const serviceBalance = await prisma.patientServiceBalance.findFirst({
                     where: {
                         patientId: patient.id,
@@ -161,48 +177,8 @@ async function main() {
             }
         }
     }
-    console.log(`- Seeded ${totalAppointments} appointments.`);
+    console.log(`- Seeded ${totalAppointments} appointments with realistic therapist skills and updated balances.`);
   }
-
-  // 5. Update UserTechniqueStatus based on performance
-  console.log("\nUpdating therapist statuses based on performance...");
-  for (const user of createdUsers) {
-    const userTechniqueStatuses = await prisma.userTechniqueStatus.findMany({
-      where: { userId: user.id },
-      include: { technique: true }
-    });
-
-    for (const status of userTechniqueStatuses) {
-      const { technique } = status;
-      const approvedAppointmentsCount = await prisma.appointment.count({
-        where: {
-          status: 'DONE',
-          evaluation: AppointmentEvaluation.APPROVED,
-          service: {
-            techniques: {
-              some: { id: technique.id }
-            }
-          },
-          patients: {
-            some: {
-              userId: user.id
-            }
-          }
-        }
-      });
-
-      if (approvedAppointmentsCount >= technique.requiredSessionsForTherapist) {
-        await prisma.userTechniqueStatus.update({
-          where: { id: status.id },
-          data: { status: TechniqueStatus.THERAPIST }
-        });
-        console.log(`- Promoted ${user.name} to THERAPIST for technique: ${technique.name} (${approvedAppointmentsCount}/${technique.requiredSessionsForTherapist})`);
-      } else {
-         console.log(`- ${user.name} remains PRACTITIONER for technique: ${technique.name} (${approvedAppointmentsCount}/${technique.requiredSessionsForTherapist})`);
-      }
-    }
-  }
-
 
   console.log(`\nSeeding finished.`);
 }
