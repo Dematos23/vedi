@@ -76,7 +76,6 @@ export const dictionaries = {
       summaryError: "No se pudo generar el resumen. Por favor, inténtalo de nuevo.",
       emptyNotesError: "No se pueden resumir notas vacías.",
       patientInformation: "Información del Paciente",
-      patientInformationDescription: "Ver o editar los detalles y notas del paciente.",
       editPatient: "Editar Paciente",
       contactDetails: "Detalles de Contacto",
       noNotesAdded: "Aún no se han añadido notas para este paciente."
@@ -89,9 +88,11 @@ export const dictionaries = {
         noServicesFound: "No se encontraron servicios.",
         allStatuses: "Todos los Estados",
         filterByStatus: "Filtrar por estado",
-        // Service Card
+        // Service Card / Table
         price: "Precio",
         duration: "Duración",
+        status: "Estado",
+        actions: "Acciones",
         edit: "Editar",
         delete: "Eliminar",
         save: "Guardar",
@@ -122,8 +123,6 @@ export const dictionaries = {
         recentAppointmentsDescription: "Una lista de citas recientes que utilizan este servicio.",
         patient: "Paciente(s)",
         date: "Fecha",
-        status: "Estado",
-        actions: "Acciones",
         noAppointmentsFound: "No se encontraron citas para este servicio.",
         view: "Ver"
     },
@@ -361,7 +360,6 @@ export const dictionaries = {
       summaryError: "Failed to generate summary. Please try again.",
       emptyNotesError: "Cannot summarize empty notes.",
       patientInformation: "Patient Information",
-      patientInformationDescription: "View or edit the patient's details and notes.",
       editPatient: "Edit Patient",
       contactDetails: "Contact Details",
       noNotesAdded: "No notes have been added for this patient yet."
@@ -374,9 +372,11 @@ export const dictionaries = {
         noServicesFound: "No services found.",
         allStatuses: "All Statuses",
         filterByStatus: "Filter by status",
-        // Service Card
+        // Service Card / Table
         price: "Price",
         duration: "Duration",
+        status: "Status",
+        actions: "Actions",
         edit: "Edit",
         delete: "Delete",
         save: "Save",
@@ -407,8 +407,6 @@ export const dictionaries = {
         recentAppointmentsDescription: "A list of recent appointments using this service.",
         patient: "Patient(s)",
         date: "Date",
-        status: "Status",
-        actions: "Actions",
         noAppointmentsFound: "No appointments found for this service.",
         view: "View"
     },
@@ -575,5 +573,3 @@ export const dictionaries = {
 };
 
 export type Dictionary = typeof dictionaries.es;
-
-    

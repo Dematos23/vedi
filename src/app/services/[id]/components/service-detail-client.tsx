@@ -12,21 +12,24 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowLeft, Clock, DollarSign, Eye } from "lucide-react";
+import { ArrowLeft, Clock, DollarSign, Eye, Pencil } from "lucide-react";
 import { format } from "date-fns";
 import { formatCurrency, getFullName } from "@/lib/utils";
 import type { SerializableServiceWithDetails } from "../page";
 import { Table, TableBody, TableCell, TableHeader, TableHead, TableRow } from "@/components/ui/table";
 import { ServiceStatus } from "@prisma/client";
 import { useLanguage } from "@/contexts/language-context";
+import { EditServiceSheet } from "../../components/edit-service-sheet";
 
 export function ServiceDetailClient({ serviceData }: { serviceData: SerializableServiceWithDetails }) {
   const { name, description, price, duration, status, appointments } = serviceData;
   const isInactive = status === ServiceStatus.INACTIVE;
   const { dictionary } = useLanguage();
   const d = dictionary.services;
+  const [isEditing, setIsEditing] = React.useState(false);
 
   return (
+    <>
     <div className="grid gap-6">
       <div className="flex items-center gap-4 print:hidden">
         <Button asChild variant="outline" size="icon">
@@ -43,6 +46,10 @@ export function ServiceDetailClient({ serviceData }: { serviceData: Serializable
                 </Badge>
             </div>
         </div>
+        <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
+            <Pencil className="mr-2 h-4 w-4" />
+            {d.edit}
+        </Button>
       </div>
       <Card>
         <CardHeader>
@@ -119,5 +126,7 @@ export function ServiceDetailClient({ serviceData }: { serviceData: Serializable
         </CardContent>
       </Card>
     </div>
+    <EditServiceSheet service={serviceData} open={isEditing} onOpenChange={setIsEditing} />
+    </>
   );
 }
