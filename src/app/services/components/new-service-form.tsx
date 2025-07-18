@@ -18,21 +18,26 @@ import { Textarea } from "@/components/ui/textarea";
 import { createService } from "@/lib/actions";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/language-context";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import type { User } from "@prisma/client";
+import { getFullName } from "@/lib/utils";
 
 const serviceSchema = z.object({
   name: z.string().min(3, "Service name must be at least 3 characters."),
   description: z.string().min(10, "Description must be at least 10 characters."),
   price: z.coerce.number().positive("Price must be a positive number.").refine(val => (val.toString().split('.')[1] || []).length <= 2, "Price can have at most 2 decimal places."),
   duration: z.coerce.number().int().positive("Duration must be a positive integer."),
+  userId: z.string({ required_error: "Please select a therapist." }),
 });
 
 type ServiceFormValues = z.infer<typeof serviceSchema>;
 
 interface NewServiceFormProps {
+  therapists: User[];
   onFormSubmit?: () => void;
 }
 
-export function NewServiceForm({ onFormSubmit }: NewServiceFormProps) {
+export function NewServiceForm({ therapists, onFormSubmit }: NewServiceFormProps) {
   const { toast } = useToast();
   const { dictionary } = useLanguage();
   const d = dictionary.services;
@@ -92,6 +97,30 @@ export function NewServiceForm({ onFormSubmit }: NewServiceFormProps) {
               <FormControl>
                 <Textarea placeholder={d.descriptionPlaceholder} {...field} />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+         <FormField
+          control={form.control}
+          name="userId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{dictionary.therapists.title}</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder={dictionary.appointments.selectTherapist} />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {therapists.map((therapist) => (
+                    <SelectItem key={therapist.id} value={therapist.id}>
+                      {getFullName(therapist)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}

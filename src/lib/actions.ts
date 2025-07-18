@@ -16,6 +16,7 @@ const serviceSchema = z.object({
     .min(10, "Description must be at least 10 characters."),
   price: z.coerce.number().positive("Price must be a positive number.").refine(val => (val.toString().split('.')[1] || []).length <= 2, "Price can have at most 2 decimal places."),
   duration: z.coerce.number().int().positive("Duration must be a positive integer."),
+  userId: z.string({ required_error: "Please select a therapist." }),
 });
 
 export async function createService(data: z.infer<typeof serviceSchema>) {
@@ -25,18 +26,10 @@ export async function createService(data: z.infer<typeof serviceSchema>) {
     throw new Error("Invalid service data.");
   }
 
-  // This assumes a logged-in user context would provide the userId.
-  // For this demo, we'll find the first therapist and assign it.
-  const therapist = await prisma.user.findFirst({ where: { type: UserType.THERAPIST } });
-
   await prisma.service.create({
     data: {
-      name: validatedFields.data.name,
-      description: validatedFields.data.description,
-      price: validatedFields.data.price,
-      duration: validatedFields.data.duration,
+      ...validatedFields.data,
       status: 'ACTIVE',
-      userId: therapist?.id
     },
   });
 
@@ -552,5 +545,6 @@ export async function deleteTechnique(techniqueId: string) {
     
 
     
+
 
 

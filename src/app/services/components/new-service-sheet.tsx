@@ -14,8 +14,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { NewServiceForm } from "./new-service-form";
 import { useLanguage } from "@/contexts/language-context";
+import type { User } from "@prisma/client";
 
-export function NewServiceSheet() {
+interface NewServiceSheetProps {
+    therapists: User[];
+}
+
+export function NewServiceSheet({ therapists }: NewServiceSheetProps) {
   const [open, setOpen] = React.useState(false);
   const { dictionary } = useLanguage();
   const d = dictionary.services;
@@ -35,7 +40,7 @@ export function NewServiceSheet() {
             {d.addNewService}
           </SheetDescription>
         </SheetHeader>
-        <NewServiceForm onFormSubmit={() => setOpen(false)} />
+        <NewServiceForm therapists={therapists} onFormSubmit={() => setOpen(false)} />
       </SheetContent>
     </Sheet>
   );

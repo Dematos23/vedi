@@ -13,7 +13,7 @@ import { Search } from "@/app/patients/components/search"; // Re-using search co
 import { NewServiceSheet } from "./new-service-sheet";
 import { ServiceCard } from "./service-card";
 import { StatusFilter } from "./status-filter";
-import type { Service } from "@prisma/client";
+import type { Service, User } from "@prisma/client";
 import { useLanguage } from "@/contexts/language-context";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatCurrency } from "@/lib/utils";
@@ -25,9 +25,10 @@ import Link from "next/link";
 
 interface ServicesListProps {
   services: Service[];
+  therapists: User[];
 }
 
-export function ServicesList({ services }: ServicesListProps) {
+export function ServicesList({ services, therapists }: ServicesListProps) {
     const { dictionary } = useLanguage();
     const d = dictionary.services;
     const [editingService, setEditingService] = React.useState<Service | null>(null);
@@ -40,7 +41,7 @@ export function ServicesList({ services }: ServicesListProps) {
                 <CardTitle>{d.title}</CardTitle>
                 <CardDescription>{d.description}</CardDescription>
             </div>
-            <NewServiceSheet />
+            <NewServiceSheet therapists={therapists} />
             </div>
             <div className="pt-4 flex flex-col md:flex-row items-center gap-4">
             <div className="w-full md:flex-1">

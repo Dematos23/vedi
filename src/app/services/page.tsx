@@ -1,6 +1,6 @@
 
 import prisma from "@/lib/prisma";
-import type { ServiceStatus } from "@prisma/client";
+import { ServiceStatus, UserType } from "@prisma/client";
 import { ServicesList } from "./components/services-list";
 
 export default async function ServicesPage({
@@ -45,8 +45,12 @@ export default async function ServicesPage({
       }
     ]
   });
+  
+  const therapists = await prisma.user.findMany({
+    where: { type: UserType.THERAPIST },
+  });
 
   return (
-    <ServicesList services={services} />
+    <ServicesList services={services} therapists={therapists} />
   );
 }
