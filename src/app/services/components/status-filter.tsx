@@ -31,7 +31,7 @@ export function StatusFilter() {
 
   return (
     <Select
-        value={searchParams.get("status") || "ALL"}
+        defaultValue={searchParams.get("status") || "ALL"}
         onValueChange={handleStatusChange}
     >
       <SelectTrigger className="w-full md:w-[180px]">
