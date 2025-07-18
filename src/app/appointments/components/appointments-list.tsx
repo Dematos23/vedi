@@ -90,10 +90,12 @@ export function AppointmentsList({ appointments, allPatients, allServices, searc
                                     {isClient ? format(new Date(appt.date), "PPP 'at' p") : ""}
                                 </CardDescription>
                             </div>
-                            <Badge variant={appt.validatedByGuide ? 'default' : 'outline'} className="text-xs bg-blue-100 text-blue-800 border-blue-300">
-                              {appt.validatedByGuide ? <ShieldCheck className="mr-1 h-3 w-3" /> : <ShieldAlert className="mr-1 h-3 w-3" /> }
-                              {dictionary.enums.validationStatus[appt.validatedByGuide ? 'APPROVED' : 'PENDING']}
-                            </Badge>
+                            {appt.status === 'DONE' && (
+                                <Badge variant={appt.validatedByGuide ? 'default' : 'outline'} className="text-xs bg-blue-100 text-blue-800 border-blue-300">
+                                  {appt.validatedByGuide ? <ShieldCheck className="mr-1 h-3 w-3" /> : <ShieldAlert className="mr-1 h-3 w-3" /> }
+                                  {dictionary.enums.validationStatus[appt.validatedByGuide ? 'APPROVED' : 'PENDING']}
+                                </Badge>
+                            )}
                         </div>
                     </CardHeader>
                     <CardContent className="grid gap-2 text-sm pt-0">
@@ -163,10 +165,12 @@ export function AppointmentsList({ appointments, allPatients, allServices, searc
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <Badge variant={appt.validatedByGuide ? 'default' : 'outline'} className="bg-blue-100 text-blue-800 border-blue-300 hover:bg-blue-200">
-                    {appt.validatedByGuide ? <ShieldCheck className="mr-1.5 h-3.5 w-3.5" /> : <ShieldAlert className="mr-1.5 h-3.5 w-3.5" /> }
-                    {dictionary.enums.validationStatus[appt.validatedByGuide ? 'APPROVED' : 'PENDING']}
-                  </Badge>
+                    {appt.status === 'DONE' && (
+                        <Badge variant={appt.validatedByGuide ? 'default' : 'outline'} className="bg-blue-100 text-blue-800 border-blue-300 hover:bg-blue-200">
+                            {appt.validatedByGuide ? <ShieldCheck className="mr-1.5 h-3.5 w-3.5" /> : <ShieldAlert className="mr-1.5 h-3.5 w-3.5" /> }
+                            {dictionary.enums.validationStatus[appt.validatedByGuide ? 'APPROVED' : 'PENDING']}
+                        </Badge>
+                    )}
                 </TableCell>
                 <TableCell className="text-right">
                   <Button asChild variant="outline" size="sm">

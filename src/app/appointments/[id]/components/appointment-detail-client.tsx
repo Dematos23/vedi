@@ -146,10 +146,12 @@ export function AppointmentDetailClient({ appointmentData }: { appointmentData: 
               <Badge variant={status === 'DONE' ? 'secondary' : 'default'} className="text-sm">
                   {dictionary.enums.appointmentStatus[status]}
               </Badge>
-              <Badge variant={validatedByGuide ? 'default' : 'outline'} className="text-sm bg-blue-100 text-blue-800 border-blue-300">
-                {validatedByGuide ? <ShieldCheck className="mr-1.5 h-3.5 w-3.5" /> : <ShieldAlert className="mr-1.5 h-3.5 w-3.5" /> }
-                {dictionary.enums.validationStatus[validatedByGuide ? 'APPROVED' : 'PENDING']}
-              </Badge>
+              {status === 'DONE' && (
+                <Badge variant={validatedByGuide ? 'default' : 'outline'} className="text-sm bg-blue-100 text-blue-800 border-blue-300">
+                    {validatedByGuide ? <ShieldCheck className="mr-1.5 h-3.5 w-3.5" /> : <ShieldAlert className="mr-1.5 h-3.5 w-3.5" /> }
+                    {dictionary.enums.validationStatus[validatedByGuide ? 'APPROVED' : 'PENDING']}
+                </Badge>
+              )}
             </div>
           </div>
         </CardHeader>
