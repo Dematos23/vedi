@@ -37,12 +37,11 @@ export function ServiceCard({ service }: ServiceCardProps) {
             </div>
         </CardHeader>
         <CardContent className="grid gap-4 flex-grow">
-            <div className="flex justify-between items-start">
-                <div>
-                <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                {service.description}
-                </p>
-                <div className="flex items-center gap-4 mt-2">
+            <p className="text-sm text-muted-foreground mt-1 line-clamp-3">
+              {service.description}
+            </p>
+            <div className="flex justify-between items-center pt-2">
+                <div className="flex items-center gap-2">
                      <p className="text-xs text-muted-foreground">
                         {service.duration} min
                     </p>
@@ -50,10 +49,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
                         {dictionary.enums.serviceStatus[service.status]}
                     </Badge>
                 </div>
-            </div>
-            <div className="text-right">
                 <p className="font-semibold text-lg">{formatCurrency(Number(service.price))}</p>
-            </div>
             </div>
         </CardContent>
         <CardFooter className="border-t pt-6 mt-auto">
