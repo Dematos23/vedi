@@ -1,7 +1,7 @@
 
 import prisma from "@/lib/prisma";
 import { format, startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, addMonths, parseISO } from "date-fns";
-import type { Prisma, AppointmentStatus, Appointment, Patient, Service, User } from "@prisma/client";
+import type { Prisma, AppointmentStatus, Appointment, Patient, Service, User, AppointmentEvaluation } from "@prisma/client";
 import { AppointmentsList } from "./components/appointments-list";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AgendaView } from "./components/agenda-view";
@@ -10,6 +10,7 @@ import { UserType } from "@prisma/client";
 export type AppointmentWithDetails = Appointment & {
   patients: Patient[];
   service: Service | null;
+  evaluation: AppointmentEvaluation | null;
 };
 
 export default async function AppointmentsPage({
@@ -148,5 +149,3 @@ export default async function AppointmentsPage({
     </Tabs>
   );
 }
-
-    

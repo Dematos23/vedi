@@ -2,12 +2,13 @@
 import * as React from "react";
 import { notFound } from "next/navigation";
 import prisma from "@/lib/prisma";
-import type { Appointment, Patient, Service } from "@prisma/client";
+import type { Appointment, Patient, Service, AppointmentEvaluation } from "@prisma/client";
 import { AppointmentDetailClient } from "./components/appointment-detail-client";
 
 export type AppointmentWithDetails = Appointment & {
   patients: Patient[];
   service: Service | null;
+  evaluation: AppointmentEvaluation | null;
 };
 
 // This is a serializable version of the above type for client components

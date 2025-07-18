@@ -13,15 +13,15 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowLeft, User, Clock, DollarSign, BookText, Pencil, Save, CheckCircle, ShieldCheck, ShieldAlert } from "lucide-react";
+import { ArrowLeft, User, Clock, DollarSign, BookText, Pencil, Save, CheckCircle, ShieldCheck, ShieldAlert, ThumbsUp, ThumbsDown } from "lucide-react";
 import { format } from "date-fns";
 import { formatCurrency, getFullName } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { updateAppointmentDescription, completeAppointment } from "@/lib/actions";
+import { updateAppointmentDescription, completeAppointment, evaluateAppointment } from "@/lib/actions";
 import { ExportAppointmentPdfButton } from "./export-appointment-pdf";
 import type { SerializableAppointmentWithDetails } from "../page";
-import { AppointmentStatus } from "@prisma/client";
+import { AppointmentStatus, AppointmentEvaluation } from "@prisma/client";
 import { useLanguage } from "@/contexts/language-context";
 
 export function AppointmentDetailClient({ appointmentData }: { appointmentData: SerializableAppointmentWithDetails }) {
@@ -29,6 +29,7 @@ export function AppointmentDetailClient({ appointmentData }: { appointmentData: 
   const [isEditing, setIsEditing] = React.useState(false);
   const [isSaving, setIsSaving] = React.useState(false);
   const [isCompleting, setIsCompleting] = React.useState(false);
+  const [isEvaluating, setIsEvaluating] = React.useState(false);
   const { toast } = useToast();
   const { dictionary } = useLanguage();
   const d = dictionary.appointments;
@@ -104,12 +105,54 @@ export function AppointmentDetailClient({ appointmentData }: { appointmentData: 
         setIsCompleting(false);
     }
   }
+
+  const handleEvaluation = async (evaluation: AppointmentEvaluation) => {
+    setIsEvaluating(true);
+    try {
+      const result = await evaluateAppointment(appointment.id, evaluation);
+      const serializableResult: SerializableAppointmentWithDetails = {
+        ...result,
+        date: result.date.toISOString(),
+      };
+      setAppointment(serializableResult);
+      toast({
+        title: "Success",
+        description: `Appointment has been ${evaluation.toLowerCase()}.`,
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to evaluate appointment. Please try again.",
+      });
+    } finally {
+      setIsEvaluating(false);
+    }
+  };
   
-  const { patients, service, description, status, validatedByGuide } = appointment;
+  const { patients, service, description, status, evaluation } = appointment;
+  const isGuideUser = true; // Hardcoded for demo purposes
 
   if (!service) {
     return <div>Service not found for this appointment.</div>;
   }
+
+  const getEvaluationBadgeVariant = () => {
+    switch(evaluation) {
+        case 'APPROVED': return 'default';
+        case 'REJECTED': return 'destructive';
+        default: return 'outline';
+    }
+  }
+
+  const getEvaluationBadgeIcon = () => {
+    switch(evaluation) {
+        case 'APPROVED': return <ShieldCheck className="mr-1.5 h-3.5 w-3.5" />;
+        case 'REJECTED': return <ShieldAlert className="mr-1.5 h-3.5 w-3.5 text-destructive" />;
+        default: return <ShieldAlert className="mr-1.5 h-3.5 w-3.5" />;
+    }
+  }
+
 
   return (
     <div id="appointment-view" className="grid gap-6">
@@ -130,6 +173,18 @@ export function AppointmentDetailClient({ appointmentData }: { appointmentData: 
                   {isCompleting ? d.completing : d.markAsDone}
               </Button>
           )}
+          {isGuideUser && status === AppointmentStatus.DONE && evaluation === AppointmentEvaluation.UNDER_EVALUATION && (
+            <div className="flex gap-2">
+                 <Button variant="outline" onClick={() => handleEvaluation(AppointmentEvaluation.REJECTED)} disabled={isEvaluating}>
+                    <ThumbsDown className="mr-2 h-4 w-4" />
+                    {isEvaluating ? d.rejecting : d.reject}
+                </Button>
+                <Button onClick={() => handleEvaluation(AppointmentEvaluation.APPROVED)} disabled={isEvaluating}>
+                    <ThumbsUp className="mr-2 h-4 w-4" />
+                    {isEvaluating ? d.approving : d.approve}
+                </Button>
+            </div>
+          )}
           <ExportAppointmentPdfButton appointmentId={appointment.id} serviceName={service.name} />
         </div>
       </div>
@@ -146,10 +201,10 @@ export function AppointmentDetailClient({ appointmentData }: { appointmentData: 
               <Badge variant={status === 'DONE' ? 'secondary' : 'default'} className="text-sm">
                   {dictionary.enums.appointmentStatus[status]}
               </Badge>
-              {status === 'DONE' && (
-                <Badge variant={validatedByGuide ? 'default' : 'outline'} className="text-sm bg-blue-100 text-blue-800 border-blue-300">
-                    {validatedByGuide ? <ShieldCheck className="mr-1.5 h-3.5 w-3.5" /> : <ShieldAlert className="mr-1.5 h-3.5 w-3.5" /> }
-                    {dictionary.enums.validationStatus[validatedByGuide ? 'APPROVED' : 'PENDING']}
+              {status === 'DONE' && evaluation && (
+                <Badge variant={getEvaluationBadgeVariant()} className="text-sm">
+                    {getEvaluationBadgeIcon()}
+                    {dictionary.enums.appointmentEvaluation[evaluation]}
                 </Badge>
               )}
             </div>

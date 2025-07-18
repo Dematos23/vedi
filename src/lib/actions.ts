@@ -4,7 +4,7 @@
 import { revalidatePath } from "next/cache";
 import prisma from "./prisma";
 import * as z from "zod";
-import { AppointmentStatus, Concurrency, type ServiceStatus, UserType } from "@prisma/client";
+import { AppointmentStatus, Concurrency, type ServiceStatus, UserType, AppointmentEvaluation } from "@prisma/client";
 import { startOfMonth, endOfMonth } from "date-fns";
 
 // Service Actions
@@ -219,7 +219,10 @@ export async function completeAppointment(appointmentId: string, patientId: stri
     // 5. Update the appointment status to 'DONE'
     const completedAppointment = await tx.appointment.update({
       where: { id: appointmentId },
-      data: { status: AppointmentStatus.DONE },
+      data: { 
+        status: AppointmentStatus.DONE,
+        evaluation: AppointmentEvaluation.UNDER_EVALUATION,
+      },
     });
     
     revalidatePath(`/appointments`);
@@ -228,6 +231,25 @@ export async function completeAppointment(appointmentId: string, patientId: stri
 
     return completedAppointment;
   });
+}
+
+export async function evaluateAppointment(appointmentId: string, evaluation: AppointmentEvaluation) {
+  if (!appointmentId) {
+    throw new Error("Appointment ID is required.");
+  }
+  if (evaluation === AppointmentEvaluation.UNDER_EVALUATION) {
+    throw new Error("Cannot set evaluation back to 'Under Evaluation'.");
+  }
+
+  const updatedAppointment = await prisma.appointment.update({
+    where: { id: appointmentId },
+    data: { evaluation },
+  });
+
+  revalidatePath(`/appointments`);
+  revalidatePath(`/appointments/${appointmentId}`);
+
+  return updatedAppointment;
 }
 
 

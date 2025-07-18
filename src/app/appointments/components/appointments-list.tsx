@@ -63,6 +63,23 @@ export function AppointmentsList({ appointments, allPatients, allServices, searc
   currentParams.set('sort', newSortOrder);
   const sortLink = `/appointments?${currentParams.toString()}`;
 
+  const getEvaluationBadgeVariant = (evaluation: any) => {
+    switch(evaluation) {
+        case 'APPROVED': return 'default';
+        case 'REJECTED': return 'destructive';
+        default: return 'outline';
+    }
+  }
+
+  const getEvaluationBadgeIcon = (evaluation: any) => {
+    switch(evaluation) {
+        case 'APPROVED': return <ShieldCheck className="mr-1.5 h-3.5 w-3.5" />;
+        case 'REJECTED': return <ShieldAlert className="mr-1.5 h-3.5 w-3.5 text-destructive" />;
+        default: return <ShieldAlert className="mr-1.5 h-3.5 w-3.5" />;
+    }
+  }
+
+
   return (
     <Card>
       <CardHeader>
@@ -90,10 +107,10 @@ export function AppointmentsList({ appointments, allPatients, allServices, searc
                                     {isClient ? format(new Date(appt.date), "PPP 'at' p") : ""}
                                 </CardDescription>
                             </div>
-                            {appt.status === 'DONE' && (
-                                <Badge variant={appt.validatedByGuide ? 'default' : 'outline'} className="text-xs bg-blue-100 text-blue-800 border-blue-300">
-                                  {appt.validatedByGuide ? <ShieldCheck className="mr-1 h-3 w-3" /> : <ShieldAlert className="mr-1 h-3 w-3" /> }
-                                  {dictionary.enums.validationStatus[appt.validatedByGuide ? 'APPROVED' : 'PENDING']}
+                            {appt.status === 'DONE' && appt.evaluation && (
+                                <Badge variant={getEvaluationBadgeVariant(appt.evaluation)} className="text-xs">
+                                  {getEvaluationBadgeIcon(appt.evaluation)}
+                                  {dictionary.enums.appointmentEvaluation[appt.evaluation]}
                                 </Badge>
                             )}
                         </div>
@@ -165,10 +182,10 @@ export function AppointmentsList({ appointments, allPatients, allServices, searc
                   </Badge>
                 </TableCell>
                 <TableCell>
-                    {appt.status === 'DONE' && (
-                        <Badge variant={appt.validatedByGuide ? 'default' : 'outline'} className="bg-blue-100 text-blue-800 border-blue-300 hover:bg-blue-200">
-                            {appt.validatedByGuide ? <ShieldCheck className="mr-1.5 h-3.5 w-3.5" /> : <ShieldAlert className="mr-1.5 h-3.5 w-3.5" /> }
-                            {dictionary.enums.validationStatus[appt.validatedByGuide ? 'APPROVED' : 'PENDING']}
+                    {appt.status === 'DONE' && appt.evaluation && (
+                        <Badge variant={getEvaluationBadgeVariant(appt.evaluation)}>
+                            {getEvaluationBadgeIcon(appt.evaluation)}
+                            {dictionary.enums.appointmentEvaluation[appt.evaluation]}
                         </Badge>
                     )}
                 </TableCell>

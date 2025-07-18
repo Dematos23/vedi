@@ -138,10 +138,14 @@ export const dictionaries = {
         date: "Fecha",
         time: "Hora",
         status: "Estado",
-        approvalStatus: "Aprobación",
+        approvalStatus: "Evaluación",
         actions: "Acciones",
         // Buttons
         view: "Ver",
+        approve: "Aprobar",
+        approving: "Aprobando...",
+        reject: "Rechazar",
+        rejecting: "Rechazando...",
         // Filters
         filterByStatus: "Filtrar por Estado",
         allStatuses: "Todos los Estados",
@@ -267,6 +271,11 @@ export const dictionaries = {
       appointmentStatus: {
         PROGRAMMED: "Programada",
         DONE: "Realizada",
+      },
+      appointmentEvaluation: {
+        UNDER_EVALUATION: "En Evaluación",
+        APPROVED: "Aprobada",
+        REJECTED: "Rechazada",
       },
       concurrency: {
         SINGLE: "Única",
@@ -422,10 +431,14 @@ export const dictionaries = {
         date: "Date",
         time: "Time",
         status: "Status",
-        approvalStatus: "Approval",
+        approvalStatus: "Evaluation",
         actions: "Actions",
         // Buttons
         view: "View",
+        approve: "Approve",
+        approving: "Approving...",
+        reject: "Reject",
+        rejecting: "Rejecting...",
         // Filters
         filterByStatus: "Filter by Status",
         allStatuses: "All Statuses",
@@ -552,6 +565,11 @@ export const dictionaries = {
         PROGRAMMED: "Programmed",
         DONE: "Done",
       },
+      appointmentEvaluation: {
+        UNDER_EVALUATION: "Under Evaluation",
+        APPROVED: "Approved",
+        REJECTED: "Rejected",
+      },
       concurrency: {
         SINGLE: "Single",
         MULTIPLE: "Multiple",
@@ -565,8 +583,8 @@ export const dictionaries = {
         THERAPIST: "Therapist",
       },
       validationStatus: {
-        PENDING: "Under review",
-        APPROVED: "Approved",
+        PENDING: "En evaluación",
+        APPROVED: "Aprobada",
       }
     }
   },
