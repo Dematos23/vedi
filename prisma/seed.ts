@@ -107,15 +107,18 @@ async function main() {
     const mockSales = generateMockSalesAndBalances(createdPatients, allCreatedServices);
     for (const saleData of mockSales) {
       if (!saleData.serviceId) continue;
+      
       const sale = await prisma.sale.create({
         data: saleData,
       });
+
+      // Create a corresponding service balance for every sale
       await prisma.patientServiceBalance.create({
         data: {
           patientId: sale.patientId,
           serviceId: sale.serviceId,
           saleId: sale.id,
-          total: 5,
+          total: 5, // Each sale corresponds to a package of 5 sessions
           used: 0,
         },
       });
