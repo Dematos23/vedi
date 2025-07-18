@@ -34,13 +34,13 @@ export const mockUsers: Omit<User, 'id' | 'createdAt' | 'updatedAt'>[] = [
 ];
 
 export const mockTechniques: Omit<Technique, 'id' | 'createdAt' | 'updatedAt' | 'services'>[] = [
-    { name: 'Cognitive Restructuring', description: 'Identifying and changing negative thought patterns.' },
-    { name: 'Exposure Therapy', description: 'Confronting fears in a safe environment.' },
-    { name: 'Mindfulness Practice', description: 'Focusing on the present moment without judgment.' },
-    { name: 'Behavioral Activation', description: 'Increasing engagement in rewarding activities.' },
-    { name: 'Emotion Regulation Skills', description: 'Learning to manage and respond to intense emotions.' },
-    { name: 'Systemic Desensitization', description: 'Gradual exposure to anxiety-provoking stimuli while in a relaxed state.' },
-    { name: 'Communication Training', description: 'Improving interpersonal communication skills.' }
+    { name: 'Aromaterapia', description: 'Uso de aceites esenciales para mejorar el bienestar físico y emocional.' },
+    { name: 'Reiki', description: 'Técnica de sanación energética mediante la imposición de manos.' },
+    { name: 'Acupuntura', description: 'Estimulación de puntos específicos del cuerpo con agujas finas para aliviar el dolor.' },
+    { name: 'Terapia Floral de Bach', description: 'Uso de esencias florales para equilibrar estados emocionales negativos.' },
+    { name: 'Reflexología Podal', description: 'Aplicación de presión en puntos de los pies para estimular órganos y mejorar la salud.' },
+    { name: 'Meditación Guiada', description: 'Práctica de meditación con la guía de un instructor para alcanzar relajación profunda.' },
+    { name: 'Cristaloterapia', description: 'Uso de cristales y piedras para equilibrar la energía del cuerpo.' }
 ];
 
 const latinAmericanNames = [
