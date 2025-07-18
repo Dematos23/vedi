@@ -153,131 +153,10 @@ export function PatientDetailClient({ patient }: { patient: PatientWithDetails }
         </Button>
         <h1 className="text-2xl font-bold">{patientFullName}</h1>
       </div>
-      <div className="grid md:grid-cols-3 gap-6">
-        <div className="md:col-span-2 grid gap-6">
-           <Card>
-            <CardHeader>
-                <CardTitle>{d.serviceBalances}</CardTitle>
-                <CardDescription>{d.serviceBalancesDescription}</CardDescription>
-            </CardHeader>
-            <CardContent>
-                {patient.patientServiceBalances.length > 0 ? (
-                    <div className="space-y-4">
-                        {patient.patientServiceBalances.map(balance => (
-                            <div key={balance.id}>
-                                <div className="flex justify-between items-center mb-1">
-                                    <p className="font-medium">{balance.service.name}</p>
-                                    <p className="text-sm text-muted-foreground">{balance.used} / {balance.total} {d.used}</p>
-                                </div>
-                                <Progress value={(balance.used / balance.total) * 100} />
-                            </div>
-                        ))}
-                    </div>
-                ): (
-                     <p className="text-sm text-muted-foreground text-center py-4">{d.noActiveBalances}</p>
-                )}
-            </CardContent>
-           </Card>
-          <Card id="appointment-history">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>{d.appointmentHistory}</CardTitle>
-               <div className="flex gap-2 print:hidden">
-                  <ExportPdfButton patientName={patientFullName} buttonText={d.exportPdf} />
-                  <Button onClick={handleSummarize} disabled={isSummarizing || !form.getValues("notes")}>
-                  <Wand2 className="mr-2 h-4 w-4" />
-                  {isSummarizing ? d.summarizing : d.summarizeWithAi}
-                  </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>{d.service}</TableHead>
-                    <TableHead>{d.date}</TableHead>
-                    <TableHead>{d.status}</TableHead>
-                    <TableHead>
-                      <span className="sr-only">{d.actions}</span>
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {patient.appointments.length > 0 ? (
-                    patient.appointments.map((appt) => (
-                      <TableRow key={appt.id}>
-                        <TableCell>
-                          {appt.service ? (
-                            <Badge variant="outline">{appt.service.name}</Badge>
-                          ) : (
-                            <span className="text-muted-foreground">N/A</span>
-                          )}
-                        </TableCell>
-                        <TableCell>{format(appt.date, "PPP")}</TableCell>
-                        <TableCell>
-                             <Badge variant={appt.status === 'DONE' ? 'secondary' : 'default'}>
-                                {dictionary.enums.appointmentStatus[appt.status]}
-                             </Badge>
-                        </TableCell>
-                        <TableCell className="text-right print:hidden">
-                            <Button asChild variant="outline" size="sm">
-                                <Link href={`/appointments/${appt.id}`}>
-                                <Eye className="mr-2 h-4 w-4" />
-                                {d.view}
-                                </Link>
-                            </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                     <TableRow>
-                        <TableCell colSpan={4} className="h-24 text-center">
-                          {d.noAppointmentsFound}
-                        </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-           {isSummarizing && (
-            <Card>
-              <CardHeader>
-                <CardTitle>{d.aiSummary}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-1/2" />
-              </CardContent>
-            </Card>
-          )}
-          {error && (
-            <Card className="border-destructive">
-              <CardHeader>
-                <CardTitle className="text-destructive">{d.error}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p>{error}</p>
-              </CardContent>
-            </Card>
-          )}
-          {summary && (
-            <Card>
-              <CardHeader>
-                <CardTitle>{d.aiSummary}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div
-                  className="prose prose-sm dark:prose-invert max-w-none"
-                  dangerouslySetInnerHTML={{ __html: summary.replace(/\n/g, '<br />') }}
-                />
-              </CardContent>
-            </Card>
-          )}
-        </div>
-        <div className="grid gap-6 content-start" id="therapist-notes">
-           <Form {...form}>
+
+      <div className="grid gap-6">
+        <div id="therapist-notes">
+          <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <Card>
                 <CardHeader className="flex flex-row items-start justify-between">
@@ -299,12 +178,12 @@ export function PatientDetailClient({ patient }: { patient: PatientWithDetails }
                             <span>{d.contactDetails}</span>
                         </div>
                         {isEditing ? (
-                             <div className="grid grid-cols-2 gap-4">
+                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <FormField control={form.control} name="name" render={({ field }) => (<FormItem><FormLabel>{d.firstName}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                                 <FormField control={form.control} name="secondname" render={({ field }) => (<FormItem><FormLabel>{d.middleName}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                                 <FormField control={form.control} name="lastname" render={({ field }) => (<FormItem><FormLabel>{d.lastName}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                                 <FormField control={form.control} name="secondlastname" render={({ field }) => (<FormItem><FormLabel>{d.secondLastName}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                <FormField control={form.control} name="email" render={({ field }) => (<FormItem className="col-span-2"><FormLabel>{d.email}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                <FormField control={form.control} name="email" render={({ field }) => (<FormItem className="col-span-1 md:col-span-2"><FormLabel>{d.email}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                                 <FormField control={form.control} name="phone" render={({ field }) => (<FormItem><FormLabel>{d.phone}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                                 <FormField control={form.control} name="address" render={({ field }) => (<FormItem><FormLabel>{d.address}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                             </div>
@@ -365,9 +244,130 @@ export function PatientDetailClient({ patient }: { patient: PatientWithDetails }
             </form>
            </Form>
         </div>
+
+        <Card>
+          <CardHeader>
+              <CardTitle>{d.serviceBalances}</CardTitle>
+              <CardDescription>{d.serviceBalancesDescription}</CardDescription>
+          </CardHeader>
+          <CardContent>
+              {patient.patientServiceBalances.length > 0 ? (
+                  <div className="space-y-4">
+                      {patient.patientServiceBalances.map(balance => (
+                          <div key={balance.id}>
+                              <div className="flex justify-between items-center mb-1">
+                                  <p className="font-medium">{balance.service.name}</p>
+                                  <p className="text-sm text-muted-foreground">{balance.used} / {balance.total} {d.used}</p>
+                              </div>
+                              <Progress value={(balance.used / balance.total) * 100} />
+                          </div>
+                      ))}
+                  </div>
+              ): (
+                    <p className="text-sm text-muted-foreground text-center py-4">{d.noActiveBalances}</p>
+              )}
+          </CardContent>
+        </Card>
+
+        <Card id="appointment-history">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>{d.appointmentHistory}</CardTitle>
+              <div className="flex gap-2 print:hidden">
+                <ExportPdfButton patientName={patientFullName} buttonText={d.exportPdf} />
+                <Button onClick={handleSummarize} disabled={isSummarizing || !form.getValues("notes")}>
+                <Wand2 className="mr-2 h-4 w-4" />
+                {isSummarizing ? d.summarizing : d.summarizeWithAi}
+                </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{d.service}</TableHead>
+                  <TableHead>{d.date}</TableHead>
+                  <TableHead>{d.status}</TableHead>
+                  <TableHead>
+                    <span className="sr-only">{d.actions}</span>
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {patient.appointments.length > 0 ? (
+                  patient.appointments.map((appt) => (
+                    <TableRow key={appt.id}>
+                      <TableCell>
+                        {appt.service ? (
+                          <Badge variant="outline">{appt.service.name}</Badge>
+                        ) : (
+                          <span className="text-muted-foreground">N/A</span>
+                        )}
+                      </TableCell>
+                      <TableCell>{format(appt.date, "PPP")}</TableCell>
+                      <TableCell>
+                            <Badge variant={appt.status === 'DONE' ? 'secondary' : 'default'}>
+                              {dictionary.enums.appointmentStatus[appt.status]}
+                            </Badge>
+                      </TableCell>
+                      <TableCell className="text-right print:hidden">
+                          <Button asChild variant="outline" size="sm">
+                              <Link href={`/appointments/${appt.id}`}>
+                              <Eye className="mr-2 h-4 w-4" />
+                              {d.view}
+                              </Link>
+                          </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                    <TableRow>
+                      <TableCell colSpan={4} className="h-24 text-center">
+                        {d.noAppointmentsFound}
+                      </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+
+        {isSummarizing && (
+          <Card>
+            <CardHeader>
+              <CardTitle>{d.aiSummary}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-1/2" />
+            </CardContent>
+          </Card>
+        )}
+        {error && (
+          <Card className="border-destructive">
+            <CardHeader>
+              <CardTitle className="text-destructive">{d.error}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>{error}</p>
+            </CardContent>
+          </Card>
+        )}
+        {summary && (
+          <Card>
+            <CardHeader>
+              <CardTitle>{d.aiSummary}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div
+                className="prose prose-sm dark:prose-invert max-w-none"
+                dangerouslySetInnerHTML={{ __html: summary.replace(/\n/g, '<br />') }}
+              />
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
 }
-
-    
