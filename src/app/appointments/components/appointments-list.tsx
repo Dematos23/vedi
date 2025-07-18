@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Eye, ArrowUpDown, UsersRound, ShieldCheck, ShieldAlert } from "lucide-react";
+import { Eye, ArrowUpDown, UsersRound } from "lucide-react";
 import { NewAppointmentSheet } from "./new-appointment-sheet";
 import { Filters } from "./filters";
 import type { Patient, Service } from "@prisma/client";
@@ -63,23 +63,6 @@ export function AppointmentsList({ appointments, allPatients, allServices, searc
   currentParams.set('sort', newSortOrder);
   const sortLink = `/appointments?${currentParams.toString()}`;
 
-  const getEvaluationBadgeVariant = (evaluation: any) => {
-    switch(evaluation) {
-        case 'APPROVED': return 'default';
-        case 'REJECTED': return 'destructive';
-        default: return 'outline';
-    }
-  }
-
-  const getEvaluationBadgeIcon = (evaluation: any) => {
-    switch(evaluation) {
-        case 'APPROVED': return <ShieldCheck className="mr-1.5 h-3.5 w-3.5" />;
-        case 'REJECTED': return <ShieldAlert className="mr-1.5 h-3.5 w-3.5 text-destructive" />;
-        default: return <ShieldAlert className="mr-1.5 h-3.5 w-3.5" />;
-    }
-  }
-
-
   return (
     <Card>
       <CardHeader>
@@ -107,12 +90,6 @@ export function AppointmentsList({ appointments, allPatients, allServices, searc
                                     {isClient ? format(new Date(appt.date), "PPP 'at' p") : ""}
                                 </CardDescription>
                             </div>
-                            {appt.status === 'DONE' && appt.evaluation && (
-                                <Badge variant={getEvaluationBadgeVariant(appt.evaluation)} className="text-xs">
-                                  {getEvaluationBadgeIcon(appt.evaluation)}
-                                  {dictionary.enums.appointmentEvaluation[appt.evaluation]}
-                                </Badge>
-                            )}
                         </div>
                     </CardHeader>
                     <CardContent className="grid gap-2 text-sm pt-0">
@@ -155,7 +132,6 @@ export function AppointmentsList({ appointments, allPatients, allServices, searc
               </TableHead>
               <TableHead>{d.time}</TableHead>
                <TableHead>{d.status}</TableHead>
-               <TableHead>{d.approvalStatus}</TableHead>
               <TableHead>
                 <span className="sr-only">{d.actions}</span>
               </TableHead>
@@ -181,14 +157,6 @@ export function AppointmentsList({ appointments, allPatients, allServices, searc
                     {dictionary.enums.appointmentStatus[appt.status]}
                   </Badge>
                 </TableCell>
-                <TableCell>
-                    {appt.status === 'DONE' && appt.evaluation && (
-                        <Badge variant={getEvaluationBadgeVariant(appt.evaluation)}>
-                            {getEvaluationBadgeIcon(appt.evaluation)}
-                            {dictionary.enums.appointmentEvaluation[appt.evaluation]}
-                        </Badge>
-                    )}
-                </TableCell>
                 <TableCell className="text-right">
                   <Button asChild variant="outline" size="sm">
                     <Link href={`/appointments/${appt.id}`}>
@@ -201,7 +169,7 @@ export function AppointmentsList({ appointments, allPatients, allServices, searc
             ))}
              {appointments.length === 0 && (
                 <TableRow>
-                    <TableCell colSpan={7} className="h-24 text-center">
+                    <TableCell colSpan={6} className="h-24 text-center">
                     {d.noAppointmentsFound}
                     </TableCell>
                 </TableRow>
