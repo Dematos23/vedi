@@ -237,9 +237,6 @@ export async function evaluateAppointment(appointmentId: string, evaluation: App
   if (!appointmentId) {
     throw new Error("Appointment ID is required.");
   }
-  if (evaluation === AppointmentEvaluation.UNDER_EVALUATION) {
-    throw new Error("Cannot set evaluation back to 'Under Evaluation'.");
-  }
 
   const updatedAppointment = await prisma.appointment.update({
     where: { id: appointmentId },
@@ -555,3 +552,4 @@ export async function deleteTechnique(techniqueId: string) {
     
 
     
+
