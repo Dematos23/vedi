@@ -86,7 +86,7 @@ export const generateMockPatients = (count: number): Omit<Patient, 'id' | 'creat
             email,
             phone,
             address: address,
-            notes: "Initial consultation notes. Patient expressed concerns about work-related stress and difficulty sleeping. Discussed potential coping strategies and scheduled a follow-up.",
+            notes: "Notas de la consulta inicial. El paciente expresó preocupaciones sobre el estrés relacionado con el trabajo y la dificultad para dormir. Se discutieron posibles estrategias de afrontamiento y se programó un seguimiento.",
         });
     }
     return patients;
@@ -159,7 +159,7 @@ export const generateMockAppointments = (
             concurrency: Concurrency.SINGLE,
             status: AppointmentStatus.DONE,
             evaluation: faker.helpers.arrayElement([AppointmentEvaluation.APPROVED, AppointmentEvaluation.REJECTED, AppointmentEvaluation.UNDER_EVALUATION]),
-            description: `Completed session for ${service.name}. Patient discussed progress on goals.`,
+            description: `Sesión completada para ${service.name}. El paciente discutió el progreso en sus objetivos.`,
             serviceId: service.id,
             patients: { connect: [{ id: patient.id }] },
         };
@@ -180,7 +180,7 @@ export const generateMockAppointments = (
             date: roundUpToNearest15Minutes(randomDate),
             concurrency: Concurrency.SINGLE,
             status: AppointmentStatus.PROGRAMMED,
-            description: `Scheduled session for ${service.name}.`,
+            description: `Sesión programada para ${service.name}.`,
             serviceId: service.id,
             patients: { connect: [{ id: patient.id }] },
         };
