@@ -43,17 +43,35 @@ export const mockTechniques: Omit<Technique, 'id' | 'createdAt' | 'updatedAt' | 
     { name: 'Communication Training', description: 'Improving interpersonal communication skills.' }
 ];
 
+const latinAmericanNames = [
+    'Juan', 'Carlos', 'Luis', 'Javier', 'Miguel', 'Jose', 'Maria', 'Ana', 'Sofia', 'Camila',
+    'Diego', 'Alejandro', 'Fernando', 'Ricardo', 'Gabriel', 'Valentina', 'Isabella', 'Lucia', 'Mariana', 'Valeria'
+];
+const latinAmericanLastnames = [
+    'Garcia', 'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Perez', 'Sanchez', 'Ramirez', 'Torres',
+    'Flores', 'Rivera', 'Gomez', 'Diaz', 'Reyes', 'Morales', 'Cruz', 'Ortiz', 'Gutierrez', 'Chavez'
+];
 
 export const generateMockPatients = (count: number): Omit<Patient, 'id' | 'createdAt' | 'updatedAt' | 'notes' | 'userId'>[] => {
     const patients = [];
+    const emailProviders = ['gmail.com', 'hotmail.com', 'yahoo.com'];
+
     for (let i = 0; i < count; i++) {
+        const name = faker.helpers.arrayElement(latinAmericanNames);
+        const lastname = faker.helpers.arrayElement(latinAmericanLastnames);
+        const secondname = i % 3 === 0 ? faker.helpers.arrayElement(latinAmericanNames) : null;
+        const secondlastname = i % 4 === 0 ? faker.helpers.arrayElement(latinAmericanLastnames) : null;
+        
+        const email = `${name.toLowerCase()}.${lastname.toLowerCase()}@${faker.helpers.arrayElement(emailProviders)}`;
+        const phone = `9${faker.string.numeric(2)}-${faker.string.numeric(3)}-${faker.string.numeric(3)}`;
+
         patients.push({
-            name: faker.person.firstName(),
-            secondname: i % 3 === 0 ? faker.person.middleName() : null,
-            lastname: faker.person.lastName(),
-            secondlastname: i % 4 === 0 ? faker.person.lastName() : null,
-            email: faker.internet.email(),
-            phone: faker.phone.number(),
+            name,
+            secondname,
+            lastname,
+            secondlastname,
+            email,
+            phone,
             address: faker.location.streetAddress(true),
             notes: "Initial consultation notes. Patient expressed concerns about work-related stress and difficulty sleeping. Discussed potential coping strategies and scheduled a follow-up.",
         });
@@ -127,6 +145,7 @@ export const generateMockAppointments = (
             date: roundUpToNearest15Minutes(randomDate),
             concurrency: Concurrency.SINGLE,
             status: AppointmentStatus.DONE,
+            evaluation: faker.helpers.arrayElement([AppointmentEvaluation.APPROVED, AppointmentEvaluation.REJECTED]),
             description: `Completed session for ${service.name}. Patient discussed progress on goals.`,
             serviceId: service.id,
             patients: { connect: [{ id: patient.id }] },
