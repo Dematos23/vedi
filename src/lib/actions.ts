@@ -221,7 +221,7 @@ export async function completeAppointment(appointmentId: string, patientId: stri
       where: { id: appointmentId },
       data: { 
         status: AppointmentStatus.DONE,
-        evaluation: AppointmentEvaluation.UNDER_EVALUATION,
+        evaluation: AppointmentEvaluation.UNDER_EVALUATION
       },
     });
     
@@ -551,5 +551,7 @@ export async function deleteTechnique(techniqueId: string) {
 
     revalidatePath("/techniques");
 }
+
+    
 
     
