@@ -97,10 +97,6 @@ export function ServicesList({ services }: ServicesListProps) {
                                         <span className="sr-only">View</span>
                                     </Link>
                                </Button>
-                               <Button variant="outline" size="icon" onClick={() => setEditingService(service)}>
-                                    <Pencil className="h-4 w-4" />
-                                    <span className="sr-only">Edit</span>
-                                </Button>
                            </div>
                         </TableCell>
                     </TableRow>
