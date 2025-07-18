@@ -91,7 +91,6 @@ model Package {
   price       Float
 
   services     Service[]
-  appointments Appointment[]
   sales        Sale[]
 
   createdAt DateTime @default(now())
@@ -126,8 +125,6 @@ model Appointment {
   patients               Patient[]
   serviceId              String?
   service                Service?                @relation(fields: [serviceId], references: [id], onDelete: Restrict)
-  packageId              String?
-  package                Package?                @relation(fields: [packageId], references: [id], onDelete: Restrict)
   patientServiceUsages   PatientServiceUsage[]
   userTechniqueUsageLogs UserTechniqueUsageLog[]
 
