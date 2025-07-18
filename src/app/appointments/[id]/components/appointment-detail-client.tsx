@@ -21,7 +21,7 @@ import { useToast } from "@/hooks/use-toast";
 import { updateAppointmentDescription, completeAppointment, evaluateAppointment } from "@/lib/actions";
 import { ExportAppointmentPdfButton } from "./export-appointment-pdf";
 import type { SerializableAppointmentWithDetails } from "../page";
-import { AppointmentStatus, AppointmentEvaluation } from "@prisma/client";
+import { AppointmentStatus, type AppointmentEvaluation } from "@prisma/client";
 import { useLanguage } from "@/contexts/language-context";
 
 export function AppointmentDetailClient({ appointmentData }: { appointmentData: SerializableAppointmentWithDetails }) {
@@ -112,6 +112,8 @@ export function AppointmentDetailClient({ appointmentData }: { appointmentData: 
       const result = await evaluateAppointment(appointment.id, evaluation);
       const serializableResult: SerializableAppointmentWithDetails = {
         ...result,
+        patients: appointment.patients, // result from action doesn't include relations
+        service: appointment.service,
         date: result.date.toISOString(),
       };
       setAppointment(serializableResult);
@@ -173,13 +175,13 @@ export function AppointmentDetailClient({ appointmentData }: { appointmentData: 
                   {isCompleting ? d.completing : d.markAsDone}
               </Button>
           )}
-          {isGuideUser && status === AppointmentStatus.DONE && evaluation === AppointmentEvaluation.UNDER_EVALUATION && (
+          {isGuideUser && status === AppointmentStatus.DONE && evaluation === 'UNDER_EVALUATION' && (
             <div className="flex gap-2">
-                 <Button variant="outline" onClick={() => handleEvaluation(AppointmentEvaluation.REJECTED)} disabled={isEvaluating}>
+                 <Button variant="outline" onClick={() => handleEvaluation('REJECTED')} disabled={isEvaluating}>
                     <ThumbsDown className="mr-2 h-4 w-4" />
                     {isEvaluating ? d.rejecting : d.reject}
                 </Button>
-                <Button onClick={() => handleEvaluation(AppointmentEvaluation.APPROVED)} disabled={isEvaluating}>
+                <Button onClick={() => handleEvaluation('APPROVED')} disabled={isEvaluating}>
                     <ThumbsUp className="mr-2 h-4 w-4" />
                     {isEvaluating ? d.approving : d.approve}
                 </Button>
