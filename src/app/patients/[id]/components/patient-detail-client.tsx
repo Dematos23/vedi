@@ -162,7 +162,6 @@ export function PatientDetailClient({ patient }: { patient: PatientWithDetails }
                 <CardHeader className="flex flex-row items-start justify-between">
                     <div>
                         <CardTitle>{d.patientInformation}</CardTitle>
-                        <CardDescription>{d.patientInformationDescription}</CardDescription>
                     </div>
                     {!isEditing && (
                         <Button variant="ghost" size="icon" onClick={() => setIsEditing(true)}>
