@@ -13,24 +13,21 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { formatCurrency, cn } from "@/lib/utils";
-import { Pencil, Eye } from "lucide-react";
+import { Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/contexts/language-context";
-import { EditServiceSheet } from "./edit-service-sheet";
 
 interface ServiceCardProps {
   service: Service;
 }
 
 export function ServiceCard({ service }: ServiceCardProps) {
-  const [isEditing, setIsEditing] = React.useState(false);
   const { dictionary } = useLanguage();
   const d = dictionary.services;
   
   const isInactive = service.status === 'INACTIVE';
 
   return (
-    <>
     <Card className={cn("flex flex-col", isInactive && "bg-muted/50 border-dashed")}>
         <CardHeader className="flex-row items-start justify-between">
             <div className="grid gap-2 flex-1">
@@ -38,10 +35,6 @@ export function ServiceCard({ service }: ServiceCardProps) {
                   <CardTitle className="line-clamp-2">{service.name}</CardTitle>
                 </div>
             </div>
-             <Button variant="ghost" size="icon" onClick={() => setIsEditing(true)}>
-                <Pencil className="h-5 w-5" />
-                <span className="sr-only">{d.edit}</span>
-            </Button>
         </CardHeader>
         <CardContent className="grid gap-4 flex-grow">
             <div className="flex justify-between items-start">
@@ -72,8 +65,5 @@ export function ServiceCard({ service }: ServiceCardProps) {
             </Button>
         </CardFooter>
     </Card>
-    <EditServiceSheet service={service} open={isEditing} onOpenChange={setIsEditing} />
-    </>
   );
 }
-
