@@ -1,7 +1,7 @@
 
 import { faker } from '@faker-js/faker';
 import type { User, Patient, Service, Sale, Appointment, Technique } from '@prisma/client';
-import { AppointmentStatus, Concurrency, ServiceStatus, UserType } from '@prisma/client';
+import { AppointmentStatus, Concurrency, ServiceStatus, UserType, AppointmentEvaluation } from '@prisma/client';
 
 // Use a consistent seed for reproducibility
 faker.seed(123);
@@ -52,6 +52,12 @@ const latinAmericanLastnames = [
     'Flores', 'Rivera', 'Gomez', 'Diaz', 'Reyes', 'Morales', 'Cruz', 'Ortiz', 'Gutierrez', 'Chavez'
 ];
 
+// Data for Peruvian addresses
+const peruvianStreetTypes = ['Av.', 'Jr.', 'Calle'];
+const peruvianStreetNames = ['Arequipa', 'Larco', 'Pardo', 'Javier Prado', 'Benavides', 'Angamos', 'Salaverry', 'Conquistadores', 'El Sol', 'Grau'];
+const peruvianDistricts = ['Miraflores', 'San Isidro', 'Barranco', 'Santiago de Surco', 'La Molina', 'Lince', 'Jesús María', 'Pueblo Libre'];
+const peruvianCities = ['Lima', 'Arequipa', 'Cusco', 'Trujillo'];
+
 export const generateMockPatients = (count: number): Omit<Patient, 'id' | 'createdAt' | 'updatedAt' | 'notes' | 'userId'>[] => {
     const patients = [];
     const emailProviders = ['gmail.com', 'hotmail.com', 'yahoo.com'];
@@ -64,6 +70,13 @@ export const generateMockPatients = (count: number): Omit<Patient, 'id' | 'creat
         
         const email = `${name.toLowerCase()}.${lastname.toLowerCase()}@${faker.helpers.arrayElement(emailProviders)}`;
         const phone = `9${faker.string.numeric(2)}-${faker.string.numeric(3)}-${faker.string.numeric(3)}`;
+        
+        const streetType = faker.helpers.arrayElement(peruvianStreetTypes);
+        const streetName = faker.helpers.arrayElement(peruvianStreetNames);
+        const streetNumber = faker.number.int({ min: 100, max: 2000 });
+        const district = faker.helpers.arrayElement(peruvianDistricts);
+        const city = faker.helpers.arrayElement(peruvianCities);
+        const address = `${streetType} ${streetName} ${streetNumber}, ${district}, ${city}`;
 
         patients.push({
             name,
@@ -72,7 +85,7 @@ export const generateMockPatients = (count: number): Omit<Patient, 'id' | 'creat
             secondlastname,
             email,
             phone,
-            address: faker.location.streetAddress(true),
+            address: address,
             notes: "Initial consultation notes. Patient expressed concerns about work-related stress and difficulty sleeping. Discussed potential coping strategies and scheduled a follow-up.",
         });
     }
