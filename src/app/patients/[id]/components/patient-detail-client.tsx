@@ -188,18 +188,18 @@ export function PatientDetailClient({ patient }: { patient: PatientWithDetails }
                                 <FormField control={form.control} name="address" render={({ field }) => (<FormItem><FormLabel>{d.address}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                             </div>
                         ) : (
-                            <div className="grid gap-2 text-sm pl-6">
-                                <div className="flex justify-between">
+                             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 text-sm pl-6">
+                                <div className="grid grid-cols-[100px_1fr] items-center">
                                     <span className="font-medium text-muted-foreground">{d.email}</span>
                                     <span>{patient.email || 'N/A'}</span>
                                 </div>
-                                <div className="flex justify-between">
+                                <div className="grid grid-cols-[100px_1fr] items-center">
                                     <span className="font-medium text-muted-foreground">{d.phone}</span>
                                     <span>{patient.phone || 'N/A'}</span>
                                 </div>
-                                <div className="flex justify-between">
+                                <div className="grid grid-cols-[100px_1fr] items-start md:col-span-2">
                                     <span className="font-medium text-muted-foreground">{d.address}</span>
-                                    <span className="text-right">{patient.address || 'N/A'}</span>
+                                    <span className="break-words">{patient.address || 'N/A'}</span>
                                 </div>
                             </div>
                         )}
