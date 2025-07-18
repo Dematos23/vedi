@@ -216,12 +216,12 @@ export async function completeAppointment(appointmentId: string, patientId: stri
       },
     });
 
-    // 5. Update the appointment status to 'DONE'
+    // 5. Update the appointment status to 'DONE' and evaluation to 'UNDER_EVALUATION'
     const completedAppointment = await tx.appointment.update({
       where: { id: appointmentId },
-      data: { 
+      data: {
         status: AppointmentStatus.DONE,
-        evaluation: AppointmentEvaluation.UNDER_EVALUATION
+        evaluation: AppointmentEvaluation.UNDER_EVALUATION,
       },
     });
     
@@ -552,4 +552,5 @@ export async function deleteTechnique(techniqueId: string) {
     
 
     
+
 

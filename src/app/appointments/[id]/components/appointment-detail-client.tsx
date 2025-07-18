@@ -21,7 +21,7 @@ import { useToast } from "@/hooks/use-toast";
 import { updateAppointmentDescription, completeAppointment, evaluateAppointment } from "@/lib/actions";
 import { ExportAppointmentPdfButton } from "./export-appointment-pdf";
 import type { SerializableAppointmentWithDetails } from "../page";
-import { AppointmentStatus, type AppointmentEvaluation } from "@prisma/client";
+import { type AppointmentEvaluation } from "@prisma/client";
 import { useLanguage } from "@/contexts/language-context";
 
 export function AppointmentDetailClient({ appointmentData }: { appointmentData: SerializableAppointmentWithDetails }) {
@@ -169,13 +169,13 @@ export function AppointmentDetailClient({ appointmentData }: { appointmentData: 
             <h1 className="text-2xl font-bold">{d.appointmentDetails}</h1>
         </div>
         <div className="flex items-center gap-2">
-          {status === AppointmentStatus.PROGRAMMED && (
+          {status === 'PROGRAMMED' && (
               <Button onClick={handleComplete} disabled={isCompleting}>
                   <CheckCircle className="mr-2 h-4 w-4" />
                   {isCompleting ? d.completing : d.markAsDone}
               </Button>
           )}
-          {isGuideUser && status === AppointmentStatus.DONE && evaluation === 'UNDER_EVALUATION' && (
+          {isGuideUser && status === 'DONE' && evaluation === 'UNDER_EVALUATION' && (
             <div className="flex gap-2">
                  <Button variant="outline" onClick={() => handleEvaluation('REJECTED')} disabled={isEvaluating}>
                     <ThumbsDown className="mr-2 h-4 w-4" />
