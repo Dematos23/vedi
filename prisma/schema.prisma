@@ -116,12 +116,12 @@ model Sale {
 }
 
 model Appointment {
-  id               String            @id @default(cuid())
-  date             DateTime
-  concurrency      Concurrency
-  status           AppointmentStatus @default(PROGRAMMED)
-  description      String?
-  validatedByGuide Boolean           @default(false) 
+  id          String                 @id @default(cuid())
+  date        DateTime
+  concurrency Concurrency
+  status      AppointmentStatus      @default(PROGRAMMED)
+  description String?
+  evaluation  AppointmentEvaluation?
 
   patients               Patient[]
   serviceId              String?
@@ -225,4 +225,10 @@ enum TechniqueStatus {
 enum AppointmentStatus {
   PROGRAMMED
   DONE
+}
+
+enum AppointmentEvaluation {
+  UNDER_EVALUATION
+  APPROVED
+  REJECTED
 }
