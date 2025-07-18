@@ -71,8 +71,8 @@ model Service {
   duration    Int // Duration in minutes
   status      ServiceStatus @default(ACTIVE)
 
-  user                   User?                   @relation(fields: [userId], references: [id])
-  userId                 String?
+  user                   User                   @relation(fields: [userId], references: [id])
+  userId                 String
   techniques             Technique[]
   sales                  Sale[]
   appointments           Appointment[]
