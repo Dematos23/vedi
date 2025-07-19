@@ -34,16 +34,18 @@ interface MultiSelectProps {
 export function MultiSelect({ options, selected, onChange, placeholder = "Select options...", className }: MultiSelectProps) {
   const [open, setOpen] = React.useState(false)
 
-  const handleSelect = (value: string) => {
-    // Find the actual value from the options based on the passed value, which might be a label
-    const option = options.find(o => o.value.toLowerCase() === value.toLowerCase() || o.label.toLowerCase() === value.toLowerCase());
-    const actualValue = option?.value;
+  const handleSelect = (currentValue: string) => {
+    // onSelect provides the value prop from CommandItem, which we set to the label
+    const option = options.find(o => o.label.toLowerCase() === currentValue.toLowerCase());
+    
+    if (!option) return;
 
-    if (!actualValue) return;
-
+    const actualValue = option.value;
+    
     const newSelected = selected.includes(actualValue)
       ? selected.filter((item) => item !== actualValue)
       : [...selected, actualValue];
+      
     onChange(newSelected);
   };
 
