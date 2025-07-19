@@ -162,7 +162,7 @@ export function MainLayout({
       <MainSidebar />
       <SidebarInset className="flex flex-col">
         {/* Mobile Header - Always rendered, but hidden on larger screens */}
-        <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-4 sm:hidden">
+        <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-4 md:hidden">
           <SidebarTrigger />
           <div className="flex-1" />
           {/* You can add mobile-specific header items here */}
