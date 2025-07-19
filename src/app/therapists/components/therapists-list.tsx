@@ -22,6 +22,7 @@ import { useLanguage } from "@/contexts/language-context";
 import { Progress } from "@/components/ui/progress";
 import type { TherapistWithPerformance } from "../page";
 import { NewTherapistSheet } from "./new-therapist-sheet";
+import { Search } from "@/app/patients/components/search";
 
 
 interface TherapistsListProps {
@@ -32,8 +33,6 @@ export function TherapistsList({ therapists }: TherapistsListProps) {
     const { dictionary } = useLanguage();
     const d = dictionary.therapists;
 
-    const maxPerformance = Math.max(...therapists.map(t => (t as any).performance), 0) || 100;
-
     return (
         <Card>
         <CardHeader>
@@ -43,6 +42,9 @@ export function TherapistsList({ therapists }: TherapistsListProps) {
                 </div>
                  <NewTherapistSheet />
             </div>
+            <div className="pt-4">
+              <Search placeholder="Search by name, lastname or email..." />
+            </div>
         </CardHeader>
         <CardContent>
             <Table>
@@ -51,7 +53,7 @@ export function TherapistsList({ therapists }: TherapistsListProps) {
                 <TableHead>{d.name}</TableHead>
                 <TableHead className="hidden md:table-cell">{d.email}</TableHead>
                 <TableHead className="hidden sm:table-cell">{d.assignedPatients}</TableHead>
-                <TableHead>{d.performance}</TableHead>
+                <TableHead>Appointments</TableHead>
                 <TableHead>
                     <span className="sr-only">{d.actions}</span>
                 </TableHead>
@@ -67,8 +69,8 @@ export function TherapistsList({ therapists }: TherapistsListProps) {
                     <TableCell className="hidden sm:table-cell text-center">
                     {therapist._count.patients}
                     </TableCell>
-                    <TableCell>
-                        <Progress value={((therapist as any).performance / maxPerformance) * 100} className="w-full" />
+                     <TableCell className="text-center">
+                        {therapist._count.appointments}
                     </TableCell>
                     <TableCell className="text-right">
                     <Button asChild variant="outline" size="sm">
