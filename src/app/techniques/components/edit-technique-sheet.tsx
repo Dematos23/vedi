@@ -6,7 +6,6 @@ import type { Technique } from "@prisma/client";
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
@@ -45,6 +44,7 @@ const techniqueSchema = z.object({
   id: z.string(),
   name: z.string().min(3, "Technique name must be at least 3 characters."),
   description: z.string().min(10, "Description must be at least 10 characters."),
+  requiredSessionsForTherapist: z.coerce.number().int().positive("Required sessions must be a positive integer."),
 });
 
 type TechniqueFormValues = z.infer<typeof techniqueSchema>;
@@ -68,6 +68,7 @@ export function EditTechniqueSheet({ technique, open, onOpenChange }: EditTechni
       id: technique.id,
       name: technique.name,
       description: technique.description,
+      requiredSessionsForTherapist: technique.requiredSessionsForTherapist,
     },
   });
   
@@ -77,6 +78,7 @@ export function EditTechniqueSheet({ technique, open, onOpenChange }: EditTechni
         id: technique.id,
         name: technique.name,
         description: technique.description,
+        requiredSessionsForTherapist: technique.requiredSessionsForTherapist,
       });
     }
   }, [open, technique, form]);
@@ -148,6 +150,19 @@ export function EditTechniqueSheet({ technique, open, onOpenChange }: EditTechni
                       <FormLabel>{d.descriptionLabel}</FormLabel>
                       <FormControl>
                         <Textarea {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="requiredSessionsForTherapist"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Required Sessions for Therapist</FormLabel>
+                      <FormControl>
+                        <Input type="number" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

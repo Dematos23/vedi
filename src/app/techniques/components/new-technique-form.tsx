@@ -22,6 +22,7 @@ import { useLanguage } from "@/contexts/language-context";
 const techniqueSchema = z.object({
   name: z.string().min(3, "Technique name must be at least 3 characters."),
   description: z.string().min(10, "Description must be at least 10 characters."),
+  requiredSessionsForTherapist: z.coerce.number().int().positive("Required sessions must be a positive integer."),
 });
 
 type TechniqueFormValues = z.infer<typeof techniqueSchema>;
@@ -40,6 +41,7 @@ export function NewTechniqueForm({ onFormSubmit }: NewTechniqueFormProps) {
     defaultValues: {
       name: "",
       description: "",
+      requiredSessionsForTherapist: 10,
     },
   });
 
@@ -91,6 +93,19 @@ export function NewTechniqueForm({ onFormSubmit }: NewTechniqueFormProps) {
               <FormMessage />
             </FormItem>
           )}
+        />
+        <FormField
+            control={form.control}
+            name="requiredSessionsForTherapist"
+            render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Required Sessions for Therapist</FormLabel>
+                    <FormControl>
+                        <Input type="number" placeholder="e.g., 10" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+            )}
         />
         <div className="flex justify-end pt-4">
             <Button type="submit" disabled={form.formState.isSubmitting}>

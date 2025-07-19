@@ -520,6 +520,7 @@ const techniqueSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(3, "Technique name must be at least 3 characters."),
   description: z.string().min(10, "Description must be at least 10 characters."),
+  requiredSessionsForTherapist: z.coerce.number().int().positive("Required sessions must be a positive integer."),
 });
 
 export async function createTechnique(data: z.infer<typeof techniqueSchema>) {
