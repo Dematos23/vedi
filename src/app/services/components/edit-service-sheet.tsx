@@ -41,7 +41,7 @@ import {
 import { Power, PowerOff, Trash2 } from "lucide-react";
 import { MultiSelect } from "@/components/ui/multi-select";
 
-const serviceSchema = z.object({
+const updateServiceSchema = z.object({
   id: z.string(),
   name: z.string().min(3, "Service name must be at least 3 characters."),
   description: z.string().min(10, "Description must be at least 10 characters."),
@@ -50,7 +50,8 @@ const serviceSchema = z.object({
   techniqueIds: z.array(z.string()).min(1, "Please select at least one technique."),
 });
 
-type ServiceFormValues = z.infer<typeof serviceSchema>;
+
+type ServiceFormValues = z.infer<typeof updateServiceSchema>;
 
 interface EditServiceSheetProps {
   service: Service & { techniques: Technique[] };
@@ -69,7 +70,7 @@ export function EditServiceSheet({ service, allTechniques, open, onOpenChange }:
   const isInactive = service.status === 'INACTIVE';
 
   const form = useForm<ServiceFormValues>({
-    resolver: zodResolver(serviceSchema),
+    resolver: zodResolver(updateServiceSchema),
     defaultValues: {
       id: service.id,
       name: service.name,

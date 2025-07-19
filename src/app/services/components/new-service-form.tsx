@@ -21,7 +21,7 @@ import { useLanguage } from "@/contexts/language-context";
 import { type Technique } from "@prisma/client";
 import { MultiSelect } from "@/components/ui/multi-select";
 
-const serviceSchema = z.object({
+const createServiceSchema = z.object({
   name: z.string().min(3, "Service name must be at least 3 characters."),
   description: z.string().min(10, "Description must be at least 10 characters."),
   price: z.coerce.number().positive("Price must be a positive number.").refine(val => (val.toString().split('.')[1] || []).length <= 2, "Price can have at most 2 decimal places."),
@@ -29,7 +29,7 @@ const serviceSchema = z.object({
   techniqueIds: z.array(z.string()).min(1, "Please select at least one technique."),
 });
 
-type ServiceFormValues = z.infer<typeof serviceSchema>;
+type ServiceFormValues = z.infer<typeof createServiceSchema>;
 
 interface NewServiceFormProps {
   techniques: Technique[];
@@ -42,7 +42,7 @@ export function NewServiceForm({ techniques, onFormSubmit }: NewServiceFormProps
   const d = dictionary.services;
 
   const form = useForm<ServiceFormValues>({
-    resolver: zodResolver(serviceSchema),
+    resolver: zodResolver(createServiceSchema),
     defaultValues: {
       name: "",
       description: "",

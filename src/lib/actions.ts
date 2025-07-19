@@ -8,8 +8,7 @@ import { AppointmentStatus, Concurrency, type ServiceStatus, UserType, Appointme
 import { startOfMonth, endOfMonth } from "date-fns";
 
 // Service Actions
-const serviceSchema = z.object({
-  id: z.string().optional(),
+const createServiceSchema = z.object({
   name: z.string().min(3, "Service name must be at least 3 characters."),
   description: z
     .string()
@@ -19,8 +18,9 @@ const serviceSchema = z.object({
   techniqueIds: z.array(z.string()).min(1, "Please select at least one technique."),
 });
 
-export async function createService(data: z.infer<typeof serviceSchema>) {
-  const validatedFields = serviceSchema.safeParse(data);
+
+export async function createService(data: z.infer<typeof createServiceSchema>) {
+  const validatedFields = createServiceSchema.safeParse(data);
 
   if (!validatedFields.success) {
     throw new Error("Invalid service data.");
@@ -41,11 +41,23 @@ export async function createService(data: z.infer<typeof serviceSchema>) {
   revalidatePath("/services");
 }
 
-export async function updateService(data: z.infer<typeof serviceSchema>) {
-    const validatedFields = serviceSchema.safeParse(data);
+const updateServiceSchema = z.object({
+  id: z.string(),
+  name: z.string().min(3, "Service name must be at least 3 characters."),
+  description: z
+    .string()
+    .min(10, "Description must be at least 10 characters."),
+  price: z.coerce.number().positive("Price must be a positive number.").refine(val => (val.toString().split('.')[1] || []).length <= 2, "Price can have at most 2 decimal places."),
+  duration: z.coerce.number().int().positive("Duration must be a positive integer."),
+  techniqueIds: z.array(z.string()).min(1, "Please select at least one technique."),
+});
 
-    if (!validatedFields.success || !validatedFields.data.id) {
-        throw new Error("Invalid service data.");
+
+export async function updateService(data: z.infer<typeof updateServiceSchema>) {
+    const validatedFields = updateServiceSchema.safeParse(data);
+
+    if (!validatedFields.success) {
+        throw new Error("Invalid service data for update.");
     }
 
     const { id, techniqueIds, ...serviceData } = validatedFields.data;
@@ -55,7 +67,7 @@ export async function updateService(data: z.infer<typeof serviceSchema>) {
         data: {
           ...serviceData,
           techniques: {
-            set: techniqueIds.map(id => ({ id })),
+            set: techniqueIds.map(techId => ({ id: techId })),
           }
         },
     });
