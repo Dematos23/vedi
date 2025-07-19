@@ -35,11 +35,11 @@ export function MultiSelect({ options, selected, onChange, placeholder = "Select
   const [open, setOpen] = React.useState(false)
 
   const handleSelect = (value: string) => {
-    const newSelected = selected.includes(value)
-      ? selected.filter((item) => item !== value)
-      : [...selected, value];
-      
-    onChange(newSelected);
+    onChange(
+      selected.includes(value)
+        ? selected.filter((item) => item !== value)
+        : [...selected, value]
+    );
   };
 
   const selectedLabels = selected.map(value => options.find(option => option.value === value)?.label).filter(Boolean);
@@ -73,7 +73,9 @@ export function MultiSelect({ options, selected, onChange, placeholder = "Select
                 <CommandItem
                   key={option.value}
                   value={option.value}
-                  onSelect={handleSelect}
+                  onSelect={() => {
+                    handleSelect(option.value);
+                  }}
                 >
                   <Check
                     className={cn(
