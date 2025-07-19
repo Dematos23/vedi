@@ -69,7 +69,6 @@ export function AppointmentsList({ appointments, allPatients, allServices, searc
          <div className="flex items-start justify-between gap-4">
             <div>
               <CardTitle>{d.title}</CardTitle>
-              <CardDescription>{d.description}</CardDescription>
             </div>
             <NewAppointmentSheet patients={allPatients} services={allServices} />
          </div>

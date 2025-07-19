@@ -40,7 +40,6 @@ export function TechniquesList({ techniques }: TechniquesListProps) {
                 <div className="flex items-center justify-between">
                 <div>
                     <CardTitle>{d.title}</CardTitle>
-                    <CardDescription>{d.description}</CardDescription>
                 </div>
                 <NewTechniqueSheet />
                 </div>

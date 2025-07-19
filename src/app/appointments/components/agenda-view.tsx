@@ -69,7 +69,6 @@ export function AgendaView({ appointments, therapists, searchParams }: AgendaVie
     <Card>
       <CardHeader>
         <CardTitle>{d.agendaView}</CardTitle>
-        <CardDescription>{d.agendaViewDescription}</CardDescription>
         <div className="flex flex-col md:flex-row gap-4 pt-4">
            <Select value={selectedTherapist} onValueChange={handleTherapistChange}>
              <SelectTrigger className="w-full md:w-[250px]">
@@ -107,7 +106,7 @@ export function AgendaView({ appointments, therapists, searchParams }: AgendaVie
               if (!appt.service) return null;
               const { top, height } = getEventPositionAndHeight(appt);
               return (
-                 <Link href={`/appointments/${appt.id}`} key={appt.id} legacyBehavior>
+                 <Link href={`/appointments/${appt.id}`} key={appt.id}>
                     <a 
                       className="absolute left-2 right-2 p-2 rounded-lg shadow-md cursor-pointer transition-colors hover:bg-primary/90"
                       style={{ 

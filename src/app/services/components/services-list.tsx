@@ -39,7 +39,6 @@ export function ServicesList({ services, therapists }: ServicesListProps) {
             <div className="flex items-center justify-between">
             <div>
                 <CardTitle>{d.title}</CardTitle>
-                <CardDescription>{d.description}</CardDescription>
             </div>
             <NewServiceSheet therapists={therapists} />
             </div>
