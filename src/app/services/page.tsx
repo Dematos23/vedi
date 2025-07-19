@@ -34,7 +34,7 @@ export default async function ServicesPage({
     where.status = status as ServiceStatus;
   }
 
-  const services = await prisma.service.findMany({
+  const servicesPromise = prisma.service.findMany({
     where,
     orderBy: [
       {
@@ -46,11 +46,19 @@ export default async function ServicesPage({
     ]
   });
   
-  const therapists = await prisma.user.findMany({
+  const therapistsPromise = prisma.user.findMany({
     where: { type: UserType.THERAPIST },
   });
 
+  const techniquesPromise = prisma.technique.findMany();
+
+  const [services, therapists, techniques] = await Promise.all([
+    servicesPromise,
+    therapistsPromise,
+    techniquesPromise
+  ]);
+
   return (
-    <ServicesList services={services} therapists={therapists} />
+    <ServicesList services={services} therapists={therapists} techniques={techniques} />
   );
 }

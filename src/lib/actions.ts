@@ -17,6 +17,7 @@ const serviceSchema = z.object({
   price: z.coerce.number().positive("Price must be a positive number.").refine(val => (val.toString().split('.')[1] || []).length <= 2, "Price can have at most 2 decimal places."),
   duration: z.coerce.number().int().positive("Duration must be a positive integer."),
   userId: z.string({ required_error: "Please select a therapist." }),
+  techniqueIds: z.array(z.string()).min(1, "Please select at least one technique."),
 });
 
 export async function createService(data: z.infer<typeof serviceSchema>) {
@@ -25,11 +26,16 @@ export async function createService(data: z.infer<typeof serviceSchema>) {
   if (!validatedFields.success) {
     throw new Error("Invalid service data.");
   }
+  
+  const { techniqueIds, ...serviceData } = validatedFields.data;
 
   await prisma.service.create({
     data: {
-      ...validatedFields.data,
+      ...serviceData,
       status: 'ACTIVE',
+      techniques: {
+        connect: techniqueIds.map(id => ({ id })),
+      }
     },
   });
 
@@ -43,11 +49,16 @@ export async function updateService(data: z.infer<typeof serviceSchema>) {
         throw new Error("Invalid service data.");
     }
 
-    const { id, ...serviceData } = validatedFields.data;
+    const { id, techniqueIds, ...serviceData } = validatedFields.data;
 
     await prisma.service.update({
         where: { id },
-        data: serviceData,
+        data: {
+          ...serviceData,
+          techniques: {
+            set: techniqueIds.map(id => ({ id })),
+          }
+        },
     });
 
     revalidatePath("/services");

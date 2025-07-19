@@ -19,8 +19,9 @@ import { createService } from "@/lib/actions";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/language-context";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { User } from "@prisma/client";
+import type { User, Technique } from "@prisma/client";
 import { getFullName } from "@/lib/utils";
+import { MultiSelect } from "@/components/ui/multi-select";
 
 const serviceSchema = z.object({
   name: z.string().min(3, "Service name must be at least 3 characters."),
@@ -28,16 +29,18 @@ const serviceSchema = z.object({
   price: z.coerce.number().positive("Price must be a positive number.").refine(val => (val.toString().split('.')[1] || []).length <= 2, "Price can have at most 2 decimal places."),
   duration: z.coerce.number().int().positive("Duration must be a positive integer."),
   userId: z.string({ required_error: "Please select a therapist." }),
+  techniqueIds: z.array(z.string()).min(1, "Please select at least one technique."),
 });
 
 type ServiceFormValues = z.infer<typeof serviceSchema>;
 
 interface NewServiceFormProps {
   therapists: User[];
+  techniques: Technique[];
   onFormSubmit?: () => void;
 }
 
-export function NewServiceForm({ therapists, onFormSubmit }: NewServiceFormProps) {
+export function NewServiceForm({ therapists, techniques, onFormSubmit }: NewServiceFormProps) {
   const { toast } = useToast();
   const { dictionary } = useLanguage();
   const d = dictionary.services;
@@ -49,6 +52,7 @@ export function NewServiceForm({ therapists, onFormSubmit }: NewServiceFormProps
       description: "",
       price: 0,
       duration: 0,
+      techniqueIds: [],
     },
   });
 
@@ -71,6 +75,8 @@ export function NewServiceForm({ therapists, onFormSubmit }: NewServiceFormProps
       });
     }
   };
+
+  const techniqueOptions = techniques.map(t => ({ value: t.id, label: t.name }));
 
   return (
     <Form {...form}>
@@ -121,6 +127,23 @@ export function NewServiceForm({ therapists, onFormSubmit }: NewServiceFormProps
                   ))}
                 </SelectContent>
               </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+         <FormField
+          control={form.control}
+          name="techniqueIds"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{dictionary.techniques.title}</FormLabel>
+                <MultiSelect
+                    options={techniqueOptions}
+                    selected={field.value}
+                    onChange={field.onChange}
+                    placeholder="Select techniques..."
+                    className="w-full"
+                />
               <FormMessage />
             </FormItem>
           )}
