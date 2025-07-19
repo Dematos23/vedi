@@ -40,7 +40,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { usePathname } from "next/navigation";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { useLanguage } from "@/contexts/language-context";
 
 function LanguageSwitcher() {
@@ -72,8 +71,9 @@ function LanguageSwitcher() {
 
 function MainSidebar() {
   const pathname = usePathname();
-  const { isMobile, setOpen } = useSidebar();
+  const { open, setOpen } = useSidebar();
   const { dictionary } = useLanguage();
+  const isMobile = useIsMobile();
 
   const navItems = [
     { href: "/dashboard", icon: LayoutDashboard, label: dictionary.sidebar.dashboard },
@@ -173,4 +173,26 @@ export function MainLayout({
       </SidebarInset>
     </SidebarProvider>
   );
+}
+
+// Custom hook to detect mobile screen size
+// This is a simplified hook. For a more robust solution, you might consider
+// using a library or a more complex implementation with cleanup.
+function useIsMobile() {
+    const [isMobile, setIsMobile] = React.useState(false);
+
+    React.useEffect(() => {
+        const checkScreenSize = () => {
+            setIsMobile(window.innerWidth < 768); // Corresponds to md breakpoint
+        };
+
+        checkScreenSize();
+        window.addEventListener('resize', checkScreenSize);
+
+        return () => {
+            window.removeEventListener('resize', checkScreenSize);
+        };
+    }, []);
+
+    return isMobile;
 }
