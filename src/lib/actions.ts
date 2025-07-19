@@ -551,6 +551,7 @@ export async function updateTechnique(data: z.infer<typeof techniqueSchema>) {
     });
 
     revalidatePath("/techniques");
+    revalidatePath(`/techniques/${id}`);
 }
 
 export async function deleteTechnique(techniqueId: string) {
@@ -601,11 +602,3 @@ export async function assignTherapistsToTechnique(techniqueId: string, therapist
 
     revalidatePath(`/techniques/${techniqueId}`);
 }
-    
-
-    
-
-
-
-
-

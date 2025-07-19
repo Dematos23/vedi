@@ -11,7 +11,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowLeft, BriefcaseMedical, UserPlus } from "lucide-react";
+import { ArrowLeft, BriefcaseMedical, UserPlus, Pencil } from "lucide-react";
 import { getFullName, cn } from "@/lib/utils";
 import { Table, TableBody, TableCell, TableHeader, TableHead, TableRow } from "@/components/ui/table";
 import { useLanguage } from "@/contexts/language-context";
@@ -19,16 +19,19 @@ import type { TechniqueWithDetails, UserForAssignment } from "../page";
 import { Progress } from "@/components/ui/progress";
 import { TechniqueStatus } from "@prisma/client";
 import { AssignTherapistsSheet } from "./assign-therapists-sheet";
+import { EditTechniqueSheet } from "../../components/edit-technique-sheet";
 
 export function TechniqueDetailClient({ technique, allTherapists }: { technique: TechniqueWithDetails, allTherapists: UserForAssignment[] }) {
   const { name, description, services, users, requiredSessionsForTherapist } = technique;
   const { dictionary } = useLanguage();
   const d = dictionary.techniques;
+  const [isEditing, setIsEditing] = React.useState(false);
 
   const assignedTherapistIds = React.useMemo(() => new Set(users.map(u => u.userId)), [users]);
   const availableTherapists = allTherapists.filter(t => !assignedTherapistIds.has(t.id));
 
   return (
+    <>
     <div className="grid gap-6">
       <div className="flex items-center gap-4">
         <Button asChild variant="outline" size="icon">
@@ -37,7 +40,13 @@ export function TechniqueDetailClient({ technique, allTherapists }: { technique:
             <span className="sr-only">{d.backToTechniques}</span>
           </Link>
         </Button>
-        <h1 className="text-2xl font-bold">{name}</h1>
+        <div className="flex-1">
+            <h1 className="text-2xl font-bold">{name}</h1>
+        </div>
+        <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
+            <Pencil className="mr-2 h-4 w-4" />
+            {d.edit}
+        </Button>
       </div>
       
       <Card>
@@ -125,5 +134,7 @@ export function TechniqueDetailClient({ technique, allTherapists }: { technique:
         </Card>
       </div>
     </div>
+    <EditTechniqueSheet technique={technique} open={isEditing} onOpenChange={setIsEditing} />
+    </>
   );
 }
