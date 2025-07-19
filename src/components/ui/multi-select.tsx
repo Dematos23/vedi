@@ -34,17 +34,10 @@ interface MultiSelectProps {
 export function MultiSelect({ options, selected, onChange, placeholder = "Select options...", className }: MultiSelectProps) {
   const [open, setOpen] = React.useState(false)
 
-  const handleSelect = (currentValue: string) => {
-    // onSelect provides the value prop from CommandItem, which we set to the label
-    const option = options.find(o => o.label.toLowerCase() === currentValue.toLowerCase());
-    
-    if (!option) return;
-
-    const actualValue = option.value;
-    
-    const newSelected = selected.includes(actualValue)
-      ? selected.filter((item) => item !== actualValue)
-      : [...selected, actualValue];
+  const handleSelect = (value: string) => {
+    const newSelected = selected.includes(value)
+      ? selected.filter((item) => item !== value)
+      : [...selected, value];
       
     onChange(newSelected);
   };
@@ -79,7 +72,7 @@ export function MultiSelect({ options, selected, onChange, placeholder = "Select
               {options.map((option) => (
                 <CommandItem
                   key={option.value}
-                  value={option.label} // Use label for display and search
+                  value={option.value}
                   onSelect={handleSelect}
                 >
                   <Check
