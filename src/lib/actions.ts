@@ -4,7 +4,7 @@
 import { revalidatePath } from "next/cache";
 import prisma from "./prisma";
 import * as z from "zod";
-import { AppointmentStatus, Concurrency, type ServiceStatus, UserType, AppointmentEvaluation } from "@prisma/client";
+import { AppointmentStatus, Concurrency, type ServiceStatus, UserType, AppointmentEvaluation, TechniqueStatus } from "@prisma/client";
 import { startOfMonth, endOfMonth } from "date-fns";
 
 // Service Actions
@@ -579,9 +579,32 @@ export async function deleteTechnique(techniqueId: string) {
     revalidatePath("/techniques");
 }
 
+export async function assignTherapistsToTechnique(techniqueId: string, therapistIds: string[]) {
+    if (!techniqueId) {
+        throw new Error("Technique ID is required.");
+    }
+    if (!therapistIds || therapistIds.length === 0) {
+        throw new Error("At least one therapist ID is required.");
+    }
+
+    const dataToInsert = therapistIds.map(userId => ({
+        userId,
+        techniqueId,
+        status: TechniqueStatus.PRACTITIONER, 
+    }));
+    
+    // This will create multiple records in one go.
+    await prisma.userTechniqueStatus.createMany({
+        data: dataToInsert,
+        skipDuplicates: true, // This prevents errors if a therapist is already assigned.
+    });
+
+    revalidatePath(`/techniques/${techniqueId}`);
+}
     
 
     
+
 
 
 

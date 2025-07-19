@@ -11,18 +11,22 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowLeft, BriefcaseMedical } from "lucide-react";
+import { ArrowLeft, BriefcaseMedical, UserPlus } from "lucide-react";
 import { getFullName, cn } from "@/lib/utils";
 import { Table, TableBody, TableCell, TableHeader, TableHead, TableRow } from "@/components/ui/table";
 import { useLanguage } from "@/contexts/language-context";
-import type { TechniqueWithDetails } from "../page";
+import type { TechniqueWithDetails, UserForAssignment } from "../page";
 import { Progress } from "@/components/ui/progress";
 import { TechniqueStatus } from "@prisma/client";
+import { AssignTherapistsSheet } from "./assign-therapists-sheet";
 
-export function TechniqueDetailClient({ technique }: { technique: TechniqueWithDetails }) {
+export function TechniqueDetailClient({ technique, allTherapists }: { technique: TechniqueWithDetails, allTherapists: UserForAssignment[] }) {
   const { name, description, services, users, requiredSessionsForTherapist } = technique;
   const { dictionary } = useLanguage();
   const d = dictionary.techniques;
+
+  const assignedTherapistIds = React.useMemo(() => new Set(users.map(u => u.userId)), [users]);
+  const availableTherapists = allTherapists.filter(t => !assignedTherapistIds.has(t.id));
 
   return (
     <div className="grid gap-6">
@@ -47,8 +51,12 @@ export function TechniqueDetailClient({ technique }: { technique: TechniqueWithD
 
       <div className="grid grid-cols-1 gap-6">
         <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row justify-between items-start">
                 <CardTitle>{d.therapistsAssigned}</CardTitle>
+                <AssignTherapistsSheet 
+                    techniqueId={technique.id} 
+                    availableTherapists={availableTherapists}
+                />
             </CardHeader>
             <CardContent>
                 <Table>

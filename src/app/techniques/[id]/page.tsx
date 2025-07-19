@@ -3,6 +3,7 @@ import * as React from "react";
 import { notFound } from "next/navigation";
 import prisma from "@/lib/prisma";
 import type { Technique, Service, User, UserTechniqueStatus } from "@prisma/client";
+import { UserType } from "@prisma/client";
 import { TechniqueDetailClient } from "./components/technique-detail-client";
 
 export type UserTechniqueStatusWithUsage = UserTechniqueStatus & {
@@ -17,8 +18,10 @@ export type TechniqueWithDetails = Technique & {
   users: UserTechniqueStatusWithUsage[];
 };
 
+export type UserForAssignment = Pick<User, 'id' | 'name' | 'lastname' | 'secondname' | 'secondlastname'>;
+
 export default async function TechniqueDetailPage({ params }: { params: { id:string } }) {
-  const technique = await prisma.technique.findUnique({
+  const techniquePromise = prisma.technique.findUnique({
     where: { id: params.id },
     include: {
       services: true,
@@ -29,6 +32,20 @@ export default async function TechniqueDetailPage({ params }: { params: { id:str
       }
     },
   });
+  
+  const allTherapistsPromise = prisma.user.findMany({
+    where: { type: UserType.THERAPIST },
+    select: {
+      id: true,
+      name: true,
+      lastname: true,
+      secondname: true,
+      secondlastname: true,
+    }
+  });
+  
+  const [technique, allTherapists] = await Promise.all([techniquePromise, allTherapistsPromise]);
+
 
   if (!technique) {
     notFound();
@@ -56,5 +73,5 @@ export default async function TechniqueDetailPage({ params }: { params: { id:str
   };
 
 
-  return <TechniqueDetailClient technique={techniqueWithDetails} />;
+  return <TechniqueDetailClient technique={techniqueWithDetails} allTherapists={allTherapists} />;
 }
