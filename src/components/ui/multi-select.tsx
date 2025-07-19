@@ -35,9 +35,15 @@ export function MultiSelect({ options, selected, onChange, placeholder = "Select
   const [open, setOpen] = React.useState(false)
 
   const handleSelect = (value: string) => {
-    const newSelected = selected.includes(value)
-      ? selected.filter((item) => item !== value)
-      : [...selected, value];
+    // Find the actual value from the options based on the passed value, which might be a label
+    const option = options.find(o => o.value.toLowerCase() === value.toLowerCase() || o.label.toLowerCase() === value.toLowerCase());
+    const actualValue = option?.value;
+
+    if (!actualValue) return;
+
+    const newSelected = selected.includes(actualValue)
+      ? selected.filter((item) => item !== actualValue)
+      : [...selected, actualValue];
     onChange(newSelected);
   };
 
@@ -71,8 +77,8 @@ export function MultiSelect({ options, selected, onChange, placeholder = "Select
               {options.map((option) => (
                 <CommandItem
                   key={option.value}
-                  value={option.value}
-                  onSelect={() => handleSelect(option.value)}
+                  value={option.label} // Use label for display and search
+                  onSelect={handleSelect}
                 >
                   <Check
                     className={cn(
