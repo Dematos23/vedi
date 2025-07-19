@@ -124,9 +124,6 @@ export function EditTechniqueSheet({ technique, open, onOpenChange }: EditTechni
       <SheetContent>
         <SheetHeader>
           <SheetTitle>{d.edit} {technique.name}</SheetTitle>
-          <SheetDescription>
-            {d.descriptionPlaceholder}
-          </SheetDescription>
         </SheetHeader>
          <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 py-4">
@@ -157,12 +154,31 @@ export function EditTechniqueSheet({ technique, open, onOpenChange }: EditTechni
                   )}
                 />
                  <div className="flex justify-between items-center pt-4">
-                    <AlertDialogTrigger asChild>
-                        <Button variant="destructive-outline" size="icon" type="button">
-                            <Trash2 className="h-4 w-4" />
-                            <span className="sr-only">{d.delete}</span>
-                        </Button>
-                    </AlertDialogTrigger>
+                    <AlertDialog open={showDeleteAlert} onOpenChange={setShowDeleteAlert}>
+                        <AlertDialogTrigger asChild>
+                            <Button variant="destructive-outline" size="icon" type="button">
+                                <Trash2 className="h-4 w-4" />
+                                <span className="sr-only">{d.delete}</span>
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                            <AlertDialogTitle>{d.areYouSure}</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                {d.deleteWarning}
+                            </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                            <AlertDialogCancel>{d.cancel}</AlertDialogCancel>
+                            <AlertDialogAction
+                                onClick={handleDeleteAttempt}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            >
+                                {d.delete}
+                            </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
                     <div className="flex gap-2">
                         <Button variant="ghost" type="button" onClick={() => onOpenChange(false)} disabled={form.formState.isSubmitting}>
                             {d.cancel}
@@ -176,26 +192,6 @@ export function EditTechniqueSheet({ technique, open, onOpenChange }: EditTechni
          </Form>
       </SheetContent>
     </Sheet>
-
-    <AlertDialog open={showDeleteAlert} onOpenChange={setShowDeleteAlert}>
-        <AlertDialogContent>
-            <AlertDialogHeader>
-            <AlertDialogTitle>{d.areYouSure}</AlertDialogTitle>
-            <AlertDialogDescription>
-                {d.deleteWarning}
-            </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-            <AlertDialogCancel>{d.cancel}</AlertDialogCancel>
-            <AlertDialogAction
-                onClick={handleDeleteAttempt}
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-                {d.delete}
-            </AlertDialogAction>
-            </AlertDialogFooter>
-        </AlertDialogContent>
-    </AlertDialog>
     </>
   );
 }
