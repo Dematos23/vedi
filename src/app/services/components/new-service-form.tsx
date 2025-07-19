@@ -18,9 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { createService } from "@/lib/actions";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/language-context";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { User, Technique } from "@prisma/client";
-import { getFullName } from "@/lib/utils";
+import { type Technique } from "@prisma/client";
 import { MultiSelect } from "@/components/ui/multi-select";
 
 const serviceSchema = z.object({
@@ -28,19 +26,17 @@ const serviceSchema = z.object({
   description: z.string().min(10, "Description must be at least 10 characters."),
   price: z.coerce.number().positive("Price must be a positive number.").refine(val => (val.toString().split('.')[1] || []).length <= 2, "Price can have at most 2 decimal places."),
   duration: z.coerce.number().int().positive("Duration must be a positive integer."),
-  userId: z.string({ required_error: "Please select a therapist." }),
   techniqueIds: z.array(z.string()).min(1, "Please select at least one technique."),
 });
 
 type ServiceFormValues = z.infer<typeof serviceSchema>;
 
 interface NewServiceFormProps {
-  therapists: User[];
   techniques: Technique[];
   onFormSubmit?: () => void;
 }
 
-export function NewServiceForm({ therapists, techniques, onFormSubmit }: NewServiceFormProps) {
+export function NewServiceForm({ techniques, onFormSubmit }: NewServiceFormProps) {
   const { toast } = useToast();
   const { dictionary } = useLanguage();
   const d = dictionary.services;
@@ -103,30 +99,6 @@ export function NewServiceForm({ therapists, techniques, onFormSubmit }: NewServ
               <FormControl>
                 <Textarea placeholder={d.descriptionPlaceholder} {...field} />
               </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-         <FormField
-          control={form.control}
-          name="userId"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{dictionary.therapists.title}</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder={dictionary.appointments.selectTherapist} />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {therapists.map((therapist) => (
-                    <SelectItem key={therapist.id} value={therapist.id}>
-                      {getFullName(therapist)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
               <FormMessage />
             </FormItem>
           )}

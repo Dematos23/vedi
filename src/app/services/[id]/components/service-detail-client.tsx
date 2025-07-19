@@ -15,13 +15,13 @@ import Link from "next/link";
 import { ArrowLeft, Clock, DollarSign, Eye, Pencil } from "lucide-react";
 import { format } from "date-fns";
 import { formatCurrency, getFullName } from "@/lib/utils";
-import type { SerializableServiceWithDetails } from "../page";
+import type { SerializableServiceWithDetails, SerializableTechnique } from "../page";
 import { Table, TableBody, TableCell, TableHeader, TableHead, TableRow } from "@/components/ui/table";
 import { ServiceStatus } from "@prisma/client";
 import { useLanguage } from "@/contexts/language-context";
 import { EditServiceSheet } from "../../components/edit-service-sheet";
 
-export function ServiceDetailClient({ serviceData }: { serviceData: SerializableServiceWithDetails }) {
+export function ServiceDetailClient({ serviceData, allTechniques }: { serviceData: SerializableServiceWithDetails, allTechniques: SerializableTechnique[] }) {
   const { name, description, price, duration, status, appointments } = serviceData;
   const isInactive = status === ServiceStatus.INACTIVE;
   const { dictionary } = useLanguage();
@@ -126,7 +126,7 @@ export function ServiceDetailClient({ serviceData }: { serviceData: Serializable
         </CardContent>
       </Card>
     </div>
-    <EditServiceSheet service={serviceData} open={isEditing} onOpenChange={setIsEditing} />
+    <EditServiceSheet service={serviceData} allTechniques={allTechniques} open={isEditing} onOpenChange={setIsEditing} />
     </>
   );
 }

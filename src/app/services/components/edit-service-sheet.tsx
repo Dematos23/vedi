@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import type { Service } from "@prisma/client";
+import type { Service, Technique } from "@prisma/client";
 import {
   Sheet,
   SheetContent,
@@ -39,6 +39,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Power, PowerOff, Trash2 } from "lucide-react";
+import { MultiSelect } from "@/components/ui/multi-select";
 
 const serviceSchema = z.object({
   id: z.string(),
@@ -46,17 +47,19 @@ const serviceSchema = z.object({
   description: z.string().min(10, "Description must be at least 10 characters."),
   price: z.coerce.number().positive("Price must be a positive number.").refine(val => (val.toString().split('.')[1] || []).length <= 2, "Price can have at most 2 decimal places."),
   duration: z.coerce.number().int().positive("Duration must be a positive integer."),
+  techniqueIds: z.array(z.string()).min(1, "Please select at least one technique."),
 });
 
 type ServiceFormValues = z.infer<typeof serviceSchema>;
 
 interface EditServiceSheetProps {
-  service: Service;
+  service: Service & { techniques: Technique[] };
+  allTechniques: Technique[];
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export function EditServiceSheet({ service, open, onOpenChange }: EditServiceSheetProps) {
+export function EditServiceSheet({ service, allTechniques, open, onOpenChange }: EditServiceSheetProps) {
   const [showDeleteAlert, setShowDeleteAlert] = React.useState(false);
   const [showDeactivationAlert, setShowDeactivationAlert] = React.useState(false);
   const { toast } = useToast();
@@ -73,6 +76,7 @@ export function EditServiceSheet({ service, open, onOpenChange }: EditServiceShe
       description: service.description,
       price: Number(service.price),
       duration: service.duration,
+      techniqueIds: service.techniques.map(t => t.id),
     },
   });
   
@@ -84,6 +88,7 @@ export function EditServiceSheet({ service, open, onOpenChange }: EditServiceShe
         description: service.description,
         price: Number(service.price),
         duration: service.duration,
+        techniqueIds: service.techniques.map(t => t.id),
       });
     }
   }, [open, service, form]);
@@ -145,6 +150,7 @@ export function EditServiceSheet({ service, open, onOpenChange }: EditServiceShe
     }
   }
 
+  const techniqueOptions = allTechniques.map(t => ({ value: t.id, label: t.name }));
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -179,6 +185,23 @@ export function EditServiceSheet({ service, open, onOpenChange }: EditServiceShe
                       <FormControl>
                         <Textarea {...field} />
                       </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="techniqueIds"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{dictionary.techniques.title}</FormLabel>
+                        <MultiSelect
+                            options={techniqueOptions}
+                            selected={field.value}
+                            onChange={field.onChange}
+                            placeholder="Select techniques..."
+                            className="w-full"
+                        />
                       <FormMessage />
                     </FormItem>
                   )}

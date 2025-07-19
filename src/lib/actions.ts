@@ -16,7 +16,6 @@ const serviceSchema = z.object({
     .min(10, "Description must be at least 10 characters."),
   price: z.coerce.number().positive("Price must be a positive number.").refine(val => (val.toString().split('.')[1] || []).length <= 2, "Price can have at most 2 decimal places."),
   duration: z.coerce.number().int().positive("Duration must be a positive integer."),
-  userId: z.string({ required_error: "Please select a therapist." }),
   techniqueIds: z.array(z.string()).min(1, "Please select at least one technique."),
 });
 
@@ -511,12 +510,11 @@ export async function resetTherapistPassword(therapistId: string) {
     randomChar(symbols);
 
   // In a real app, you would hash the password before saving.
-  // const hashedPassword = await argon2.hash(newPassword);
-
+  // Storing plain text for this demo.
   await prisma.user.update({
     where: { id: therapistId },
     data: {
-      password: newPassword, // Storing plain text for this demo due to build issues.
+      password: newPassword,
     },
   });
 

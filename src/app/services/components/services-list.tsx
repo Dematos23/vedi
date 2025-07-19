@@ -13,26 +13,23 @@ import { Search } from "@/app/patients/components/search"; // Re-using search co
 import { NewServiceSheet } from "./new-service-sheet";
 import { ServiceCard } from "./service-card";
 import { StatusFilter } from "./status-filter";
-import type { Service, User, Technique } from "@prisma/client";
+import type { Service, Technique } from "@prisma/client";
 import { useLanguage } from "@/contexts/language-context";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatCurrency } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Eye, Pencil } from "lucide-react";
-import { EditServiceSheet } from "./edit-service-sheet";
+import { Eye } from "lucide-react";
 import Link from "next/link";
 
 interface ServicesListProps {
   services: Service[];
-  therapists: User[];
   techniques: Technique[];
 }
 
-export function ServicesList({ services, therapists, techniques }: ServicesListProps) {
+export function ServicesList({ services, techniques }: ServicesListProps) {
     const { dictionary } = useLanguage();
     const d = dictionary.services;
-    const [editingService, setEditingService] = React.useState<Service | null>(null);
 
     return (
         <Card>
@@ -41,7 +38,7 @@ export function ServicesList({ services, therapists, techniques }: ServicesListP
             <div>
                 <CardTitle>{d.title}</CardTitle>
             </div>
-            <NewServiceSheet therapists={therapists} techniques={techniques} />
+            <NewServiceSheet techniques={techniques} />
             </div>
             <div className="pt-4 flex flex-col md:flex-row items-center gap-4">
             <div className="w-full md:flex-1">
@@ -111,13 +108,6 @@ export function ServicesList({ services, therapists, techniques }: ServicesListP
                 )}
                 </TableBody>
             </Table>
-             {editingService && (
-                <EditServiceSheet 
-                    service={editingService} 
-                    open={!!editingService} 
-                    onOpenChange={(open) => !open && setEditingService(null)} 
-                />
-            )}
         </CardContent>
         </Card>
     );
