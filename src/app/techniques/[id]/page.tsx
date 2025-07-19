@@ -18,7 +18,7 @@ export type TechniqueWithDetails = Technique & {
   users: UserTechniqueStatusWithUsage[];
 };
 
-export type UserForAssignment = Pick<User, 'id' | 'name' | 'lastname' | 'secondname' | 'secondlastname'>;
+export type UserForAssignment = Pick<User, 'id' | 'name' | 'lastname'>;
 
 export default async function TechniqueDetailPage({ params }: { params: { id:string } }) {
   const techniquePromise = prisma.technique.findUnique({
@@ -39,8 +39,6 @@ export default async function TechniqueDetailPage({ params }: { params: { id:str
       id: true,
       name: true,
       lastname: true,
-      secondname: true,
-      secondlastname: true,
     }
   });
   

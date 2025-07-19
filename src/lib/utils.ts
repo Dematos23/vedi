@@ -1,7 +1,7 @@
 
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
-import type { Patient } from "@prisma/client"
+import type { Patient, User } from "@prisma/client"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -14,8 +14,19 @@ export function formatCurrency(amount: number) {
   }).format(amount);
 }
 
-export function getFullName(patient: Pick<Patient, 'name' | 'secondname' | 'lastname' | 'secondlastname'>): string {
-    return [patient.name, patient.secondname, patient.lastname, patient.secondlastname]
-        .filter(Boolean) // Remove null or empty strings
-        .join(' ');
+type Nameable = 
+    Pick<Patient, 'name' | 'secondname' | 'lastname' | 'secondlastname'> | 
+    Pick<User, 'name' | 'lastname'>;
+
+
+export function getFullName(person: Nameable): string {
+    const parts = [person.name];
+    if ('secondname' in person) {
+        parts.push(person.secondname);
+    }
+    parts.push(person.lastname);
+    if ('secondlastname' in person) {
+        parts.push(person.secondlastname);
+    }
+    return parts.filter(Boolean).join(' ');
 }
