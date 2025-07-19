@@ -1,7 +1,7 @@
 
 "use client";
 
-import type { Metadata } from "next";
+import type { Metadata } from "next/meta";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { usePathname } from "next/navigation";
@@ -26,6 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Vedi - Therapy Practice Manager</title>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
