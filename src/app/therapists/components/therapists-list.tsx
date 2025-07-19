@@ -12,7 +12,6 @@ import {
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -22,6 +21,7 @@ import Link from "next/link";
 import { useLanguage } from "@/contexts/language-context";
 import { Progress } from "@/components/ui/progress";
 import type { TherapistWithPerformance } from "../page";
+import { NewTherapistSheet } from "./new-therapist-sheet";
 
 
 interface TherapistsListProps {
@@ -41,6 +41,7 @@ export function TherapistsList({ therapists }: TherapistsListProps) {
                 <div>
                     <CardTitle>{d.title}</CardTitle>
                 </div>
+                 <NewTherapistSheet />
             </div>
         </CardHeader>
         <CardContent>
