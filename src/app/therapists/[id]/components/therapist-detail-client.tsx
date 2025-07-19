@@ -19,14 +19,25 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, UsersRound, CalendarDays, DollarSign, Eye } from "lucide-react";
+import { ArrowLeft, UsersRound, CalendarDays, DollarSign, Eye, KeyRound, Copy } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency, getFullName, cn } from "@/lib/utils";
-import { getTherapistPerformance } from "@/lib/actions";
+import { getTherapistPerformance, resetTherapistPassword } from "@/lib/actions";
 import { Progress } from "@/components/ui/progress";
 import { useLanguage } from "@/contexts/language-context";
 import { TechniqueStatus } from "@prisma/client";
+import { useToast } from "@/hooks/use-toast";
 
 type Unpacked<T> = T extends (infer U)[] ? U : T;
 type PerformanceData = Awaited<ReturnType<typeof getTherapistPerformance>>;
@@ -60,15 +71,56 @@ interface TherapistDetailClientProps {
 export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
   const { dictionary } = useLanguage();
   const d = dictionary.therapists;
-  const { name, lastname, kpis, assignedPatients, techniquesPerformance } = data;
+  const { id, name, lastname, kpis, assignedPatients, techniquesPerformance } = data;
   const [formattedAppointments, setFormattedAppointments] = React.useState<SerializableAppointment[]>([]);
+  const [isResetting, setIsResetting] = React.useState(false);
+  const [newPassword, setNewPassword] = React.useState<string | null>(null);
+  const { toast } = useToast();
 
   React.useEffect(() => {
     // Format dates on the client to avoid hydration mismatch
     setFormattedAppointments(data.recentAppointments);
   }, [data.recentAppointments]);
+  
+  const handleResetPassword = async () => {
+    setIsResetting(true);
+    setNewPassword(null);
+    try {
+      const result = await resetTherapistPassword(id);
+      if (result.newPassword) {
+        setNewPassword(result.newPassword);
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to reset password. Please try again.",
+        });
+      }
+    } catch (error) {
+       const message = error instanceof Error ? error.message : "An unknown error occurred";
+       toast({
+        variant: "destructive",
+        title: "Error",
+        description: message,
+      });
+    } finally {
+      setIsResetting(false);
+    }
+  };
+
+  const copyToClipboard = () => {
+    if (newPassword) {
+      navigator.clipboard.writeText(newPassword);
+      toast({
+        title: "Copied!",
+        description: "New password has been copied to clipboard.",
+      });
+    }
+  };
+
 
   return (
+    <>
     <div className="grid gap-6">
       <div className="flex items-center gap-4">
         <Button asChild variant="outline" size="icon">
@@ -78,6 +130,12 @@ export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
           </Link>
         </Button>
         <h1 className="text-2xl font-bold">{d.performanceTitle(name, lastname)}</h1>
+        <div className="ml-auto">
+            <Button variant="outline" onClick={handleResetPassword} disabled={isResetting}>
+                <KeyRound className="mr-2 h-4 w-4" />
+                {isResetting ? "Resetting..." : "Reset Password"}
+            </Button>
+        </div>
       </div>
 
        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -233,5 +291,27 @@ export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
         </Card>
       </div>
     </div>
+
+    <AlertDialog open={!!newPassword} onOpenChange={(open) => !open && setNewPassword(null)}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Password Reset Successfully</AlertDialogTitle>
+          <AlertDialogDescription>
+            The therapist's password has been reset. Please provide them with their new password securely.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <div className="relative rounded-lg bg-muted p-4 font-mono text-sm">
+            {newPassword}
+            <Button variant="ghost" size="icon" className="absolute right-2 top-2 h-7 w-7" onClick={copyToClipboard}>
+                <Copy className="h-4 w-4" />
+                <span className="sr-only">Copy</span>
+            </Button>
+        </div>
+        <AlertDialogFooter>
+          <AlertDialogAction onClick={() => setNewPassword(null)}>Done</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 }

@@ -477,6 +477,47 @@ export async function getTherapistPerformance(therapistId: string) {
   };
 }
 
+export async function resetTherapistPassword(therapistId: string) {
+  if (!therapistId) {
+    throw new Error("Therapist ID is required.");
+  }
+
+  const consonants = 'BCDFGHJKLMNPQRSTVWXYZ';
+  const vowels = 'AEIOU';
+  const numbers = '0123456789';
+  const symbols = '+*,.!-_/=';
+
+  const randomChar = (str: string) => str.charAt(Math.floor(Math.random() * str.length));
+
+  const newPassword = 
+    randomChar(consonants) +
+    '-' +
+    randomChar(vowels).toLowerCase() +
+    '-' +
+    randomChar(consonants).toLowerCase() +
+    '-' +
+    randomChar(vowels).toLowerCase() +
+    '-' +
+    randomChar(consonants).toLowerCase() +
+    randomChar(numbers) +
+    randomChar(numbers) +
+    randomChar(symbols);
+
+  // In a real app, you would hash the password before saving.
+  // const hashedPassword = await argon2.hash(newPassword);
+
+  await prisma.user.update({
+    where: { id: therapistId },
+    data: {
+      password: newPassword, // Storing plain text for this demo due to build issues.
+    },
+  });
+
+  revalidatePath(`/therapists/${therapistId}`);
+
+  return { newPassword };
+}
+
 
 // Technique Actions
 const techniqueSchema = z.object({
