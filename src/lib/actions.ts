@@ -491,13 +491,9 @@ export async function resetTherapistPassword(therapistId: string) {
 
   const newPassword = 
     randomChar(consonants) +
-    '-' +
     randomChar(vowels).toLowerCase() +
-    '-' +
     randomChar(consonants).toLowerCase() +
-    '-' +
     randomChar(vowels).toLowerCase() +
-    '-' +
     randomChar(consonants).toLowerCase() +
     randomChar(numbers) +
     randomChar(numbers) +
