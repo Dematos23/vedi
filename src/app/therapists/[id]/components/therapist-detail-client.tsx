@@ -23,7 +23,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, UsersRound, CalendarDays, DollarSign, Eye } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency, getFullName, cn } from "@/lib/utils";
-import type { getTherapistPerformance } from "@/lib/actions";
+import { getTherapistPerformance } from "@/lib/actions";
 import { Progress } from "@/components/ui/progress";
 import { useLanguage } from "@/contexts/language-context";
 import { TechniqueStatus } from "@prisma/client";
@@ -55,6 +55,7 @@ type SerializablePerformanceData = Omit<PerformanceData, 'kpis' | 'recentAppoint
 interface TherapistDetailClientProps {
   data: SerializablePerformanceData;
 }
+
 
 export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
   const { dictionary } = useLanguage();

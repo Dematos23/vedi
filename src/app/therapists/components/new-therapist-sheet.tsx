@@ -9,11 +9,10 @@ import { PlusCircle } from "lucide-react";
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
-  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
+  SheetFooter
 } from "@/components/ui/sheet";
 import {
   Form,
@@ -26,14 +25,21 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { createTherapist } from "@/lib/actions";
 import { useLanguage } from "@/contexts/language-context";
+
+// This is a placeholder action now.
+const createTherapist = async (data: any) => {
+  console.log("Therapist creation is currently disabled.", data);
+  // In a real app with a DB, you'd have:
+  // await prisma.user.create({ data });
+  // revalidatePath("/therapists");
+};
+
 
 const therapistSchema = z.object({
   name: z.string().min(2, "Name is required."),
   lastname: z.string().min(2, "Last name is required."),
   email: z.string().email("A valid email is required."),
-  password: z.string().min(8, "Password must be at least 8 characters."),
   phone: z.string().optional(),
 });
 
@@ -51,7 +57,6 @@ export function NewTherapistSheet() {
       name: "",
       lastname: "",
       email: "",
-      password: "",
       phone: "",
     },
   });
@@ -123,19 +128,6 @@ export function NewTherapistSheet() {
                   <FormLabel>{d.email}</FormLabel>
                   <FormControl>
                     <Input type="email" placeholder="john.doe@example.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-             <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input type="password" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

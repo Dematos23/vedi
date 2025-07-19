@@ -370,43 +370,6 @@ export async function getChartData(input: z.infer<typeof chartDataSchema>) {
 
 
 // Therapist Actions
-const createTherapistSchema = z.object({
-  name: z.string().min(2, "Name is required."),
-  lastname: z.string().min(2, "Last name is required."),
-  email: z.string().email("A valid email is required."),
-  password: z.string().min(8, "Password must be at least 8 characters."),
-  phone: z.string().optional(),
-});
-
-export async function createTherapist(data: z.infer<typeof createTherapistSchema>) {
-    const validatedFields = createTherapistSchema.safeParse(data);
-
-    if (!validatedFields.success) {
-        throw new Error("Invalid therapist data.");
-    }
-
-    const { email } = validatedFields.data;
-
-    const existingUser = await prisma.user.findUnique({
-        where: { email },
-    });
-
-    if (existingUser) {
-        throw new Error("A user with this email already exists.");
-    }
-    
-    // In a real app, you would hash the password here.
-    // For now, we store it as is, but this is not secure.
-    await prisma.user.create({
-        data: {
-            ...validatedFields.data,
-            type: UserType.THERAPIST,
-        },
-    });
-
-    revalidatePath("/therapists");
-}
-
 export async function getTherapistPerformance(therapistId: string) {
   const now = new Date();
   const startOfCurrentMonth = startOfMonth(now);
