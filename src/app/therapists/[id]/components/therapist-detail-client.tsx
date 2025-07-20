@@ -177,9 +177,7 @@ export function TherapistDetailClient({ data, allTechniques }: TherapistDetailCl
 
        <Card>
           <CardHeader className="flex flex-row items-start justify-between">
-              <div>
-                <CardTitle>{d.techniquePerformance}</CardTitle>
-              </div>
+              <CardTitle>{d.techniquePerformance}</CardTitle>
               <AssignTechniqueSheet 
                 therapistId={id}
                 allTechniques={allTechniques}
@@ -304,9 +302,9 @@ export function TherapistDetailClient({ data, allTechniques }: TherapistDetailCl
     <AlertDialog open={!!newPassword} onOpenChange={(open) => !open && setNewPassword(null)}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>{t.success.passwordDialogTitle(name, lastname)}</AlertDialogTitle>
+          <AlertDialogTitle>{d.passwordDialogTitle(getFullName({ name, lastname }))}</AlertDialogTitle>
           <AlertDialogDescription>
-            {t.success.passwordDialogDescription}
+            {d.passwordDialogDescription}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <div className="relative rounded-lg bg-muted p-4 font-mono text-sm">
@@ -324,3 +322,5 @@ export function TherapistDetailClient({ data, allTechniques }: TherapistDetailCl
     </>
   );
 }
+
+      
