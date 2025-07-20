@@ -522,20 +522,21 @@ export async function resetTherapistPassword(therapistId: string) {
 
   const randomChar = (str: string) => str.charAt(Math.floor(Math.random() * str.length));
 
-  const newPassword = 
-    randomChar(consonants) +
-    randomChar(vowels).toLowerCase() +
-    randomChar(consonants).toLowerCase() +
-    randomChar(vowels).toLowerCase() +
-    randomChar(consonants).toLowerCase() +
-    randomChar(numbers) +
-    randomChar(numbers) +
-    randomChar(symbols);
+  const newPassword = [
+    randomChar(consonants),
+    randomChar(vowels).toLowerCase(),
+    randomChar(consonants).toLowerCase(),
+    randomChar(vowels).toLowerCase(),
+    randomChar(consonants).toLowerCase(),
+    randomChar(numbers),
+    randomChar(numbers),
+    randomChar(symbols)
+  ].join('');
 
   await prisma.user.update({
     where: { id: therapistId },
     data: {
-      password: newPassword,
+      password: newPassword, // This should be hashed in a real application
     },
   });
 
@@ -550,6 +551,7 @@ const techniqueSchema = z.object({
   name: z.string().min(3, "Technique name must be at least 3 characters."),
   description: z.string().min(10, "Description must be at least 10 characters."),
   requiredSessionsForTherapist: z.coerce.number().int().positive("Required sessions must be a positive integer."),
+  url: z.string().url("Please enter a valid URL.").optional().or(z.literal('')),
 });
 
 const techniqueUpdateSchema = techniqueSchema.extend({
