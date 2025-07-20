@@ -11,7 +11,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowLeft, BriefcaseMedical, UserPlus, Pencil } from "lucide-react";
+import { ArrowLeft, BriefcaseMedical, GraduationCap, Pencil } from "lucide-react";
 import { getFullName, cn } from "@/lib/utils";
 import { Table, TableBody, TableCell, TableHeader, TableHead, TableRow } from "@/components/ui/table";
 import { useLanguage } from "@/contexts/language-context";
@@ -22,7 +22,7 @@ import { AssignTherapistsSheet } from "./assign-therapists-sheet";
 import { EditTechniqueSheet } from "../../components/edit-technique-sheet";
 
 export function TechniqueDetailClient({ technique, allTherapists }: { technique: TechniqueWithDetails, allTherapists: UserForAssignment[] }) {
-  const { name, description, services, users, requiredSessionsForTherapist } = technique;
+  const { name, description, services, users, requiredSessionsForTherapist, url } = technique;
   const { dictionary } = useLanguage();
   const d = dictionary.techniques;
   const [isEditing, setIsEditing] = React.useState(false);
@@ -43,10 +43,20 @@ export function TechniqueDetailClient({ technique, allTherapists }: { technique:
         <div className="flex-1">
             <h1 className="text-2xl font-bold">{name}</h1>
         </div>
-        <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
-            <Pencil className="mr-2 h-4 w-4" />
-            {d.edit}
-        </Button>
+        <div className="flex items-center gap-2">
+            {url && (
+                <Button asChild size="sm">
+                    <Link href={url} target="_blank" rel="noopener noreferrer">
+                        <GraduationCap className="mr-2 h-4 w-4" />
+                        {d.enroll}
+                    </Link>
+                </Button>
+            )}
+            <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
+                <Pencil className="mr-2 h-4 w-4" />
+                {d.edit}
+            </Button>
+        </div>
       </div>
       
       <Card>
