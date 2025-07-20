@@ -28,9 +28,20 @@ export async function createService(data: z.infer<typeof createServiceSchema>) {
   
   const { techniqueIds, ...serviceData } = validatedFields.data;
 
+  // Since a therapist is now required, we'll assign it to the first available one.
+  // In a real multi-user app, this would come from the logged-in user's session.
+  const therapist = await prisma.user.findFirst({
+      where: { type: UserType.THERAPIST }
+  });
+
+  if (!therapist) {
+      throw new Error("No therapist available to assign this service to.");
+  }
+
   await prisma.service.create({
     data: {
       ...serviceData,
+      userId: therapist.id,
       status: 'ACTIVE',
       techniques: {
         connect: techniqueIds.map(id => ({ id })),
@@ -538,11 +549,16 @@ export async function resetTherapistPassword(therapistId: string) {
 
 // Technique Actions
 const techniqueSchema = z.object({
-  id: z.string().optional(),
   name: z.string().min(3, "Technique name must be at least 3 characters."),
   description: z.string().min(10, "Description must be at least 10 characters."),
   requiredSessionsForTherapist: z.coerce.number().int().positive("Required sessions must be a positive integer."),
+  url: z.string().url("Please enter a valid URL.").optional().or(z.literal('')),
 });
+
+const techniqueUpdateSchema = techniqueSchema.extend({
+  id: z.string(),
+});
+
 
 export async function createTechnique(data: z.infer<typeof techniqueSchema>) {
   const validatedFields = techniqueSchema.safeParse(data);
@@ -558,10 +574,10 @@ export async function createTechnique(data: z.infer<typeof techniqueSchema>) {
   revalidatePath("/techniques");
 }
 
-export async function updateTechnique(data: z.infer<typeof techniqueSchema>) {
-    const validatedFields = techniqueSchema.safeParse(data);
+export async function updateTechnique(data: z.infer<typeof techniqueUpdateSchema>) {
+    const validatedFields = techniqueUpdateSchema.safeParse(data);
 
-    if (!validatedFields.success || !validatedFields.data.id) {
+    if (!validatedFields.success) {
         throw new Error("Invalid technique data.");
     }
 
