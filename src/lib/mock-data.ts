@@ -34,13 +34,13 @@ export const mockUsers: Omit<User, 'id' | 'createdAt' | 'updatedAt'>[] = [
 ];
 
 export const mockTechniques: Omit<Technique, 'id' | 'createdAt' | 'updatedAt' | 'requiredSessionsForTherapist'>[] = [
-    { name: 'Aromaterapia', description: 'Uso de aceites esenciales para mejorar el bienestar físico y emocional.' },
-    { name: 'Reiki', description: 'Técnica de sanación energética mediante la imposición de manos.' },
-    { name: 'Acupuntura', description: 'Estimulación de puntos específicos del cuerpo con agujas finas para aliviar el dolor.' },
-    { name: 'Terapia Floral de Bach', description: 'Uso de esencias florales para equilibrar estados emocionales negativos.' },
-    { name: 'Reflexología Podal', description: 'Aplicación de presión en puntos de los pies para estimular órganos y mejorar la salud.' },
-    { name: 'Meditación Guiada', description: 'Práctica de meditación con la guía de un instructor para alcanzar relajación profunda.' },
-    { name: 'Cristaloterapia', description: 'Uso de cristales y piedras para equilibrar la energía del cuerpo.' }
+    { name: 'Aromaterapia', description: 'Uso de aceites esenciales para mejorar el bienestar físico y emocional.', url: 'https://www.example.com/aromaterapia' },
+    { name: 'Reiki', description: 'Técnica de sanación energética mediante la imposición de manos.', url: 'https://www.example.com/reiki' },
+    { name: 'Acupuntura', description: 'Estimulación de puntos específicos del cuerpo con agujas finas para aliviar el dolor.', url: 'https://www.example.com/acupuntura' },
+    { name: 'Terapia Floral de Bach', description: 'Uso de esencias florales para equilibrar estados emocionales negativos.', url: 'https://www.example.com/terapia-floral' },
+    { name: 'Reflexología Podal', description: 'Aplicación de presión en puntos de los pies para estimular órganos y mejorar la salud.', url: 'https://www.example.com/reflexologia' },
+    { name: 'Meditación Guiada', description: 'Práctica de meditación con la guía de un instructor para alcanzar relajación profunda.', url: 'https://www.example.com/meditacion' },
+    { name: 'Cristaloterapia', description: 'Uso de cristales y piedras para equilibrar la energía del cuerpo.', url: 'https://www.example.com/cristaloterapia' }
 ];
 
 const latinAmericanNames = [
