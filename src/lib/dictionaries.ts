@@ -222,7 +222,9 @@ export const dictionaries = {
         noRecentAppointments: "No se encontraron citas recientes.",
         assignedPatientsDescription: "Una lista de todos los pacientes asignados a este terapeuta.",
         viewPatient: "Ver Paciente",
-        noPatientsAssigned: "No hay pacientes asignados."
+        noPatientsAssigned: "No hay pacientes asignados.",
+        passwordDialogTitle: (name: string) => `Contraseña Creada para ${name}`,
+        passwordDialogDescription: "La contraseña del terapeuta ha sido creada. Por favor, proporciónale su nueva contraseña de forma segura.",
     },
     techniques: {
       title: "Técnicas",
@@ -558,7 +560,9 @@ export const dictionaries = {
         noRecentAppointments: "No recent appointments found.",
         assignedPatientsDescription: "A list of all patients assigned to this therapist.",
         viewPatient: "View Patient",
-        noPatientsAssigned: "No patients assigned."
+        noPatientsAssigned: "No patients assigned.",
+        passwordDialogTitle: (name: string) => `Password Created for ${name}`,
+        passwordDialogDescription: "The therapist's password has been created. Please provide them with their new password securely.",
     },
     techniques: {
       title: "Techniques",

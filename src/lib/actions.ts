@@ -403,6 +403,69 @@ export async function getChartData(input: z.infer<typeof chartDataSchema>) {
 
 
 // Therapist Actions
+const createTherapistSchema = z.object({
+  name: z.string().min(2, "Name is required."),
+  lastname: z.string().min(2, "Last name is required."),
+  email: z.string().email("A valid email is required."),
+  phone: z.string().optional(),
+});
+
+function generatePassword() {
+  const consonants = 'BCDFGHJKLMNPQRSTVWXYZ';
+  const vowels = 'AEIOU';
+  const numbers = '0123456789';
+  const symbols = '+*,.!-_/=';
+  const randomChar = (str: string) => str.charAt(Math.floor(Math.random() * str.length));
+  return [
+    randomChar(consonants),
+    randomChar(vowels).toLowerCase(),
+    randomChar(consonants).toLowerCase(),
+    randomChar(vowels).toLowerCase(),
+    randomChar(consonants).toLowerCase(),
+    randomChar(numbers),
+    randomChar(numbers),
+    randomChar(symbols)
+  ].join('');
+}
+
+export async function createTherapist(data: z.infer<typeof createTherapistSchema>) {
+    const validatedFields = createTherapistSchema.safeParse(data);
+    if (!validatedFields.success) {
+        throw new Error("Invalid therapist data.");
+    }
+    
+    const { name, lastname, email, phone } = validatedFields.data;
+
+    const existingUser = await prisma.user.findUnique({
+        where: { email },
+    });
+
+    if (existingUser) {
+        throw new Error("An account with this email already exists.");
+    }
+
+    const newPassword = generatePassword();
+    
+    const newUser = await prisma.user.create({
+        data: {
+            name,
+            lastname,
+            email,
+            phone,
+            password: newPassword, // In a real app, this MUST be hashed
+            type: UserType.THERAPIST,
+        }
+    });
+
+    revalidatePath("/therapists");
+    
+    return {
+        user: newUser,
+        newPassword: newPassword,
+    };
+}
+
+
 export async function getTherapistPerformance(therapistId: string) {
   const now = new Date();
   const startOfCurrentMonth = startOfMonth(now);
@@ -515,23 +578,7 @@ export async function resetTherapistPassword(therapistId: string) {
     throw new Error("Therapist ID is required.");
   }
 
-  const consonants = 'BCDFGHJKLMNPQRSTVWXYZ';
-  const vowels = 'AEIOU';
-  const numbers = '0123456789';
-  const symbols = '+*,.!-_/=';
-
-  const randomChar = (str: string) => str.charAt(Math.floor(Math.random() * str.length));
-
-  const newPassword = [
-    randomChar(consonants),
-    randomChar(vowels).toLowerCase(),
-    randomChar(consonants).toLowerCase(),
-    randomChar(vowels).toLowerCase(),
-    randomChar(consonants).toLowerCase(),
-    randomChar(numbers),
-    randomChar(numbers),
-    randomChar(symbols)
-  ].join('');
+  const newPassword = generatePassword();
 
   await prisma.user.update({
     where: { id: therapistId },

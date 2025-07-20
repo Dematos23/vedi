@@ -5,7 +5,7 @@ import * as React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, Copy } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -26,15 +26,17 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/language-context";
-
-// This is a placeholder action now.
-const createTherapist = async (data: any) => {
-  console.log("Therapist creation is currently disabled.", data);
-  // In a real app with a DB, you'd have:
-  // await prisma.user.create({ data });
-  // revalidatePath("/therapists");
-};
-
+import { createTherapist } from "@/lib/actions";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { getFullName } from "@/lib/utils";
 
 const therapistSchema = z.object({
   name: z.string().min(2, "Name is required."),
@@ -47,6 +49,8 @@ type TherapistFormValues = z.infer<typeof therapistSchema>;
 
 export function NewTherapistSheet() {
   const [open, setOpen] = React.useState(false);
+  const [newPassword, setNewPassword] = React.useState<string | null>(null);
+  const [createdTherapistName, setCreatedTherapistName] = React.useState<string | null>(null);
   const { toast } = useToast();
   const { dictionary } = useLanguage();
   const d = dictionary.therapists;
@@ -64,13 +68,15 @@ export function NewTherapistSheet() {
 
   const onSubmit = async (data: TherapistFormValues) => {
     try {
-      await createTherapist(data);
+      const result = await createTherapist(data);
       toast({
         title: t.success.title,
         description: t.success.therapistCreated,
       });
       setOpen(false);
       form.reset();
+      setNewPassword(result.newPassword);
+      setCreatedTherapistName(getFullName(result.user));
     } catch (error) {
       const message = error instanceof Error ? error.message : t.error.failedToCreateTherapist;
       toast({
@@ -80,8 +86,24 @@ export function NewTherapistSheet() {
       });
     }
   };
+  
+  const copyToClipboard = () => {
+    if (newPassword) {
+      navigator.clipboard.writeText(newPassword);
+      toast({
+        title: t.success.title,
+        description: t.success.passwordCopied,
+      });
+    }
+  };
+
+  const closePasswordDialog = () => {
+      setNewPassword(null);
+      setCreatedTherapistName(null);
+  }
 
   return (
+    <>
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button size="sm" className="gap-1">
@@ -157,5 +179,27 @@ export function NewTherapistSheet() {
         </Form>
       </SheetContent>
     </Sheet>
+    
+     <AlertDialog open={!!newPassword} onOpenChange={(open) => !open && closePasswordDialog()}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{d.passwordDialogTitle(createdTherapistName || '')}</AlertDialogTitle>
+          <AlertDialogDescription>
+            {d.passwordDialogDescription}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <div className="relative rounded-lg bg-muted p-4 font-mono text-sm">
+            {newPassword}
+            <Button variant="ghost" size="icon" className="absolute right-2 top-2 h-7 w-7" onClick={copyToClipboard}>
+                <Copy className="h-4 w-4" />
+                <span className="sr-only">Copy</span>
+            </Button>
+        </div>
+        <AlertDialogFooter>
+          <AlertDialogAction onClick={closePasswordDialog}>Done</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 }
