@@ -115,7 +115,7 @@ export function TechniquesList({ techniques }: TechniquesListProps) {
                                             onClick={() => toggleExpand(technique.id)}
                                             className="text-primary text-xs font-semibold hover:underline"
                                         >
-                                            {expanded[technique.id] ? 'Read less' : 'Read more'}
+                                            {expanded[technique.id] ? d.readLess : d.readMore}
                                         </button>
                                     )}
                                 </TableCell>
