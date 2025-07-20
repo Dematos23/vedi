@@ -8,7 +8,6 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -180,7 +179,6 @@ export function TherapistDetailClient({ data, allTechniques }: TherapistDetailCl
           <CardHeader className="flex flex-row items-start justify-between">
               <div>
                 <CardTitle>{d.techniquePerformance}</CardTitle>
-                <CardDescription>{d.techniquePerformanceDescription}</CardDescription>
               </div>
               <AssignTechniqueSheet 
                 therapistId={id}
@@ -218,7 +216,6 @@ export function TherapistDetailClient({ data, allTechniques }: TherapistDetailCl
         <Card>
             <CardHeader>
                 <CardTitle>{d.recentAppointments}</CardTitle>
-                <CardDescription>{d.recentAppointmentsDescription}</CardDescription>
             </CardHeader>
             <CardContent>
                  <Table>
@@ -265,7 +262,6 @@ export function TherapistDetailClient({ data, allTechniques }: TherapistDetailCl
         <Card>
             <CardHeader>
                 <CardTitle>{d.assignedPatients}</CardTitle>
-                <CardDescription>{d.assignedPatientsDescription}</CardDescription>
             </CardHeader>
             <CardContent>
                  <Table>
@@ -308,9 +304,9 @@ export function TherapistDetailClient({ data, allTechniques }: TherapistDetailCl
     <AlertDialog open={!!newPassword} onOpenChange={(open) => !open && setNewPassword(null)}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Password Reset Successfully</AlertDialogTitle>
+          <AlertDialogTitle>{t.success.passwordDialogTitle(name, lastname)}</AlertDialogTitle>
           <AlertDialogDescription>
-            The therapist's password has been reset. Please provide them with their new password securely.
+            {t.success.passwordDialogDescription}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <div className="relative rounded-lg bg-muted p-4 font-mono text-sm">
@@ -328,4 +324,3 @@ export function TherapistDetailClient({ data, allTechniques }: TherapistDetailCl
     </>
   );
 }
-
