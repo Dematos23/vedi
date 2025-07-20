@@ -44,14 +44,12 @@ export function TechniqueDetailClient({ technique, allTherapists }: { technique:
             <h1 className="text-2xl font-bold">{name}</h1>
         </div>
         <div className="flex items-center gap-2">
-            {url && (
-                <Button asChild size="sm">
-                    <Link href={url} target="_blank" rel="noopener noreferrer">
-                        <GraduationCap className="mr-2 h-4 w-4" />
-                        {d.enroll}
-                    </Link>
-                </Button>
-            )}
+            <Button asChild size="sm">
+                <Link href={url} target="_blank" rel="noopener noreferrer">
+                    <GraduationCap className="mr-2 h-4 w-4" />
+                    {d.enroll}
+                </Link>
+            </Button>
             <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
                 <Pencil className="mr-2 h-4 w-4" />
                 {d.edit}

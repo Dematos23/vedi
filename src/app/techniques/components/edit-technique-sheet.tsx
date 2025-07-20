@@ -45,7 +45,7 @@ const techniqueSchema = z.object({
   name: z.string().min(3, "Technique name must be at least 3 characters."),
   description: z.string().min(10, "Description must be at least 10 characters."),
   requiredSessionsForTherapist: z.coerce.number().int().positive("Required sessions must be a positive integer."),
-  url: z.string().url("Please enter a valid URL.").optional().or(z.literal('')),
+  url: z.string().url("Please enter a valid URL."),
 });
 
 type TechniqueFormValues = z.infer<typeof techniqueSchema>;
@@ -70,7 +70,7 @@ export function EditTechniqueSheet({ technique, open, onOpenChange }: EditTechni
       name: technique.name,
       description: technique.description,
       requiredSessionsForTherapist: technique.requiredSessionsForTherapist,
-      url: technique.url || "",
+      url: technique.url,
     },
   });
   
@@ -81,7 +81,7 @@ export function EditTechniqueSheet({ technique, open, onOpenChange }: EditTechni
         name: technique.name,
         description: technique.description,
         requiredSessionsForTherapist: technique.requiredSessionsForTherapist,
-        url: technique.url || "",
+        url: technique.url,
       });
     }
   }, [open, technique, form]);
