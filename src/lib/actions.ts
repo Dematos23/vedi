@@ -550,7 +550,6 @@ const techniqueSchema = z.object({
   name: z.string().min(3, "Technique name must be at least 3 characters."),
   description: z.string().min(10, "Description must be at least 10 characters."),
   requiredSessionsForTherapist: z.coerce.number().int().positive("Required sessions must be a positive integer."),
-  url: z.string().url("Please enter a valid URL.").optional().or(z.literal('')),
 });
 
 const techniqueUpdateSchema = techniqueSchema.extend({
@@ -562,7 +561,6 @@ export async function createTechnique(data: z.infer<typeof techniqueSchema>) {
   const validatedFields = techniqueSchema.safeParse(data);
 
   if (!validatedFields.success) {
-    // This provides more detailed error messages
     const errorMessages = validatedFields.error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ');
     throw new Error(`Invalid technique data: ${errorMessages}`);
   }
