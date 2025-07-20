@@ -59,10 +59,11 @@ export function NewTechniqueForm({ onFormSubmit }: NewTechniqueFormProps) {
         onFormSubmit();
       }
     } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to register technique. Please try again.";
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to register technique. Please try again.",
+        description: message,
       });
     }
   };

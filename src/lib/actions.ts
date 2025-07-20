@@ -532,8 +532,6 @@ export async function resetTherapistPassword(therapistId: string) {
     randomChar(numbers) +
     randomChar(symbols);
 
-  // In a real app, you would hash the password before saving.
-  // Storing plain text for this demo.
   await prisma.user.update({
     where: { id: therapistId },
     data: {
@@ -564,7 +562,9 @@ export async function createTechnique(data: z.infer<typeof techniqueSchema>) {
   const validatedFields = techniqueSchema.safeParse(data);
 
   if (!validatedFields.success) {
-    throw new Error("Invalid technique data.");
+    // This provides more detailed error messages
+    const errorMessages = validatedFields.error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ');
+    throw new Error(`Invalid technique data: ${errorMessages}`);
   }
 
   await prisma.technique.create({
