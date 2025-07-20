@@ -226,7 +226,9 @@ export const dictionaries = {
         selectTechniquesPlaceholder: "Seleccionar técnicas...",
         assign: "Asignar",
         assigning: "Asignando...",
-        cancel: "Cancelar"
+        cancel: "Cancelar",
+        passwordDialogTitle: (name: string) => `Contraseña Creada para ${name}`,
+        passwordDialogDescription: "La contraseña del terapeuta ha sido creada. Por favor, proporciónale su nueva contraseña de forma segura."
     },
     techniques: {
       title: "Técnicas",
@@ -290,9 +292,7 @@ export const dictionaries = {
             therapistsAssigned: "Terapeutas asignados exitosamente.",
             passwordCopied: "La nueva contraseña ha sido copiada al portapapeles.",
             therapistCreated: "El nuevo terapeuta ha sido creado.",
-            techniquesAssigned: "Técnicas asignadas correctamente.",
-            passwordDialogTitle: (name: string, lastname: string) => `Contraseña Creada para ${name} ${lastname}`,
-            passwordDialogDescription: "La contraseña del terapeuta ha sido creada. Por favor, proporciónale su nueva contraseña de forma segura."
+            techniquesAssigned: "Técnicas asignadas correctamente."
         },
         error: {
             title: "Error",
@@ -570,7 +570,9 @@ export const dictionaries = {
         selectTechniquesPlaceholder: "Select techniques...",
         assign: "Assign",
         assigning: "Assigning...",
-        cancel: "Cancel"
+        cancel: "Cancel",
+        passwordDialogTitle: (name: string) => `Password Created for ${name}`,
+        passwordDialogDescription: "The therapist's password has been created. Please provide them with their new password securely."
     },
     techniques: {
       title: "Techniques",
@@ -634,9 +636,7 @@ export const dictionaries = {
             therapistsAssigned: "Therapists assigned successfully.",
             passwordCopied: "New password has been copied to clipboard.",
             therapistCreated: "New therapist has been created.",
-            techniquesAssigned: "Techniques assigned successfully.",
-            passwordDialogTitle: (name: string, lastname: string) => `Password Created for ${name} ${lastname}`,
-            passwordDialogDescription: "The therapist's password has been created. Please provide them with their new password securely."
+            techniquesAssigned: "Techniques assigned successfully."
         },
         error: {
             title: "Error",
