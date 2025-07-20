@@ -54,7 +54,7 @@ model Technique {
   name                         String
   description                  String
   requiredSessionsForTherapist Int    @default(10) // número de sesiones para pasar a therapista
-  url                          String?
+  url                          String
 
   users                  UserTechniqueStatus[]
   services               Service[]
