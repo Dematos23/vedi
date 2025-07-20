@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getTherapistPerformance } from "@/lib/actions";
 import { TherapistDetailClient } from "./components/therapist-detail-client";
 import type { Technique, UserTechniqueStatus } from "@prisma/client";
+import prisma from "@/lib/prisma";
 
 export type TechniquePerformance = (UserTechniqueStatus & {
     technique: Technique;
@@ -14,7 +15,13 @@ export type TechniquePerformance = (UserTechniqueStatus & {
 
 export default async function TherapistDetailPage({ params }: { params: { id:string } }) {
   try {
-    const performanceData = await getTherapistPerformance(params.id);
+    const performanceDataPromise = getTherapistPerformance(params.id);
+    const allTechniquesPromise = prisma.technique.findMany();
+
+    const [performanceData, allTechniques] = await Promise.all([
+        performanceDataPromise,
+        allTechniquesPromise
+    ]);
     
     const serializableData = {
       ...performanceData,
@@ -38,9 +45,16 @@ export default async function TherapistDetailPage({ params }: { params: { id:str
       })),
     }
 
-    return <TherapistDetailClient data={serializableData} />;
+    const serializableTechniques = allTechniques.map(tech => ({
+        ...tech,
+        createdAt: tech.createdAt.toISOString(),
+        updatedAt: tech.updatedAt.toISOString(),
+    }));
+
+    return <TherapistDetailClient data={serializableData} allTechniques={serializableTechniques} />;
   } catch (error) {
     console.error(error);
     notFound();
   }
 }
+

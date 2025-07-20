@@ -225,6 +225,13 @@ export const dictionaries = {
         noPatientsAssigned: "No hay pacientes asignados.",
         passwordDialogTitle: (name: string) => `Contraseña Creada para ${name}`,
         passwordDialogDescription: "La contraseña del terapeuta ha sido creada. Por favor, proporciónale su nueva contraseña de forma segura.",
+        assignTechnique: "Asignar Técnica",
+        assignTechniqueDescription: "Seleccione las técnicas para asignar a este terapeuta.",
+        allTechniques: "Todas las técnicas",
+        selectTechniquesPlaceholder: "Seleccionar técnicas...",
+        assign: "Asignar",
+        assigning: "Asignando...",
+        cancel: "Cancelar"
     },
     techniques: {
       title: "Técnicas",
@@ -287,7 +294,8 @@ export const dictionaries = {
             techniqueDeleted: "La técnica ha sido eliminada.",
             therapistsAssigned: "Terapeutas asignados exitosamente.",
             passwordCopied: "La nueva contraseña ha sido copiada al portapapeles.",
-            therapistCreated: "El nuevo terapeuta ha sido creado."
+            therapistCreated: "El nuevo terapeuta ha sido creado.",
+            techniquesAssigned: "Técnicas asignadas correctamente."
         },
         error: {
             title: "Error",
@@ -309,7 +317,8 @@ export const dictionaries = {
             failedToDeleteTechnique: "Error al eliminar la técnica. Por favor, inténtalo de nuevo.",
             failedToAssignTherapists: "Error al asignar terapeutas. Por favor, inténtalo de nuevo.",
             failedToResetPassword: "Error al restablecer la contraseña. Por favor, inténtalo de nuevo.",
-            failedToCreateTherapist: "Error al crear el terapeuta. Por favor, inténtalo de nuevo."
+            failedToCreateTherapist: "Error al crear el terapeuta. Por favor, inténtalo de nuevo.",
+            failedToAssignTechniques: "Error al asignar técnicas. Por favor, inténtalo de nuevo."
         }
     },
     enums: {
@@ -563,6 +572,13 @@ export const dictionaries = {
         noPatientsAssigned: "No patients assigned.",
         passwordDialogTitle: (name: string) => `Password Created for ${name}`,
         passwordDialogDescription: "The therapist's password has been created. Please provide them with their new password securely.",
+        assignTechnique: "Assign Technique",
+        assignTechniqueDescription: "Select techniques to assign to this therapist.",
+        allTechniques: "All Techniques",
+        selectTechniquesPlaceholder: "Select techniques...",
+        assign: "Assign",
+        assigning: "Assigning...",
+        cancel: "Cancel"
     },
     techniques: {
       title: "Techniques",
@@ -625,7 +641,8 @@ export const dictionaries = {
             techniqueDeleted: "Technique has been deleted.",
             therapistsAssigned: "Therapists assigned successfully.",
             passwordCopied: "New password has been copied to clipboard.",
-            therapistCreated: "New therapist has been created."
+            therapistCreated: "New therapist has been created.",
+            techniquesAssigned: "Techniques assigned successfully."
         },
         error: {
             title: "Error",
@@ -647,7 +664,8 @@ export const dictionaries = {
             failedToDeleteTechnique: "Failed to delete technique. Please try again.",
             failedToAssignTherapists: "Failed to assign therapists. Please try again.",
             failedToResetPassword: "Failed to reset password. Please try again.",
-            failedToCreateTherapist: "Failed to create therapist. Please try again."
+            failedToCreateTherapist: "Failed to create therapist. Please try again.",
+            failedToAssignTechniques: "Failed to assign techniques. Please try again."
         }
     },
     enums: {

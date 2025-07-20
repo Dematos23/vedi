@@ -36,8 +36,9 @@ import { formatCurrency, getFullName, cn } from "@/lib/utils";
 import { getTherapistPerformance, resetTherapistPassword } from "@/lib/actions";
 import { Progress } from "@/components/ui/progress";
 import { useLanguage } from "@/contexts/language-context";
-import { TechniqueStatus } from "@prisma/client";
+import { TechniqueStatus, type Technique } from "@prisma/client";
 import { useToast } from "@/hooks/use-toast";
+import { AssignTechniqueSheet } from "./assign-technique-sheet";
 
 type Unpacked<T> = T extends (infer U)[] ? U : T;
 type PerformanceData = Awaited<ReturnType<typeof getTherapistPerformance>>;
@@ -63,12 +64,16 @@ type SerializablePerformanceData = Omit<PerformanceData, 'kpis' | 'recentAppoint
     techniquesPerformance: SerializableTechniquePerformance[];
 }
 
+type SerializableTechnique = Omit<Technique, 'createdAt' | 'updatedAt'> & { createdAt: string; updatedAt: string };
+
+
 interface TherapistDetailClientProps {
   data: SerializablePerformanceData;
+  allTechniques: SerializableTechnique[];
 }
 
 
-export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
+export function TherapistDetailClient({ data, allTechniques }: TherapistDetailClientProps) {
   const { dictionary } = useLanguage();
   const d = dictionary.therapists;
   const t = dictionary.toasts;
@@ -172,9 +177,16 @@ export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
       </div>
 
        <Card>
-          <CardHeader>
-              <CardTitle>{d.techniquePerformance}</CardTitle>
-              <CardDescription>{d.techniquePerformanceDescription}</CardDescription>
+          <CardHeader className="flex flex-row items-start justify-between">
+              <div>
+                <CardTitle>{d.techniquePerformance}</CardTitle>
+                <CardDescription>{d.techniquePerformanceDescription}</CardDescription>
+              </div>
+              <AssignTechniqueSheet 
+                therapistId={id}
+                allTechniques={allTechniques}
+                assignedTechniqueIds={techniquesPerformance.map(t => t.techniqueId)}
+              />
           </CardHeader>
           <CardContent className="space-y-6">
               <div className="grid grid-cols-[200px_1fr_80px_120px] items-center gap-4">
@@ -316,3 +328,4 @@ export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
     </>
   );
 }
+

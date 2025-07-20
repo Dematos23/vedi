@@ -687,3 +687,34 @@ export async function assignTherapistsToTechnique(techniqueId: string, therapist
 
     revalidatePath(`/techniques/${techniqueId}`);
 }
+
+export async function assignTechniquesToTherapist(therapistId: string, techniqueIds: string[]) {
+    if (!therapistId) {
+        throw new Error("Therapist ID is required.");
+    }
+    
+    await prisma.$transaction(async (tx) => {
+        // First, remove all existing assignments for this therapist
+        await tx.userTechniqueStatus.deleteMany({
+            where: {
+                userId: therapistId,
+            }
+        });
+
+        // Then, create the new assignments
+        if (techniqueIds.length > 0) {
+            const dataToInsert = techniqueIds.map(techniqueId => ({
+                userId: therapistId,
+                techniqueId: techniqueId,
+                status: TechniqueStatus.PRACTITIONER, 
+            }));
+
+            await tx.userTechniqueStatus.createMany({
+                data: dataToInsert,
+            });
+        }
+    });
+
+    revalidatePath(`/therapists/${therapistId}`);
+}
+
