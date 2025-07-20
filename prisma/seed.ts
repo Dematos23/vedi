@@ -26,8 +26,8 @@ async function main() {
   
   await prisma.service.deleteMany();
   await prisma.userTechniqueStatus.deleteMany();
-  await prisma.user.deleteMany();
   await prisma.patient.deleteMany();
+  await prisma.user.deleteMany();
   await prisma.technique.deleteMany();
   await prisma.package.deleteMany();
   console.log('Cleared previous data.');
@@ -35,7 +35,7 @@ async function main() {
   // Seed Techniques
   const createdTechniques = [];
   for (const techData of mockTechniques) {
-    const technique = await prisma.technique.create({ data: techData });
+    const technique = await prisma.technique.create({ data: { ...techData, requiredSessionsForTherapist: 10 } });
     createdTechniques.push(technique);
     console.log(`Created technique: ${technique.name}`);
   }
@@ -61,26 +61,27 @@ async function main() {
     console.log(`- Assigned ${techniquesToAssign.length} techniques to ${user.name}`);
   }
 
-  // Seed Services globally (not tied to a therapist initially)
-  const allCreatedServices = [];
-  for (const serviceData of mockServices) {
-      const requiredTechniques = faker.helpers.arrayElements(createdTechniques, faker.number.int({ min: 1, max: 2 }));
-      const service = await prisma.service.create({
-          data: {
-              ...serviceData,
-              techniques: {
-                  connect: requiredTechniques.map(t => ({ id: t.id }))
-              }
-          },
-      });
-      allCreatedServices.push(service);
-  }
-  console.log(`\nSeeded ${allCreatedServices.length} global services and linked techniques.`);
-
-
   // Loop through each therapist to create their own patient-related data
   for (const user of createdUsers) {
     console.log(`\nSeeding data for ${user.name} ${user.lastname}...`);
+
+    // Create services for the current therapist
+    const createdServicesForUser = [];
+    for (const serviceData of mockServices) {
+        const requiredTechniques = faker.helpers.arrayElements(createdTechniques, faker.number.int({ min: 1, max: 2 }));
+        const service = await prisma.service.create({
+            data: {
+                ...serviceData,
+                userId: user.id,
+                techniques: {
+                    connect: requiredTechniques.map(t => ({ id: t.id }))
+                }
+            },
+        });
+        createdServicesForUser.push(service);
+    }
+    console.log(`- Seeded ${createdServicesForUser.length} services for ${user.name}`);
+
 
     // Seed 10 Patients for the current therapist
     const mockPatients = generateMockPatients(10);
@@ -97,7 +98,7 @@ async function main() {
     console.log(`- Seeded ${createdPatients.length} patients.`);
 
     // Generate and Seed Sales and PatientServiceBalances for this therapist's patients
-    const mockSales = generateMockSalesAndBalances(createdPatients, allCreatedServices);
+    const mockSales = generateMockSalesAndBalances(createdPatients, createdServicesForUser);
     for (const saleData of mockSales) {
       const sale = await prisma.sale.create({
         data: saleData,
@@ -117,12 +118,8 @@ async function main() {
     console.log(`- Seeded ${mockSales.length} sales and created corresponding service balances.`);
     
     // Get therapist's techniques to determine which services they can offer
-    const therapistTechniqueIds = (await prisma.userTechniqueStatus.findMany({
-      where: { userId: user.id },
-    })).map(ut => ut.techniqueId);
-
     const servicesForTherapist = await prisma.service.findMany({
-        where: { techniques: { some: { id: { in: therapistTechniqueIds } } } },
+        where: { userId: user.id },
         include: { techniques: true }
     });
 
@@ -134,7 +131,12 @@ async function main() {
 
         for (const { appointmentData, techniquesUsed, service } of mockAppointments) {
             const appt = await prisma.appointment.create({
-                data: appointmentData,
+                data: {
+                  ...appointmentData,
+                  patients: {
+                    connect: [{ id: patient.id }]
+                  }
+                },
             });
 
             // If the appointment is done, log the technique usage and update balance
