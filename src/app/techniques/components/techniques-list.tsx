@@ -1,6 +1,7 @@
 
 "use client";
 
+import * as React from "react";
 import {
   Table,
   TableBody,
@@ -25,6 +26,7 @@ import { NewTechniqueSheet } from "./new-technique-sheet";
 import { useLanguage } from "@/contexts/language-context";
 import type { TechniqueWithTherapistCount } from "../page";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 interface TechniquesListProps {
   techniques: TechniqueWithTherapistCount[];
@@ -33,6 +35,13 @@ interface TechniquesListProps {
 export function TechniquesList({ techniques }: TechniquesListProps) {
     const { dictionary } = useLanguage();
     const d = dictionary.techniques;
+    const [expanded, setExpanded] = React.useState<Record<string, boolean>>({});
+
+    const toggleExpand = (id: string) => {
+        setExpanded(prev => ({ ...prev, [id]: !prev[id] }));
+    };
+
+    const DESCRIPTION_TRUNCATE_LENGTH = 150;
 
     return (
         <Card>
@@ -97,8 +106,18 @@ export function TechniquesList({ techniques }: TechniquesListProps) {
                         {techniques.map((technique) => (
                             <TableRow key={technique.id}>
                                 <TableCell className="font-medium">{technique.name}</TableCell>
-                                <TableCell className="hidden md:table-cell text-muted-foreground line-clamp-2">
-                                    {technique.description}
+                                <TableCell className="hidden md:table-cell text-muted-foreground max-w-sm">
+                                    <p className={cn(!expanded[technique.id] && "line-clamp-3")}>
+                                        {technique.description}
+                                    </p>
+                                    {technique.description.length > DESCRIPTION_TRUNCATE_LENGTH && (
+                                        <button 
+                                            onClick={() => toggleExpand(technique.id)}
+                                            className="text-primary text-xs font-semibold hover:underline"
+                                        >
+                                            {expanded[technique.id] ? 'Read less' : 'Read more'}
+                                        </button>
+                                    )}
                                 </TableCell>
                                 <TableCell className="text-center font-medium">
                                     {technique.users.length}
