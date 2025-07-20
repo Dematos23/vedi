@@ -71,6 +71,7 @@ interface TherapistDetailClientProps {
 export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
   const { dictionary } = useLanguage();
   const d = dictionary.therapists;
+  const t = dictionary.toasts;
   const { id, name, lastname, kpis, assignedPatients, techniquesPerformance } = data;
   const [formattedAppointments, setFormattedAppointments] = React.useState<SerializableAppointment[]>([]);
   const [isResetting, setIsResetting] = React.useState(false);
@@ -92,15 +93,15 @@ export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
       } else {
         toast({
           variant: "destructive",
-          title: "Error",
-          description: "Failed to reset password. Please try again.",
+          title: t.error.title,
+          description: t.error.failedToResetPassword,
         });
       }
     } catch (error) {
-       const message = error instanceof Error ? error.message : "An unknown error occurred";
+       const message = error instanceof Error ? error.message : t.error.unknown;
        toast({
         variant: "destructive",
-        title: "Error",
+        title: t.error.title,
         description: message,
       });
     } finally {
@@ -112,8 +113,8 @@ export function TherapistDetailClient({ data }: TherapistDetailClientProps) {
     if (newPassword) {
       navigator.clipboard.writeText(newPassword);
       toast({
-        title: "Copied!",
-        description: "New password has been copied to clipboard.",
+        title: t.success.title,
+        description: t.success.passwordCopied,
       });
     }
   };

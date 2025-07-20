@@ -50,6 +50,7 @@ export function NewTherapistSheet() {
   const { toast } = useToast();
   const { dictionary } = useLanguage();
   const d = dictionary.therapists;
+  const t = dictionary.toasts;
 
   const form = useForm<TherapistFormValues>({
     resolver: zodResolver(therapistSchema),
@@ -65,16 +66,16 @@ export function NewTherapistSheet() {
     try {
       await createTherapist(data);
       toast({
-        title: "Success",
-        description: "New therapist has been created.",
+        title: t.success.title,
+        description: t.success.therapistCreated,
       });
       setOpen(false);
       form.reset();
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to create therapist. Please try again.";
+      const message = error instanceof Error ? error.message : t.error.failedToCreateTherapist;
       toast({
         variant: "destructive",
-        title: "Error",
+        title: t.error.title,
         description: message,
       });
     }

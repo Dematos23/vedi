@@ -61,6 +61,7 @@ export function EditTechniqueSheet({ technique, open, onOpenChange }: EditTechni
   const { toast } = useToast();
   const { dictionary } = useLanguage();
   const d = dictionary.techniques;
+  const t = dictionary.toasts;
   const router = useRouter();
 
   const form = useForm<TechniqueFormValues>({
@@ -90,15 +91,15 @@ export function EditTechniqueSheet({ technique, open, onOpenChange }: EditTechni
     try {
       await updateTechnique(data);
       toast({
-        title: "Success",
-        description: "Technique has been updated.",
+        title: t.success.title,
+        description: t.success.techniqueUpdated,
       });
       onOpenChange(false);
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Failed to update technique. Please try again.",
+        title: t.error.title,
+        description: t.error.failedToUpdateTechnique,
       });
     }
   };
@@ -107,8 +108,8 @@ export function EditTechniqueSheet({ technique, open, onOpenChange }: EditTechni
     try {
         await deleteTechnique(technique.id);
         toast({
-            title: "Success",
-            description: "Technique has been deleted.",
+            title: t.success.title,
+            description: t.success.techniqueDeleted,
         });
         setShowDeleteAlert(false);
         onOpenChange(false);
@@ -116,8 +117,8 @@ export function EditTechniqueSheet({ technique, open, onOpenChange }: EditTechni
     } catch (error: any) {
         toast({
             variant: "destructive",
-            title: "Error",
-            description: error.message || "Failed to delete technique. Please try again.",
+            title: t.error.title,
+            description: error.message || t.error.failedToDeleteTechnique,
         });
     }
   }

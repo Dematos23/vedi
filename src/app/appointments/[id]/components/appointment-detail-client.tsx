@@ -33,6 +33,7 @@ export function AppointmentDetailClient({ appointmentData }: { appointmentData: 
   const { toast } = useToast();
   const { dictionary } = useLanguage();
   const d = dictionary.appointments;
+  const t = dictionary.toasts;
   
   const [formattedDate, setFormattedDate] = React.useState("");
 
@@ -53,15 +54,15 @@ export function AppointmentDetailClient({ appointmentData }: { appointmentData: 
       };
       setAppointment(serializableUpdatedAppointment);
       toast({
-        title: "Success",
-        description: "Appointment notes have been updated.",
+        title: t.success.title,
+        description: t.success.appointmentNotesUpdated,
       });
       setIsEditing(false);
     } catch (error) {
        toast({
         variant: "destructive",
-        title: "Error",
-        description: "Failed to update notes. Please try again.",
+        title: t.error.title,
+        description: t.error.failedToUpdateNotes,
       });
     } finally {
       setIsSaving(false);
@@ -73,8 +74,8 @@ export function AppointmentDetailClient({ appointmentData }: { appointmentData: 
         // This is a simplified logic. A real app might have a modal to select which patient's balance to use.
         toast({
             variant: "destructive",
-            title: "Action Required",
-            description: "Completing appointments with multiple patients is not yet supported in this demo.",
+            title: t.error.actionRequired,
+            description: t.error.multiPatientCompletion,
         });
         return;
     }
@@ -91,14 +92,14 @@ export function AppointmentDetailClient({ appointmentData }: { appointmentData: 
         }
         setAppointment(serializableResult);
         toast({
-            title: "Success",
-            description: "Appointment has been marked as done.",
+            title: t.success.title,
+            description: t.success.appointmentMarkedAsDone,
         });
     } catch(error) {
-        const message = error instanceof Error ? error.message : "An unknown error occurred.";
+        const message = error instanceof Error ? error.message : t.error.unknown;
         toast({
             variant: "destructive",
-            title: "Completion Failed",
+            title: t.error.completionFailed,
             description: message,
         });
     } finally {
@@ -118,14 +119,14 @@ export function AppointmentDetailClient({ appointmentData }: { appointmentData: 
       };
       setAppointment(serializableResult);
       toast({
-        title: "Success",
-        description: `Appointment has been ${evaluation.toLowerCase()}.`,
+        title: t.success.title,
+        description: t.success.appointmentEvaluated(evaluation.toLowerCase()),
       });
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Failed to evaluate appointment. Please try again.",
+        title: t.error.title,
+        description: t.error.failedToEvaluate,
       });
     } finally {
       setIsEvaluating(false);

@@ -36,6 +36,7 @@ export function NewTechniqueForm({ onFormSubmit }: NewTechniqueFormProps) {
   const { toast } = useToast();
   const { dictionary } = useLanguage();
   const d = dictionary.techniques;
+  const t = dictionary.toasts;
 
   const form = useForm<TechniqueFormValues>({
     resolver: zodResolver(techniqueSchema),
@@ -51,18 +52,18 @@ export function NewTechniqueForm({ onFormSubmit }: NewTechniqueFormProps) {
     try {
       await createTechnique(data);
       toast({
-        title: "Success",
-        description: "New technique has been registered.",
+        title: t.success.title,
+        description: t.success.techniqueRegistered,
       });
       form.reset();
       if (onFormSubmit) {
         onFormSubmit();
       }
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to register technique. Please try again.";
+      const message = error instanceof Error ? error.message : t.error.failedToRegisterTechnique;
       toast({
         variant: "destructive",
-        title: "Error",
+        title: t.error.title,
         description: message,
       });
     }

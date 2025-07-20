@@ -62,6 +62,7 @@ export function PatientDetailClient({ patient }: { patient: PatientWithDetails }
   const { toast } = useToast();
   const { dictionary } = useLanguage();
   const d = dictionary.patients;
+  const t = dictionary.toasts;
   const router = useRouter();
 
   const form = useForm<PatientUpdateFormValues>({
@@ -82,8 +83,8 @@ export function PatientDetailClient({ patient }: { patient: PatientWithDetails }
     try {
       await updatePatient({ id: patient.id, ...data });
       toast({
-        title: "Success",
-        description: "Patient details have been updated.",
+        title: t.success.title,
+        description: t.success.patientDetailsUpdated,
       });
       setIsEditing(false);
       // Refresh the page to get the latest data
@@ -91,8 +92,8 @@ export function PatientDetailClient({ patient }: { patient: PatientWithDetails }
     } catch (e) {
       toast({
         variant: "destructive",
-        title: d.error,
-        description: "Failed to update patient details. Please try again.",
+        title: t.error.title,
+        description: t.error.failedToUpdatePatient,
       });
       console.error(e);
     }

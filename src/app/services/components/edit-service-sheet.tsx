@@ -66,6 +66,7 @@ export function EditServiceSheet({ service, allTechniques, open, onOpenChange }:
   const { toast } = useToast();
   const { dictionary } = useLanguage();
   const d = dictionary.services;
+  const t = dictionary.toasts;
   
   const isInactive = service.status === 'INACTIVE';
 
@@ -98,15 +99,15 @@ export function EditServiceSheet({ service, allTechniques, open, onOpenChange }:
     try {
       await updateService(data);
       toast({
-        title: "Success",
-        description: "Service has been updated.",
+        title: t.success.title,
+        description: t.success.serviceUpdated,
       });
       onOpenChange(false);
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Failed to update service. Please try again.",
+        title: t.error.title,
+        description: t.error.failedToUpdateService,
       });
     }
   };
@@ -115,8 +116,8 @@ export function EditServiceSheet({ service, allTechniques, open, onOpenChange }:
     try {
         await deleteService(service.id);
         toast({
-            title: "Success",
-            description: "Service has been deleted.",
+            title: t.success.title,
+            description: t.success.serviceDeleted,
         });
         setShowDeleteAlert(false);
         onOpenChange(false);
@@ -127,8 +128,8 @@ export function EditServiceSheet({ service, allTechniques, open, onOpenChange }:
         } else {
             toast({
                 variant: "destructive",
-                title: "Error",
-                description: "Failed to delete service. Please try again.",
+                title: t.error.title,
+                description: t.error.failedToDeleteService,
             });
         }
     }
@@ -138,15 +139,15 @@ export function EditServiceSheet({ service, allTechniques, open, onOpenChange }:
     try {
       await toggleServiceStatus(service.id, service.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE');
       toast({
-        title: "Success",
-        description: `Service has been ${isInactive ? 'activated' : 'deactivated'}.`,
+        title: t.success.title,
+        description: isInactive ? t.success.serviceActivated : t.success.serviceDeactivated,
       });
       onOpenChange(false);
     } catch (error) {
        toast({
         variant: "destructive",
-        title: "Error",
-        description: "Failed to update service status.",
+        title: t.error.title,
+        description: t.error.failedToUpdateServiceStatus,
       });
     }
   }

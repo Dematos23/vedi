@@ -40,6 +40,7 @@ export function NewServiceForm({ techniques, onFormSubmit }: NewServiceFormProps
   const { toast } = useToast();
   const { dictionary } = useLanguage();
   const d = dictionary.services;
+  const t = dictionary.toasts;
 
   const form = useForm<ServiceFormValues>({
     resolver: zodResolver(createServiceSchema),
@@ -56,8 +57,8 @@ export function NewServiceForm({ techniques, onFormSubmit }: NewServiceFormProps
     try {
       await createService(data);
       toast({
-        title: "Success",
-        description: "New service has been registered.",
+        title: t.success.title,
+        description: t.success.serviceRegistered,
       });
       form.reset();
       if (onFormSubmit) {
@@ -66,8 +67,8 @@ export function NewServiceForm({ techniques, onFormSubmit }: NewServiceFormProps
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Failed to register service. Please try again.",
+        title: t.error.title,
+        description: t.error.failedToRegisterService,
       });
     }
   };

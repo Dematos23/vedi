@@ -48,6 +48,7 @@ export function AssignTherapistsSheet({ techniqueId, availableTherapists }: Assi
   const { toast } = useToast();
   const { dictionary } = useLanguage();
   const d = dictionary.techniques;
+  const t = dictionary.toasts;
 
   const form = useForm<AssignFormValues>({
     resolver: zodResolver(assignSchema),
@@ -60,16 +61,16 @@ export function AssignTherapistsSheet({ techniqueId, availableTherapists }: Assi
     try {
       await assignTherapistsToTechnique(techniqueId, data.therapistIds);
       toast({
-        title: "Success",
-        description: "Therapists assigned successfully.",
+        title: t.success.title,
+        description: t.success.therapistsAssigned,
       });
       setOpen(false);
       form.reset();
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Failed to assign therapists. Please try again.",
+        title: t.error.title,
+        description: t.error.failedToAssignTherapists,
       });
     }
   };

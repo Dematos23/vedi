@@ -46,6 +46,7 @@ export function NewPatientSheet() {
   const { toast } = useToast();
   const { dictionary } = useLanguage();
   const d = dictionary.patients;
+  const t = dictionary.toasts;
 
   const form = useForm<PatientFormValues>({
     resolver: zodResolver(patientSchema),
@@ -64,16 +65,16 @@ export function NewPatientSheet() {
     try {
       await createPatient(data);
       toast({
-        title: "Success",
-        description: "New patient has been created.",
+        title: t.success.title,
+        description: t.success.patientCreated,
       });
       setOpen(false);
       form.reset();
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Failed to create patient. Please try again.",
+        title: t.error.title,
+        description: t.error.failedToCreatePatient,
       });
     }
   };

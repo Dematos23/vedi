@@ -62,6 +62,7 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
   const { toast } = useToast();
   const { dictionary } = useLanguage();
   const d = dictionary.appointments;
+  const t = dictionary.toasts;
 
   const form = useForm<AppointmentFormValues>({
     resolver: zodResolver(appointmentSchema),
@@ -78,8 +79,8 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
     try {
       await createAppointment(data);
       toast({
-        title: "Success",
-        description: "New appointment has been scheduled.",
+        title: t.success.title,
+        description: t.success.appointmentScheduled,
       });
       setOpen(false);
       form.reset({
@@ -90,13 +91,13 @@ export function NewAppointmentSheet({ patients, services }: NewAppointmentSheetP
          concurrency: Concurrency.SINGLE
       });
     } catch (error) {
-       let message = "Failed to schedule appointment. Please try again.";
+       let message = t.error.failedToScheduleAppointment;
        if (error instanceof Error) {
            message = error.message;
        }
       toast({
         variant: "destructive",
-        title: "Error",
+        title: t.error.title,
         description: message,
       });
     }
