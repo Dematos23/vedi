@@ -77,8 +77,7 @@ model Service {
   techniques             Technique[]
   sales                  Sale[]
   appointments           Appointment[]
-  package                Package?                @relation(fields: [packageId], references: [id])
-  packageId              String?
+  packageServices        PackageService[]
   patientServiceBalances PatientServiceBalance[]
 
   createdAt DateTime @default(now())
@@ -91,8 +90,8 @@ model Package {
   description String
   price       Float
 
-  services Service[]
-  sales    Sale[]
+  packageServices PackageService[]
+  sales           Sale[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -131,6 +130,20 @@ model Appointment {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model PackageService {
+  id        String  @id @default(cuid())
+  package   Package @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  packageId String
+  service   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  serviceId String
+  quantity  Int     @default(1)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([packageId, serviceId])
 }
 
 model PatientServiceBalance {
