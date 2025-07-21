@@ -1,6 +1,6 @@
 
 import prisma from "@/lib/prisma";
-import { ServiceStatus } from "@prisma/client";
+import { ServiceStatus, type Prisma } from "@prisma/client";
 import { ServicesList } from "./components/services-list";
 
 export default async function ServicesPage({
@@ -13,7 +13,7 @@ export default async function ServicesPage({
 }) {
   const { query = "", status } = searchParams;
   
-  const where: any = {
+  const where: Prisma.ServiceWhereInput = {
     OR: [
       {
         name: {
@@ -36,6 +36,17 @@ export default async function ServicesPage({
 
   const servicesPromise = prisma.service.findMany({
     where,
+    select: {
+        id: true,
+        name: true,
+        description: true,
+        price: true,
+        duration: true,
+        status: true,
+        userId: true,
+        createdAt: true,
+        updatedAt: true,
+    },
     orderBy: [
       {
         status: 'asc' // Show ACTIVE ones first
