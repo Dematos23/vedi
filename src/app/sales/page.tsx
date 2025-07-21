@@ -38,7 +38,20 @@ export default async function SalesPage({
   });
 
   const patients = await prisma.patient.findMany();
-  const services = await prisma.service.findMany({ where: { status: 'ACTIVE' } });
+  const services = await prisma.service.findMany({ 
+    where: { status: 'ACTIVE' },
+    select: {
+      id: true,
+      name: true,
+      price: true,
+      status: true,
+      duration: true,
+      description: true,
+      userId: true,
+      createdAt: true,
+      updatedAt: true,
+    }
+  });
   const packages = await prisma.package.findMany();
 
   return (
@@ -50,3 +63,4 @@ export default async function SalesPage({
     />
   );
 }
+
