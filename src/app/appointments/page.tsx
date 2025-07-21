@@ -119,7 +119,19 @@ export default async function AppointmentsPage({
   });
 
   const allPatients = await prisma.patient.findMany();
-  const allServices = await prisma.service.findMany();
+  const allServices = await prisma.service.findMany({
+    select: {
+      id: true,
+      name: true,
+      status: true,
+      price: true,
+      description: true,
+      duration: true,
+      userId: true,
+      createdAt: true,
+      updatedAt: true,
+    }
+  });
   const allTherapists = await prisma.user.findMany({ where: { type: UserType.THERAPIST } });
 
   const listAppointments = view === 'list' ? appointments : [];
