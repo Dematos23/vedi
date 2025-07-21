@@ -74,7 +74,7 @@ export function PackagesList({ packages, services }: PackagesListProps) {
                     </TableCell>
                     <TableCell className="text-right">{formatCurrency(Number(pkg.price))}</TableCell>
                     <TableCell className="text-right">
-                        <Button asChild variant="ghost" size="icon">
+                        <Button variant="ghost" size="icon">
                            {/* <Link href={`/packages/${pkg.id}`}> */}
                                 <Edit className="h-4 w-4" />
                                 <span className="sr-only">{d.edit}</span>
