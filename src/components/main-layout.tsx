@@ -11,6 +11,7 @@ import {
   HeartPulse,
   Globe,
   BrainCircuit,
+  DollarSign,
 } from "lucide-react";
 import {
   SidebarProvider,
@@ -78,8 +79,9 @@ function MainSidebar() {
   const navItems = [
     { href: "/dashboard", icon: LayoutDashboard, label: dictionary.sidebar.dashboard },
     { href: "/patients", icon: UsersRound, label: dictionary.sidebar.patients },
-    { href: "/services", icon: BriefcaseMedical, label: dictionary.sidebar.services },
     { href: "/appointments", icon: CalendarDays, label: dictionary.sidebar.appointments },
+    { href: "/sales", icon: DollarSign, label: dictionary.sidebar.sales },
+    { href: "/services", icon: BriefcaseMedical, label: dictionary.sidebar.services },
     { href: "/therapists", icon: HeartPulse, label: dictionary.sidebar.therapists },
     { href: "/techniques", icon: BrainCircuit, label: dictionary.sidebar.techniques },
   ];

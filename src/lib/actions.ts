@@ -718,3 +718,59 @@ export async function assignTechniquesToTherapist(therapistId: string, technique
     revalidatePath(`/therapists/${therapistId}`);
 }
 
+// Sale Actions
+const createSaleSchema = z.object({
+  patientId: z.string({ required_error: "Patient is required." }),
+  saleType: z.enum(["service", "package"]),
+  serviceId: z.string().optional(),
+  packageId: z.string().optional(),
+  sessions: z.coerce.number().int().positive().optional(),
+  amount: z.coerce.number().positive("Amount must be a positive number."),
+}).refine(data => {
+    if (data.saleType === 'service') return !!data.serviceId && !!data.sessions;
+    if (data.saleType === 'package') return !!data.packageId;
+    return false;
+}, {
+    message: "Invalid sale data based on sale type.",
+});
+
+export async function createSale(data: z.infer<typeof createSaleSchema>) {
+    const validatedFields = createSaleSchema.safeParse(data);
+
+    if (!validatedFields.success) {
+        const errors = validatedFields.error.flatten().fieldErrors;
+        console.error(errors);
+        throw new Error("Invalid sale data.");
+    }
+    
+    const { patientId, saleType, serviceId, packageId, sessions, amount } = validatedFields.data;
+
+    return await prisma.$transaction(async (tx) => {
+        const sale = await tx.sale.create({
+            data: {
+                patientId,
+                serviceId: saleType === 'service' ? serviceId : undefined,
+                packageId: saleType === 'package' ? packageId : undefined,
+                amount,
+                date: new Date(),
+            }
+        });
+
+        if (saleType === 'service' && serviceId && sessions) {
+            await tx.patientServiceBalance.create({
+                data: {
+                    patientId,
+                    serviceId,
+                    saleId: sale.id,
+                    total: sessions,
+                    used: 0,
+                }
+            });
+        }
+        
+        revalidatePath("/sales");
+        revalidatePath(`/patients/${patientId}`);
+
+        return sale;
+    });
+}

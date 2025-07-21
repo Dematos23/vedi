@@ -10,6 +10,7 @@ export const dictionaries = {
       appointments: 'Citas',
       therapists: 'Terapeutas',
       techniques: 'Técnicas',
+      sales: 'Ventas',
     },
     language: "Idioma",
     dashboard: {
@@ -85,7 +86,6 @@ export const dictionaries = {
         noServicesFound: "No se encontraron servicios.",
         allStatuses: "Todos los Estados",
         filterByStatus: "Filtrar por estado",
-        // Service Card / Table
         price: "Precio",
         duration: "Duración",
         status: "Estado",
@@ -102,7 +102,6 @@ export const dictionaries = {
         deleteWarning: "Esta acción no se puede deshacer. Esto eliminará permanentemente el servicio.",
         cannotDelete: "No se puede eliminar el servicio",
         deactivationWarning: "Este servicio tiene citas asociadas y no se puede eliminar. ¿Te gustaría desactivarlo en su lugar? Los servicios desactivados no aparecerán al crear nuevas citas.",
-        // New Service Sheet
         registerNewService: "Registrar Nuevo Servicio",
         addNewService: "Añade una nueva terapia o servicio al registro.",
         serviceName: "Nombre del Servicio",
@@ -113,7 +112,6 @@ export const dictionaries = {
         durationLabel: "Duración (min)",
         registering: "Registrando...",
         registerService: "Registrar Servicio",
-        // Service Detail
         backToServices: "Volver a Servicios",
         serviceDetails: "Detalles del Servicio",
         recentAppointments: "Citas Recientes",
@@ -128,7 +126,6 @@ export const dictionaries = {
         newAppointment: "Nueva Cita",
         searchPlaceholder: "Buscar por paciente o servicio...",
         noAppointmentsFound: "No se encontraron citas.",
-        // Table Headers
         patients: "Paciente(s)",
         service: "Servicio",
         date: "Fecha",
@@ -136,13 +133,11 @@ export const dictionaries = {
         status: "Estado",
         approvalStatus: "Evaluación",
         actions: "Acciones",
-        // Buttons
         view: "Ver",
         approve: "Aprobar",
         approving: "Aprobando...",
         reject: "Rechazar",
         rejecting: "Rechazando...",
-        // Filters
         filterByStatus: "Filtrar por Estado",
         allStatuses: "Todos los Estados",
         filterByService: "Filtrar por servicio...",
@@ -154,7 +149,6 @@ export const dictionaries = {
         thisYear: "Este Año",
         nextMonth: "Próximo Mes",
         filters: "Filtros",
-        // New Appointment Sheet
         scheduleAppointment: "Programar Cita",
         scheduleAppointmentDescription: "Complete los detalles para crear una nueva cita.",
         patientsLabel: "Pacientes",
@@ -167,7 +161,6 @@ export const dictionaries = {
         descriptionPlaceholder: "Detalles de la sesión...",
         scheduleButton: "Programar",
         schedulingButton: "Programando...",
-        // Appointment Detail Page
         appointmentDetails: "Detalles de la Cita",
         backToAppointments: "Volver a Citas",
         markAsDone: "Marcar como Realizada",
@@ -189,7 +182,6 @@ export const dictionaries = {
         savingNotes: "Guardando...",
         cancel: "Cancelar",
         noNotes: "Aún no se han añadido notas para esta sesión.",
-        // Agenda View
         agendaView: "Vista de Agenda",
         selectTherapist: "Seleccionar un terapeuta"
     },
@@ -244,7 +236,6 @@ export const dictionaries = {
       readLess: "Leer menos",
       url: "URL",
       enroll: "Inscribirse",
-      // Technique Card
       edit: "Editar",
       delete: "Eliminar",
       save: "Guardar",
@@ -254,14 +245,12 @@ export const dictionaries = {
       deleteWarning: "Esta acción no se puede deshacer. Esto eliminará permanentemente la técnica.",
       cannotDelete: "No se puede eliminar la técnica",
       deactivationWarning: "Esta técnica está asociada con servicios o terapeutas y no puede ser eliminada.",
-      // New Technique Sheet
       registerNewTechnique: "Registrar Nueva Técnica",
       addNewTechnique: "Añade una nueva técnica terapéutica al registro.",
       techniqueNameExample: "p. ej., Terapia Cognitiva",
       descriptionPlaceholder: "Describe la técnica...",
       registering: "Registrando...",
       registerTechnique: "Registrar Técnica",
-      // Detail Page
       backToTechniques: "Volver a Técnicas",
       techniqueDetails: "Detalles de la Técnica",
       servicesUsingTechnique: "Servicios que Utilizan esta Técnica",
@@ -271,6 +260,33 @@ export const dictionaries = {
       therapist: "Terapeuta",
       status: "Estado",
       performance: "Desempeño"
+    },
+    sales: {
+        title: "Ventas",
+        newSale: "Nueva Venta",
+        searchPlaceholder: "Buscar por paciente o item...",
+        noSalesFound: "No se encontraron ventas.",
+        date: "Fecha",
+        patient: "Paciente",
+        item: "Ítem",
+        amount: "Monto",
+        registerSale: "Registrar Venta",
+        registerSaleDescription: "Registra una nueva venta de un servicio o paquete.",
+        patientLabel: "Paciente",
+        selectPatientPlaceholder: "Selecciona un paciente",
+        saleTypeLabel: "Tipo de Venta",
+        saleTypeService: "Servicio",
+        saleTypePackage: "Paquete",
+        serviceLabel: "Servicio",
+        selectServicePlaceholder: "Selecciona un servicio",
+        packageLabel: "Paquete",
+        selectPackagePlaceholder: "Selecciona un paquete",
+        sessionsLabel: "Número de Sesiones",
+        amountLabel: "Monto ($)",
+        registerButton: "Registrar Venta",
+        registeringButton: "Registrando...",
+        cancel: "Cancelar",
+        actions: "Acciones"
     },
     toasts: {
         success: {
@@ -292,7 +308,8 @@ export const dictionaries = {
             therapistsAssigned: "Terapeutas asignados exitosamente.",
             passwordCopied: "La nueva contraseña ha sido copiada al portapapeles.",
             therapistCreated: "El nuevo terapeuta ha sido creado.",
-            techniquesAssigned: "Técnicas asignadas correctamente."
+            techniquesAssigned: "Técnicas asignadas correctamente.",
+            saleRegistered: "La venta ha sido registrada exitosamente.",
         },
         error: {
             title: "Error",
@@ -315,7 +332,8 @@ export const dictionaries = {
             failedToAssignTherapists: "Error al asignar terapeutas. Por favor, inténtalo de nuevo.",
             failedToResetPassword: "Error al restablecer la contraseña. Por favor, inténtalo de nuevo.",
             failedToCreateTherapist: "Error al crear el terapeuta. Por favor, inténtalo de nuevo.",
-            failedToAssignTechniques: "Error al asignar técnicas. Por favor, inténtalo de nuevo."
+            failedToAssignTechniques: "Error al asignar técnicas. Por favor, inténtalo de nuevo.",
+            failedToRegisterSale: "Error al registrar la venta. Por favor, inténtalo de nuevo.",
         }
     },
     enums: {
@@ -354,6 +372,7 @@ export const dictionaries = {
       appointments: 'Appointments',
       therapists: 'Therapists',
       techniques: 'Techniques',
+      sales: 'Sales',
     },
     language: "Language",
     dashboard: {
@@ -429,7 +448,6 @@ export const dictionaries = {
         noServicesFound: "No services found.",
         allStatuses: "All Statuses",
         filterByStatus: "Filter by status",
-        // Service Card / Table
         price: "Price",
         duration: "Duration",
         status: "Status",
@@ -446,7 +464,6 @@ export const dictionaries = {
         deleteWarning: "This action cannot be undone. This will permanently delete the service.",
         cannotDelete: "Cannot Delete Service",
         deactivationWarning: "This service has appointments associated with it and cannot be deleted. Would you like to deactivate it instead? Deactivated services will not appear when creating new appointments.",
-        // New Service Sheet
         registerNewService: "Register New Service",
         addNewService: "Add a new therapy or service to the registry.",
         serviceName: "Service Name",
@@ -457,7 +474,6 @@ export const dictionaries = {
         durationLabel: "Duration (min)",
         registering: "Registering...",
         registerService: "Register Service",
-        // Service Detail
         backToServices: "Back to Services",
         serviceDetails: "Service Details",
         recentAppointments: "Recent Appointments",
@@ -472,7 +488,6 @@ export const dictionaries = {
         newAppointment: "New Appointment",
         searchPlaceholder: "Search by patient or service...",
         noAppointmentsFound: "No appointments found.",
-        // Table Headers
         patients: "Patient(s)",
         service: "Service",
         date: "Date",
@@ -480,13 +495,11 @@ export const dictionaries = {
         status: "Status",
         approvalStatus: "Evaluation",
         actions: "Actions",
-        // Buttons
         view: "View",
         approve: "Approve",
         approving: "Approving...",
         reject: "Reject",
         rejecting: "Rejecting...",
-        // Filters
         filterByStatus: "Filter by Status",
         allStatuses: "All Statuses",
         filterByService: "Filter by service...",
@@ -498,7 +511,6 @@ export const dictionaries = {
         thisYear: "This Year",
         nextMonth: "Next Month",
         filters: "Filters",
-        // New Appointment Sheet
         scheduleAppointment: "Schedule Appointment",
         scheduleAppointmentDescription: "Fill in the details to create a new appointment.",
         patientsLabel: "Patients",
@@ -511,7 +523,6 @@ export const dictionaries = {
         descriptionPlaceholder: "Session details...",
         scheduleButton: "Schedule",
         schedulingButton: "Scheduling...",
-        // Appointment Detail Page
         appointmentDetails: "Appointment Details",
         backToAppointments: "Back to Appointments",
         markAsDone: "Mark as Done",
@@ -533,7 +544,6 @@ export const dictionaries = {
         savingNotes: "Saving...",
         cancel: "Cancel",
         noNotes: "No notes have been added for this session yet.",
-        // Agenda View
         agendaView: "Agenda View",
         selectTherapist: "Select a therapist"
     },
@@ -588,7 +598,6 @@ export const dictionaries = {
       readLess: "Read less",
       url: "URL",
       enroll: "Enroll",
-      // Technique Card
       edit: "Edit",
       delete: "Delete",
       save: "Save",
@@ -598,14 +607,12 @@ export const dictionaries = {
       deleteWarning: "This action cannot be undone. This will permanently delete the technique.",
       cannotDelete: "Cannot delete technique",
       deactivationWarning: "This technique is associated with services or therapists and cannot be deleted.",
-      // New Technique Sheet
       registerNewTechnique: "Register New Technique",
       addNewTechnique: "Add a new therapeutic technique to the registry.",
       techniqueNameExample: "e.g., Cognitive Therapy",
       descriptionPlaceholder: "Describe the technique...",
       registering: "Registering...",
       registerTechnique: "Register Technique",
-      // Detail Page
       backToTechniques: "Back to Techniques",
       techniqueDetails: "Technique Details",
       servicesUsingTechnique: "Services Using this Technique",
@@ -615,6 +622,33 @@ export const dictionaries = {
       therapist: "Therapist",
       status: "Status",
       performance: "Performance"
+    },
+    sales: {
+        title: "Sales",
+        newSale: "New Sale",
+        searchPlaceholder: "Search by patient or item...",
+        noSalesFound: "No sales found.",
+        date: "Date",
+        patient: "Patient",
+        item: "Item",
+        amount: "Amount",
+        registerSale: "Register Sale",
+        registerSaleDescription: "Register a new sale of a service or package.",
+        patientLabel: "Patient",
+        selectPatientPlaceholder: "Select a patient",
+        saleTypeLabel: "Sale Type",
+        saleTypeService: "Service",
+        saleTypePackage: "Package",
+        serviceLabel: "Service",
+        selectServicePlaceholder: "Select a service",
+        packageLabel: "Package",
+        selectPackagePlaceholder: "Select a package",
+        sessionsLabel: "Number of Sessions",
+        amountLabel: "Amount ($)",
+        registerButton: "Register Sale",
+        registeringButton: "Registering...",
+        cancel: "Cancel",
+        actions: "Actions"
     },
     toasts: {
         success: {
@@ -636,7 +670,8 @@ export const dictionaries = {
             therapistsAssigned: "Therapists assigned successfully.",
             passwordCopied: "New password has been copied to clipboard.",
             therapistCreated: "New therapist has been created.",
-            techniquesAssigned: "Techniques assigned successfully."
+            techniquesAssigned: "Techniques assigned successfully.",
+            saleRegistered: "Sale has been registered successfully.",
         },
         error: {
             title: "Error",
@@ -659,7 +694,8 @@ export const dictionaries = {
             failedToAssignTherapists: "Failed to assign therapists. Please try again.",
             failedToResetPassword: "Failed to reset password. Please try again.",
             failedToCreateTherapist: "Failed to create therapist. Please try again.",
-            failedToAssignTechniques: "Failed to assign techniques. Please try again."
+            failedToAssignTechniques: "Failed to assign techniques. Please try again.",
+            failedToRegisterSale: "Failed to register sale. Please try again.",
         }
     },
     enums: {
