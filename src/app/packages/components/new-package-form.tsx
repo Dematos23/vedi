@@ -138,48 +138,52 @@ export function NewPackageForm({ services, onFormSubmit }: NewPackageFormProps) 
         <div>
           <FormLabel>{d.servicesLabel}</FormLabel>
           <div className="space-y-4 pt-2">
-            {fields.map((field, index) => (
-              <div key={field.id} className="flex items-end gap-2">
-                <FormField
-                  control={form.control}
-                  name={`services.${index}.serviceId`}
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormControl>
-                        <Select onValueChange={field.onChange} defaultValue={field.value} disabled>
-                           <SelectTrigger>
-                            <SelectValue placeholder={d.selectServicesPlaceholder} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {services.map((service) => (
-                              <SelectItem key={service.id} value={service.id}>
-                                {service.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                 <FormField
-                  control={form.control}
-                  name={`services.${index}.quantity`}
-                  render={({ field }) => (
-                    <FormItem className="w-24">
-                       <FormControl>
-                         <Input type="number" placeholder="Qty" {...field} />
-                       </FormControl>
-                       <FormMessage />
-                    </FormItem>
-                  )}
-                 />
-                 <Button type="button" variant="destructive-outline" size="icon" onClick={() => remove(index)}>
-                    <Trash2 className="h-4 w-4" />
-                 </Button>
-              </div>
-            ))}
+            {fields.map((field, index) => {
+                const selectedService = services.find(s => s.id === form.getValues(`services.${index}.serviceId`));
+                return (
+                    <div key={field.id} className="flex items-end gap-2">
+                        <FormField
+                        control={form.control}
+                        name={`services.${index}.serviceId`}
+                        render={({ field }) => (
+                            <FormItem className="flex-1">
+                            <FormControl>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder={d.selectServicesPlaceholder} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {selectedService && <SelectItem value={selectedService.id}>{selectedService.name}</SelectItem>}
+                                    {availableServices.map((service) => (
+                                        <SelectItem key={service.id} value={service.id}>
+                                            {service.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                                </Select>
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                        <FormField
+                        control={form.control}
+                        name={`services.${index}.quantity`}
+                        render={({ field }) => (
+                            <FormItem className="w-24">
+                            <FormControl>
+                                <Input type="number" placeholder="Qty" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                        <Button type="button" variant="destructive-outline" size="icon" onClick={() => remove(index)}>
+                            <Trash2 className="h-4 w-4" />
+                        </Button>
+                    </div>
+                );
+            })}
              <FormMessage>{form.formState.errors.services?.message}</FormMessage>
              <Button
                 type="button"
