@@ -103,9 +103,8 @@ function MainSidebar() {
         <SidebarMenu>
           {navItems.map((item) => (
             <SidebarMenuItem key={item.href}>
-              <Link href={item.href} legacyBehavior passHref>
+              <Link href={item.href} passHref>
                 <SidebarMenuButton
-                  as="a"
                   isActive={item.href === '/dashboard' ? pathname === item.href : pathname.startsWith(item.href)}
                   onClick={handleLinkClick}
                 >
