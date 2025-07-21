@@ -188,7 +188,7 @@ export function TherapistDetailClient({ data, allTechniques }: TherapistDetailCl
               <div className="grid grid-cols-[200px_1fr_80px_120px] items-center gap-4">
                 {techniquesPerformance.map(tech => (
                   <React.Fragment key={tech.id}>
-                      <span className="font-medium truncate">{tech.technique.name}</span>
+                      <Link href={`/techniques/${tech.techniqueId}`} className="font-medium truncate hover:underline">{tech.technique.name}</Link>
                       <Progress value={tech._count.userTechniqueUsageLogs} max={100} />
                       <span className="text-sm font-mono text-muted-foreground text-center">{tech._count.userTechniqueUsageLogs} {d.uses}</span>
                       <Badge 
@@ -324,3 +324,5 @@ export function TherapistDetailClient({ data, allTechniques }: TherapistDetailCl
 }
 
       
+
+    
