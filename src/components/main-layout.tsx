@@ -73,7 +73,7 @@ function LanguageSwitcher() {
 
 function MainSidebar() {
   const pathname = usePathname();
-  const { open, setOpen } = useSidebar();
+  const { setOpen } = useSidebar();
   const { dictionary } = useLanguage();
   const isMobile = useIsMobile();
 
@@ -103,15 +103,16 @@ function MainSidebar() {
         <SidebarMenu>
           {navItems.map((item) => (
             <SidebarMenuItem key={item.href}>
-              <Link href={item.href} passHref>
-                <SidebarMenuButton
-                  isActive={item.href === '/dashboard' ? pathname === item.href : pathname.startsWith(item.href)}
-                  onClick={handleLinkClick}
-                >
+              <SidebarMenuButton
+                asChild
+                isActive={item.href === '/dashboard' ? pathname === item.href : pathname.startsWith(item.href)}
+                onClick={handleLinkClick}
+              >
+                <Link href={item.href}>
                   <item.icon />
                   {item.label}
-                </SidebarMenuButton>
-              </Link>
+                </Link>
+              </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
