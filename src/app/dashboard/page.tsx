@@ -17,7 +17,20 @@ export default async function DashboardPage() {
     },
   });
   
-  const services: Service[] = await prisma.service.findMany();
+  // Explicitly select only the needed fields to avoid issues with removed columns like packageId
+  const services: Service[] = await prisma.service.findMany({
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      price: true,
+      duration: true,
+      status: true,
+      userId: true,
+      createdAt: true,
+      updatedAt: true,
+    }
+  });
 
   const now = new Date();
   const startOfCurrentMonth = startOfMonth(now);
