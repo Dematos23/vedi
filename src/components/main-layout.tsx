@@ -12,6 +12,7 @@ import {
   Globe,
   BrainCircuit,
   DollarSign,
+  Package,
 } from "lucide-react";
 import {
   SidebarProvider,
@@ -82,6 +83,7 @@ function MainSidebar() {
     { href: "/appointments", icon: CalendarDays, label: dictionary.sidebar.appointments },
     { href: "/sales", icon: DollarSign, label: dictionary.sidebar.sales },
     { href: "/services", icon: BriefcaseMedical, label: dictionary.sidebar.services },
+    { href: "/packages", icon: Package, label: dictionary.sidebar.packages },
     { href: "/therapists", icon: HeartPulse, label: dictionary.sidebar.therapists },
     { href: "/techniques", icon: BrainCircuit, label: dictionary.sidebar.techniques },
   ];
@@ -103,7 +105,7 @@ function MainSidebar() {
             <SidebarMenuItem key={item.href}>
               <Link href={item.href}>
                 <SidebarMenuButton
-                  isActive={pathname === item.href || (pathname.startsWith(item.href) && item.href !== '/dashboard')}
+                  isActive={pathname.startsWith(item.href) && (item.href !== '/dashboard' || pathname === '/dashboard')}
                   onClick={handleLinkClick}
                 >
                   <item.icon />

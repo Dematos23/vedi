@@ -774,3 +774,32 @@ export async function createSale(data: z.infer<typeof createSaleSchema>) {
         return sale;
     });
 }
+
+// Package Actions
+const createPackageSchema = z.object({
+  name: z.string().min(3, "Package name must be at least 3 characters."),
+  description: z.string().min(10, "Description must be at least 10 characters."),
+  price: z.coerce.number().positive("Price must be a positive number."),
+  serviceIds: z.array(z.string()).min(1, "Please select at least one service."),
+});
+
+export async function createPackage(data: z.infer<typeof createPackageSchema>) {
+  const validatedFields = createPackageSchema.safeParse(data);
+
+  if (!validatedFields.success) {
+    throw new Error("Invalid package data.");
+  }
+  
+  const { serviceIds, ...packageData } = validatedFields.data;
+
+  await prisma.package.create({
+    data: {
+      ...packageData,
+      services: {
+        connect: serviceIds.map(id => ({ id })),
+      }
+    },
+  });
+
+  revalidatePath("/packages");
+}

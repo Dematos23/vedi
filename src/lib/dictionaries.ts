@@ -11,6 +11,7 @@ export const dictionaries = {
       therapists: 'Terapeutas',
       techniques: 'Técnicas',
       sales: 'Ventas',
+      packages: 'Paquetes',
     },
     language: "Idioma",
     dashboard: {
@@ -220,7 +221,7 @@ export const dictionaries = {
         assigning: "Asignando...",
         cancel: "Cancelar",
         passwordDialogTitle: (name: string) => `Contraseña Creada para ${name}`,
-        passwordDialogDescription: "La contraseña del terapeuta ha sido creada. Por favor, proporciónale su nueva contraseña de forma segura."
+        passwordDialogDescription: "La contraseña del terapeuta ha sido creada. Por favor, proporciónale su nueva contraseña de forma segura.",
     },
     techniques: {
       title: "Técnicas",
@@ -288,6 +289,30 @@ export const dictionaries = {
         cancel: "Cancelar",
         actions: "Acciones"
     },
+    packages: {
+      title: "Paquetes",
+      newPackage: "Nuevo Paquete",
+      searchPlaceholder: "Buscar por nombre...",
+      noPackagesFound: "No se encontraron paquetes.",
+      packageName: "Nombre del Paquete",
+      description: "Descripción",
+      price: "Precio",
+      services: "Servicios",
+      actions: "Acciones",
+      view: "Ver",
+      edit: "Editar",
+      delete: "Eliminar",
+      registerNewPackage: "Registrar Nuevo Paquete",
+      addNewPackage: "Crea un nuevo paquete agrupando servicios existentes.",
+      packageNameExample: "p. ej., Paquete de Relajación",
+      descriptionPlaceholder: "Describe el contenido del paquete...",
+      priceLabel: "Precio ($)",
+      servicesLabel: "Servicios Incluidos",
+      selectServicesPlaceholder: "Selecciona servicios...",
+      registering: "Registrando...",
+      registerPackage: "Registrar Paquete",
+      cancel: "Cancelar",
+    },
     toasts: {
         success: {
             title: "Éxito",
@@ -310,6 +335,7 @@ export const dictionaries = {
             therapistCreated: "El nuevo terapeuta ha sido creado.",
             techniquesAssigned: "Técnicas asignadas correctamente.",
             saleRegistered: "La venta ha sido registrada exitosamente.",
+            packageCreated: "El nuevo paquete ha sido creado.",
         },
         error: {
             title: "Error",
@@ -334,6 +360,7 @@ export const dictionaries = {
             failedToCreateTherapist: "Error al crear el terapeuta. Por favor, inténtalo de nuevo.",
             failedToAssignTechniques: "Error al asignar técnicas. Por favor, inténtalo de nuevo.",
             failedToRegisterSale: "Error al registrar la venta. Por favor, inténtalo de nuevo.",
+            failedToCreatePackage: "Error al crear el paquete. Por favor, inténtalo de nuevo.",
         }
     },
     enums: {
@@ -373,6 +400,7 @@ export const dictionaries = {
       therapists: 'Therapists',
       techniques: 'Techniques',
       sales: 'Sales',
+      packages: 'Packages',
     },
     language: "Language",
     dashboard: {
@@ -650,6 +678,30 @@ export const dictionaries = {
         cancel: "Cancel",
         actions: "Actions"
     },
+    packages: {
+      title: "Packages",
+      newPackage: "New Package",
+      searchPlaceholder: "Search by name...",
+      noPackagesFound: "No packages found.",
+      packageName: "Package Name",
+      description: "Description",
+      price: "Price",
+      services: "Services",
+      actions: "Actions",
+      view: "View",
+      edit: "Edit",
+      delete: "Delete",
+      registerNewPackage: "Register New Package",
+      addNewPackage: "Create a new package by bundling existing services.",
+      packageNameExample: "e.g., Relaxation Package",
+      descriptionPlaceholder: "Describe the contents of the package...",
+      priceLabel: "Price ($)",
+      servicesLabel: "Included Services",
+      selectServicesPlaceholder: "Select services...",
+      registering: "Registering...",
+      registerPackage: "Register Package",
+      cancel: "Cancel",
+    },
     toasts: {
         success: {
             title: "Success",
@@ -672,6 +724,7 @@ export const dictionaries = {
             therapistCreated: "New therapist has been created.",
             techniquesAssigned: "Techniques assigned successfully.",
             saleRegistered: "Sale has been registered successfully.",
+            packageCreated: "The new package has been created.",
         },
         error: {
             title: "Error",
@@ -696,6 +749,7 @@ export const dictionaries = {
             failedToCreateTherapist: "Failed to create therapist. Please try again.",
             failedToAssignTechniques: "Failed to assign techniques. Please try again.",
             failedToRegisterSale: "Failed to register sale. Please try again.",
+            failedToCreatePackage: "Failed to create package. Please try again.",
         }
     },
     enums: {
