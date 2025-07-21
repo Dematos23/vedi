@@ -275,4 +275,3 @@ export function NewSaleSheet({ patients, services, packages }: NewSaleSheetProps
     </Sheet>
   );
 }
-
