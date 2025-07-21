@@ -21,12 +21,12 @@ import { Button } from "@/components/ui/button";
 import { Edit, Eye } from "lucide-react";
 import { Search } from "@/app/patients/components/search";
 import { formatCurrency } from "@/lib/utils";
-import type { Service, Package } from "@prisma/client";
+import type { Service, Package, PackageService } from "@prisma/client";
 import { useLanguage } from "@/contexts/language-context";
 import { NewPackageSheet } from "./new-package-sheet";
 
 interface PackageWithServices extends Package {
-    services: Service[];
+    packageServices: (PackageService & { service: Service })[];
 }
 
 interface PackagesListProps {
@@ -69,7 +69,7 @@ export function PackagesList({ packages, services }: PackagesListProps) {
                     <TableCell className="font-medium">{pkg.name}</TableCell>
                     <TableCell className="hidden md:table-cell">
                         <div className="flex flex-wrap gap-1">
-                            {pkg.services.map(s => <Badge key={s.id} variant="secondary">{s.name}</Badge>)}
+                            {pkg.packageServices.map(ps => <Badge key={ps.serviceId} variant="secondary">{ps.service.name} (x{ps.quantity})</Badge>)}
                         </div>
                     </TableCell>
                     <TableCell className="text-right">{formatCurrency(Number(pkg.price))}</TableCell>

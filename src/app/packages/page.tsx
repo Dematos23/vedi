@@ -19,7 +19,11 @@ export default async function PackagesPage({
         ]
     },
     include: {
-        services: true,
+        packageServices: {
+            include: {
+                service: true
+            }
+        },
     },
     orderBy: {
         name: 'asc'
@@ -29,7 +33,6 @@ export default async function PackagesPage({
   const servicesPromise = prisma.service.findMany({ where: { status: 'ACTIVE' } });
   
   const [packages, services] = await Promise.all([packagesPromise, servicesPromise]);
-
 
   return (
     <PackagesList 

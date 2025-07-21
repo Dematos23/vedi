@@ -746,6 +746,7 @@ export async function createSale(data: z.infer<typeof createSaleSchema>) {
     const { patientId, saleType, serviceId, packageId, sessions, amount } = validatedFields.data;
 
     return await prisma.$transaction(async (tx) => {
+        // Create the main Sale record
         const sale = await tx.sale.create({
             data: {
                 patientId,
@@ -756,6 +757,7 @@ export async function createSale(data: z.infer<typeof createSaleSchema>) {
             }
         });
 
+        // If it's a service sale, create one balance
         if (saleType === 'service' && serviceId && sessions) {
             await tx.patientServiceBalance.create({
                 data: {
@@ -766,6 +768,32 @@ export async function createSale(data: z.infer<typeof createSaleSchema>) {
                     used: 0,
                 }
             });
+        }
+
+        // If it's a package sale, create multiple balances
+        if (saleType === 'package' && packageId) {
+            const packageWithServices = await tx.package.findUnique({
+                where: { id: packageId },
+                include: { packageServices: true }
+            });
+
+            if (!packageWithServices) {
+                throw new Error("Package not found");
+            }
+
+            const balanceCreations = packageWithServices.packageServices.map(ps => {
+                return tx.patientServiceBalance.create({
+                    data: {
+                        patientId,
+                        serviceId: ps.serviceId,
+                        saleId: sale.id,
+                        total: ps.quantity,
+                        used: 0,
+                    }
+                });
+            });
+
+            await Promise.all(balanceCreations);
         }
         
         revalidatePath("/sales");
@@ -780,7 +808,10 @@ const createPackageSchema = z.object({
   name: z.string().min(3, "Package name must be at least 3 characters."),
   description: z.string().min(10, "Description must be at least 10 characters."),
   price: z.coerce.number().positive("Price must be a positive number."),
-  serviceIds: z.array(z.string()).min(1, "Please select at least one service."),
+  services: z.array(z.object({
+      serviceId: z.string().min(1),
+      quantity: z.coerce.number().int().min(1),
+  })).min(1, "Please add at least one service."),
 });
 
 export async function createPackage(data: z.infer<typeof createPackageSchema>) {
@@ -790,13 +821,16 @@ export async function createPackage(data: z.infer<typeof createPackageSchema>) {
     throw new Error("Invalid package data.");
   }
   
-  const { serviceIds, ...packageData } = validatedFields.data;
+  const { services, ...packageData } = validatedFields.data;
 
   await prisma.package.create({
     data: {
       ...packageData,
-      services: {
-        connect: serviceIds.map(id => ({ id })),
+      packageServices: {
+        create: services.map(s => ({
+            serviceId: s.serviceId,
+            quantity: s.quantity,
+        })),
       }
     },
   });
