@@ -76,6 +76,7 @@ export function NewSaleSheet({ patients, services, packages }: NewSaleSheetProps
       patientId: undefined,
       saleType: "service",
       sessions: 5, // Default to a package of 5
+      amount: undefined,
     }
   });
 
@@ -257,7 +258,15 @@ export function NewSaleSheet({ patients, services, packages }: NewSaleSheetProps
                 render={({ field }) => (
                     <FormItem>
                         <FormLabel>{d.amountLabel}</FormLabel>
-                        <FormControl><Input type="number" step="0.01" {...field} /></FormControl>
+                        <FormControl>
+                            <Input
+                                type="number"
+                                step="0.01"
+                                {...field}
+                                value={field.value === undefined || isNaN(field.value) ? '' : field.value}
+                                onChange={e => field.onChange(e.target.valueAsNumber)}
+                            />
+                        </FormControl>
                         <FormMessage />
                     </FormItem>
                 )}
