@@ -153,9 +153,9 @@ export function NewPackageForm({ services, onFormSubmit }: NewPackageFormProps) 
                                     <SelectValue placeholder={d.selectServicesPlaceholder} />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {selectedService && <SelectItem value={selectedService.id}>{selectedService.name}</SelectItem>}
+                                    {selectedService && <SelectItem key={`${index}-${selectedService.id}`} value={selectedService.id}>{selectedService.name}</SelectItem>}
                                     {availableServices.map((service) => (
-                                        <SelectItem key={service.id} value={service.id}>
+                                        <SelectItem key={`${index}-${service.id}`} value={service.id}>
                                             {service.name}
                                         </SelectItem>
                                     ))}
